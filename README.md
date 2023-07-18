@@ -15,3 +15,6 @@ This project is designed to be a starting point for a typescript web application
 ## Manually test backend responses
 1. ```brew install insomnia```
 2. import from file ```insomnia-config.json```
+
+## Run end-2-end tests
+1. ```npx cypress open```

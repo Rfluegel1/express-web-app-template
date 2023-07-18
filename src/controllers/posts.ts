@@ -1,12 +1,7 @@
 import { Request, Response } from 'express';
 import axios, { AxiosResponse } from 'axios';
+import Post from '../domain/post'
 
-interface Post {
-    userId: Number;
-    id: Number;
-    title: String;
-    body: String;
-}
 
 const getPosts = async (req: Request, res: Response) => {
     let result: AxiosResponse = await axios.get(`https://jsonplaceholder.typicode.com/posts`);
