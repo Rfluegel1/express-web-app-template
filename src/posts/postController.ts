@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import axios, { AxiosResponse } from 'axios';
-import Post from '../domain/post'
+import Post from './post'
 
 
 const getPosts = async (req: Request, res: Response) => {
