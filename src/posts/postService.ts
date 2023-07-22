@@ -1,6 +1,6 @@
-import Post from "./post";
+import Post from './post'
 
-export const post = (userId: string, title: string, message: string) : Post => {
+export const post = (userId: string, title: string, message: string): Post => {
     return new Post(userId, title, message)
 }
 

@@ -1,10 +1,10 @@
 import Post from '../../src/posts/post'
-import {UUID_REG_EXP} from "../../src/contants";
+import {UUID_REG_EXP} from '../../src/contants'
 
 describe('domain functions work', () => {
     it('default constructor sets default values', () => {
         // when
-        let result= new Post()
+        let result = new Post()
         // then
         expect(result.userId).toEqual('')
         expect(result.id).toMatch(UUID_REG_EXP)

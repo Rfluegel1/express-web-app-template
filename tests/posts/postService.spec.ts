@@ -1,5 +1,5 @@
 import {post} from '../../src/posts/postService'
-import {UUID_REG_EXP} from "../../src/contants";
+import {UUID_REG_EXP} from '../../src/contants'
 
 describe('service functions work', () => {
     it('post returns message and UUID', () => {
