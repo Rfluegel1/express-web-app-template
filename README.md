@@ -1,29 +1,39 @@
 # typescript-template
 
-This project is designed to be a starting point for a typescript web application
+This project is designed to be a starting point for a typescript web application with unit, integration, blackbox, e2e,
+and performance testing.
 
 ```npm install```
 
-## Run Front End Locally
+## Run front end locally
 
 ```node server.js```
-
-## Run unit tests
-
-```npm test```
 
 ## Run backend
 
 ```npm run dev```
 
-## Manually test backend responses
+## Run database
 
-1. ```brew install insomnia```
-2. import from file ```insomnia-config.json```
+```brew services start postgresql@14```
+
+#### Install postgresql@14
+
+1. ```brew install postgresql@14```
+2. ```createdb post```
+
+## Run unit tests
+
+```npm test```
 
 ## Run end-2-end tests
 
 1. ```npx cypress open```
+
+## Manually test backend responses
+
+1. ```brew install insomnia```
+2. import from file ```insomnia-config.json```
 
 ## Configure WebStorm
 

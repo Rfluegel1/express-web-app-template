@@ -20,8 +20,10 @@
     "jest-editor-support": "^31.1.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.22",
+    "pg": "^8.11.1",
     "pocketbase": "^0.15.2",
     "ts-node": "^10.9.1",
+    "typeorm": "^0.3.17",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
