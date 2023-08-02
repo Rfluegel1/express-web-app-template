@@ -5,6 +5,7 @@ import {createConnection} from 'typeorm'
 jest.mock('typeorm', () => ({
     createConnection: jest.fn(() => Promise.resolve()),
 }))
+
 describe('repository functions work', () => {
     it('post calls postgres', () => {
         // when

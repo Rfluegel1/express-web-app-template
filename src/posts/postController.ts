@@ -2,6 +2,7 @@ import {Request, Response} from 'express'
 import axios, {AxiosResponse} from 'axios'
 import Post from './post'
 import PostService from './postService'
+import {StatusCodes} from 'http-status-codes'
 
 
 const getPosts = async (req: Request, res: Response) => {
@@ -42,16 +43,13 @@ const deletePost = async (req: Request, res: Response) => {
     })
 }
 
-const addPost = async (req: Request, res: Response) => {
+const addPost = (req: Request, res: Response) => {
     let title: string = req.body.title
     let body: string = req.body.body
-    PostService.post('1', title, body)
-    let response: AxiosResponse = await axios.post(`https://jsonplaceholder.typicode.com/posts`, {
-        title,
-        body
-    })
-    return res.status(200).json({
-        message: response.data
+    let userId: string = req.body.userId
+    const response = PostService.post(userId, title, body)
+    return res.status(StatusCodes.CREATED).json({
+        message: response
     })
 }
 
