@@ -15,8 +15,7 @@ const getPosts = async (req: Request, res: Response) => {
 
 const getPost = async (req: Request, res: Response) => {
     let id: string = req.params.id
-    let result: AxiosResponse = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`)
-    let post: Post = result.data
+    const post = PostService.get(id)
     return res.status(200).json({
         message: post
     })
@@ -47,7 +46,7 @@ const addPost = (req: Request, res: Response) => {
     let title: string = req.body.title
     let body: string = req.body.body
     let userId: string = req.body.userId
-    const response = PostService.post(userId, title, body)
+    const response = PostService.addPost(userId, title, body)
     return res.status(StatusCodes.CREATED).json({
         message: response
     })

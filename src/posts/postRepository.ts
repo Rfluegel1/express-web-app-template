@@ -1,9 +1,23 @@
-import {createConnection} from 'typeorm'
+import {createConnection, getConnection} from 'typeorm'
+import Post from './post'
+import {plainToClass} from 'class-transformer'
 
-const post = (userId: string, title: string, message: string): void => {
-    createConnection().then(async connection => {
-        console.log('Connected to DB')
-    }).catch(error => console.log(error))
+const post = async (post: Post) => {
+    await createConnection()
+    getConnection().query(
+        'INSERT INTO ' +
+        'posts (id, userId, title, body) ' +
+        'VALUES ($1, $2, $3, $4)',
+        [post.id, post.userId, post.title, post.body]
+    )
 }
 
-export default {post}
+const get = async (id: string) => {
+    await createConnection()
+    const postResponse = getConnection().query(
+        'SELECT FROM posts WHERE id=$1', [id]
+    )
+    return plainToClass(Post, postResponse)
+}
+
+export default {post, get}

@@ -1,9 +1,14 @@
 import Post from './post'
 import PostRepository from './postRepository'
 
-export const post = (userId: string, title: string, message: string): Post => {
-    PostRepository.post(userId, title, message)
-    return new Post(userId, title, message)
+export const addPost = (userId: string, title: string, body: string) => {
+    const post = new Post(userId, title, body)
+    PostRepository.post(post)
+    return post
 }
 
-export default {post}
+export const get = async (id: string) => {
+    return await PostRepository.get(id)
+}
+
+export default {addPost, get}
