@@ -61,3 +61,12 @@ Assign Ctrl+S to "Format and Save"
 6. it will report conflicts. Ignore it and click OK button
 7. WebStorm will show a warning "The shortcut is already assigned to other actions. Do you want to remove other
    assignments?" Click "Remove" button
+
+### To run backend in debug mode
+
+1. Run | Edit Configurations...
+2. Create a new Node.js configuration
+3. Rename to 'Debug Server'
+4. Change the interpreter to ts-node (~/workspaces/typescript-template/node_modules/.bin/ts-node)
+5. Set working directory to ~/workspaces/typescript-template
+6. Set Javascript file to src/server.ts

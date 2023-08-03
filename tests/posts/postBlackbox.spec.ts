@@ -16,9 +16,9 @@ describe('Post Lifecycle', () => {
         expect(postResponse.status).toEqual(StatusCodes.CREATED)
         let postMessage = postResponse.data.message
         expect(postMessage.id).toMatch(UUID_REG_EXP)
-        expect(postMessage.userId).toBe('theUser')
-        expect(postMessage.title).toBe('theTitle')
-        expect(postMessage.body).toBe('theBody')
+        expect(postMessage.userId).toEqual('theUser')
+        expect(postMessage.title).toEqual('theTitle')
+        expect(postMessage.body).toEqual('theBody')
 
         // when
         const id = postMessage.id
@@ -26,10 +26,10 @@ describe('Post Lifecycle', () => {
 
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)
-        let getMessage = getResponse.data.message
-        expect(getMessage.id).toBe(id)
-        expect(getMessage.userId).toBe('theUser')
-        expect(getMessage.title).toContain('theTitle')
-        expect(getMessage.body).toContain('theBody')
+        let getMessage = getResponse.data.message[0]
+        expect(getMessage.id).toEqual(id)
+        expect(getMessage.userId).toEqual('theUser')
+        expect(getMessage.title).toEqual('theTitle')
+        expect(getMessage.body).toEqual('theBody')
     })
 })

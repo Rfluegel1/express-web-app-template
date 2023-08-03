@@ -2,6 +2,7 @@ import http from 'http'
 import express, {Express} from 'express'
 import morgan from 'morgan'
 import routes from './posts/postRoutes'
+import PostRepository from './posts/postRepository'
 
 const router: Express = express()
 
@@ -30,4 +31,9 @@ router.use((req, res) => {
 
 const httpServer = http.createServer(router)
 const PORT: any = process.env.PORT ?? 8080
+
+PostRepository.initialize().catch(err => {
+    console.error('Failed to connect to the database', err)
+    process.exit(1)
+})
 httpServer.listen(PORT, () => console.log(`The server is running on port ${PORT}`))

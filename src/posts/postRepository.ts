@@ -2,9 +2,11 @@ import {createConnection, getConnection} from 'typeorm'
 import Post from './post'
 import {plainToClass} from 'class-transformer'
 
-const post = async (post: Post) => {
+const initialize = async () => {
     await createConnection()
-    getConnection().query(
+}
+const post = async (post: Post) => {
+    await getConnection().query(
         'INSERT INTO ' +
         'posts (id, userId, title, body) ' +
         'VALUES ($1, $2, $3, $4)',
@@ -13,11 +15,16 @@ const post = async (post: Post) => {
 }
 
 const get = async (id: string) => {
-    await createConnection()
-    const postResponse = getConnection().query(
-        'SELECT FROM posts WHERE id=$1', [id]
+    const postResponse = await getConnection().query(
+        'SELECT * FROM posts WHERE id=$1', [id]
     )
-    return plainToClass(Post, postResponse)
+    const intermediate = [{
+        id: postResponse[0]?.id,
+        userId: postResponse[0]?.userid,
+        title: postResponse[0]?.title,
+        body: postResponse[0]?.body
+    }]
+    return plainToClass(Post, intermediate)
 }
 
-export default {post, get}
+export default {initialize, post, get}

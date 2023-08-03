@@ -7,6 +7,12 @@ import Post from '../../src/posts/post'
 jest.mock('typeorm')
 
 describe('repository functions work', () => {
+    it('initialize creates connection to postgresql', async () => {
+        //when
+        await postRepository.initialize()
+        //then
+        expect(createConnection).toHaveBeenCalled()
+    })
     it('post saves to postgres', async () => {
         //given
         const query = jest.fn();
@@ -15,7 +21,6 @@ describe('repository functions work', () => {
         // when
         await postRepository.post(post)
         // then
-        expect(createConnection).toHaveBeenCalled()
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
             'INSERT INTO' +
@@ -27,7 +32,7 @@ describe('repository functions work', () => {
     it('get retrieves from postgres', async () => {
         //given
         const id = uuidv4()
-        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost = {id: id, userid: 'the user', title: 'the title', body: 'the message!'}
         const query = jest.fn(() => {
             return mockPost
         });
@@ -35,10 +40,9 @@ describe('repository functions work', () => {
         // when
         const actual = await postRepository.get(id)
         // then
-        expect(createConnection).toHaveBeenCalled()
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
-            'SELECT FROM posts WHERE id=$1',
+            'SELECT * FROM posts WHERE id=$1',
             [id]
         )
         expect(actual.id).toEqual(id)

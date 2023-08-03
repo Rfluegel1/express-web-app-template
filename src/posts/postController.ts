@@ -15,9 +15,9 @@ const getPosts = async (req: Request, res: Response) => {
 
 const getPost = async (req: Request, res: Response) => {
     let id: string = req.params.id
-    const post = PostService.get(id)
+    const post = await PostService.get(id)
     return res.status(200).json({
-        message: post
+        message: post[0]
     })
 }
 
