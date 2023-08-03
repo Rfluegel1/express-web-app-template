@@ -34,7 +34,7 @@ describe('repository functions work', () => {
         const id = uuidv4()
         const mockPost = {id: id, userid: 'the user', title: 'the title', body: 'the message!'}
         const query = jest.fn(() => {
-            return mockPost
+            return [mockPost]
         });
         (getConnection as jest.Mock).mockReturnValue({query})
         // when
@@ -45,9 +45,9 @@ describe('repository functions work', () => {
             'SELECT * FROM posts WHERE id=$1',
             [id]
         )
-        expect(actual.id).toEqual(id)
-        expect(actual.userId).toEqual('the user')
-        expect(actual.title).toEqual('the title')
-        expect(actual.body).toEqual('the message!')
+        expect(actual[0].id).toEqual(id)
+        expect(actual[0].userId).toEqual('the user')
+        expect(actual[0].title).toEqual('the title')
+        expect(actual[0].body).toEqual('the message!')
     })
 })
