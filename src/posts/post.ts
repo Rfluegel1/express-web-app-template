@@ -12,4 +12,16 @@ export default class Post {
         this.title = title
         this.userId = userId
     }
+
+    updateDefinedFields(userId: string | undefined, title: string | undefined, body: string) {
+        if (userId != undefined) {
+            this.userId = userId
+        }
+        if (title != undefined) {
+            this.title = title
+        }
+        if (body != undefined) {
+            this.body = body
+        }
+    }
 }

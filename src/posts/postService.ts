@@ -11,4 +11,11 @@ export const get = async (id: string) => {
     return await PostRepository.get(id)
 }
 
-export default {addPost, get}
+export const update = async (id: string, userId: string | undefined, title: string | undefined, body: string) => {
+    let post = await get(id)
+    post.updateDefinedFields(userId, title, body)
+    await PostRepository.update(post)
+    return post
+}
+
+export default {addPost, get, update}

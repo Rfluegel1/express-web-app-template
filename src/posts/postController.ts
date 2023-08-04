@@ -17,20 +17,18 @@ const getPost = async (req: Request, res: Response) => {
     let id: string = req.params.id
     const post = await PostService.get(id)
     return res.status(200).json({
-        message: post[0]
+        message: post
     })
 }
 
 const updatePost = async (req: Request, res: Response) => {
     let id: string = req.params.id
-    let title: string = req.body.title ?? null
-    let body: string = req.body.body ?? null
-    let response: AxiosResponse = await axios.put(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-        ...(title && {title}),
-        ...(body && {body})
-    })
+    let userId: string = req.body.userId
+    let title: string = req.body.title
+    let body: string = req.body.body
+    let post = await PostService.update(id, userId, title, body)
     return res.status(200).json({
-        message: response.data
+        message: post
     })
 }
 

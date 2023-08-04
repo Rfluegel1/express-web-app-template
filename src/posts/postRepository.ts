@@ -18,13 +18,20 @@ const get = async (id: string) => {
     const postResponse = await getConnection().query(
         'SELECT * FROM posts WHERE id=$1', [id]
     )
-    const intermediate = [{
+    const intermediate = {
         id: postResponse[0]?.id,
         userId: postResponse[0]?.userid,
         title: postResponse[0]?.title,
         body: postResponse[0]?.body
-    }]
+    }
     return plainToClass(Post, intermediate)
 }
 
-export default {initialize, post, get}
+const update = async (post: Post) => {
+    await getConnection().query(
+        'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
+        [post.userId, post.title, post.body, post.id]
+    )
+}
+
+export default {initialize, post, get, update}

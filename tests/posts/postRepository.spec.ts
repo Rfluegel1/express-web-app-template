@@ -45,9 +45,25 @@ describe('repository functions work', () => {
             'SELECT * FROM posts WHERE id=$1',
             [id]
         )
-        expect(actual[0].id).toEqual(id)
-        expect(actual[0].userId).toEqual('the user')
-        expect(actual[0].title).toEqual('the title')
-        expect(actual[0].body).toEqual('the message!')
+        expect(actual.id).toEqual(id)
+        expect(actual.userId).toEqual('the user')
+        expect(actual.title).toEqual('the title')
+        expect(actual.body).toEqual('the message!')
+    })
+    it('update updates postgres', async () => {
+        //given
+        const mockPost = new Post('the new user', 'the new title', 'the new message!')
+        const query = jest.fn(() => {
+            return [mockPost]
+        });
+        (getConnection as jest.Mock).mockReturnValue({query})
+        // when
+        await postRepository.update(mockPost)
+        // then
+        expect(getConnection).toHaveBeenCalled()
+        expect(query).toHaveBeenCalledWith(
+            'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
+            ['the new user', 'the new title', 'the new message!', mockPost.id]
+        )
     })
 })
