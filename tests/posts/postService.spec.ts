@@ -7,10 +7,10 @@ import {UUID_REG_EXP} from '../../src/contants'
 jest.mock('../../src/posts/postRepository')
 
 describe('service functions work', () => {
-    it('post returns message and UUID', () => {
+    it('post returns message and UUID', async () => {
         const expectedPost = {userId: 'the user', title: 'the title', body: 'the message!'}
         // when
-        let result = PostService.addPost('the user', 'the title', 'the message!')
+        let result = await PostService.addPost('the user', 'the title', 'the message!')
         // then
         expect(PostRepository.post).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
         expect(result.userId).toEqual('the user')

@@ -8,6 +8,7 @@ describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
         // given
         const post = new Post('theUser', 'theTitle', 'theBody')
+        const updatePost = new Post('theUpdatedUser', 'theUpdatedTitle', 'theUpdatedBody')
 
         // when
         const postResponse = await axios.post('http://127.0.0.1:8080/posts', post)
@@ -26,10 +27,28 @@ describe('Post Lifecycle', () => {
 
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)
-        let getMessage = getResponse.data.message[0]
+        let getMessage = getResponse.data.message
         expect(getMessage.id).toEqual(id)
         expect(getMessage.userId).toEqual('theUser')
         expect(getMessage.title).toEqual('theTitle')
         expect(getMessage.body).toEqual('theBody')
+
+        // when
+        const updateResponse = await axios.put(`http://127.0.0.1:8080/posts/${id}`, updatePost)
+
+        // then
+        expect(updateResponse.status).toEqual(StatusCodes.OK)
+        let updateMessage = updateResponse.data.message[0]
+        expect(updateMessage.id).toEqual(id)
+        expect(updateMessage.userId).toEqual('theUpdatedUser')
+        expect(updateMessage.title).toEqual('theUpdatedTitle')
+        expect(updateMessage.body).toEqual('theUpdatedBody')
+
+        // when
+        const deleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${id}`)
+
+        //then
+        expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+
     })
 })

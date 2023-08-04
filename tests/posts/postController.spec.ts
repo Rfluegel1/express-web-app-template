@@ -7,7 +7,7 @@ import {StatusCodes} from 'http-status-codes'
 jest.mock('../../src/posts/postService')
 
 describe('Post controller', () => {
-    it('addPost should respond with the same data that is returned from the PostService', () => {
+    it('addPost should respond with the same data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
         const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
@@ -34,13 +34,13 @@ describe('Post controller', () => {
         })
 
         // when
-        PostController.addPost(request as any, response as any)
+        await PostController.addPost(request as any, response as any)
 
         // then
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
     })
-    it('getPost should respond with the same data that is returned from the PostService', () => {
+    it('getPost should respond with the same data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
         const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
@@ -56,18 +56,18 @@ describe('Post controller', () => {
 
         (PostService.get as jest.Mock).mockImplementation((sentId) => {
             if (id === sentId) {
-                return mockPost
+                return [mockPost]
             } else {
                 return null
             }
         })
 
         // when
-        PostController.getPost(request as any, response as any)
+        await PostController.getPost(request as any, response as any)
 
         // then
-        expect(response.json).toHaveBeenCalledWith({message: mockPost})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.json).toHaveBeenCalledWith({message: mockPost})
     })
 })
 

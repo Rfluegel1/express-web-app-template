@@ -42,11 +42,11 @@ const deletePost = async (req: Request, res: Response) => {
     })
 }
 
-const addPost = (req: Request, res: Response) => {
+const addPost = async (req: Request, res: Response) => {
     let title: string = req.body.title
     let body: string = req.body.body
     let userId: string = req.body.userId
-    const response = PostService.addPost(userId, title, body)
+    const response = await PostService.addPost(userId, title, body)
     return res.status(StatusCodes.CREATED).json({
         message: response
     })
