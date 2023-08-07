@@ -1,8 +1,10 @@
 import PostController from '../../src/posts/postController'
+import postController from '../../src/posts/postController'
 import PostService from '../../src/posts/postService'
 import postService from '../../src/posts/postService'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
+import {NextFunction} from 'express'
 
 // setup
 jest.mock('../../src/posts/postService')
@@ -100,11 +102,30 @@ describe('Post controller', () => {
         })
 
         // when
-        await PostController.getPost(request as any, response as any)
+        await PostController.getPost(request as any, response as any, jest.fn())
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
+    })
+    it('getPost should next error that is returned from the PostService', async () => {
+        // given
+        let id = uuidv4()
+        const request = {
+            params: {id: id},
+        }
+        const response = {};
+
+        (PostService.get as jest.Mock).mockImplementation(() => {
+            throw new Error
+        })
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.getPost(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(Error))
     })
     it('delPost should respond with a 204', async () => {
         // given

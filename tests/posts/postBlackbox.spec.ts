@@ -1,6 +1,7 @@
 import Post from '../../src/posts/post'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../src/contants'
+import {AxiosError} from 'axios'
 
 const axios = require('axios')
 
@@ -51,9 +52,16 @@ describe('Post Lifecycle', () => {
         expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
 
         // when
-        const getAfterDeleteResponse = await axios.get(`http://127.0.0.1:8080/posts/${id}`)
+        let getAfterDeleteResponse
+
+        try {
+            getAfterDeleteResponse = await axios.get(`http://127.0.0.1:8080/posts/${id}`)
+        } catch (error) {
+            getAfterDeleteResponse = (error as AxiosError).response
+        }
 
         // then
         expect(getAfterDeleteResponse.status).toEqual(StatusCodes.NOT_FOUND)
+        expect(getAfterDeleteResponse.data.message).toEqual(`Object not found for id=${id}`)
     })
 })

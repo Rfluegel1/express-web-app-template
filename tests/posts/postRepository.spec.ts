@@ -2,6 +2,7 @@ import postRepository from '../../src/posts/postRepository'
 import {createConnection, getConnection} from 'typeorm'
 import {v4 as uuidv4} from 'uuid'
 import Post from '../../src/posts/post'
+import {NotFoundException} from '../../src/notFoundException'
 
 // setup
 jest.mock('typeorm')
@@ -49,6 +50,15 @@ describe('repository functions work', () => {
         expect(actual.userId).toEqual('the user')
         expect(actual.title).toEqual('the title')
         expect(actual.body).toEqual('the message!')
+    })
+    it('get when not found throws', async () => {
+        //given
+        const query = jest.fn(() => {
+            return []
+        });
+        (getConnection as jest.Mock).mockReturnValue({query})
+        // when and then
+        await expect(() => postRepository.get(uuidv4())).rejects.toThrow(NotFoundException)
     })
     it('delete removes from postgres', async () => {
         //given

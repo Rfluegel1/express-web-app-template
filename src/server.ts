@@ -3,14 +3,15 @@ import express, {Express} from 'express'
 import morgan from 'morgan'
 import routes from './posts/postRoutes'
 import PostRepository from './posts/postRepository'
+import PostController from './posts/postController'
 
-const router: Express = express()
+const app: Express = express()
 
-router.use(morgan('dev'))
-router.use(express.urlencoded({extended: false}))
-router.use(express.json())
+app.use(morgan('dev'))
+app.use(express.urlencoded({extended: false}))
+app.use(express.json())
 
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*')
     res.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
     if (req.method === 'OPTIONS') {
@@ -20,16 +21,18 @@ router.use((req, res, next) => {
     next()
 })
 
-router.use('/', routes)
+app.use('/', routes)
 
-router.use((req, res) => {
+app.use((req, res) => {
     const error = new Error('not found')
     return res.status(404).json({
         message: error.message
     })
 })
 
-const httpServer = http.createServer(router)
+app.use(PostController.errorHandler)
+
+const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080
 
 PostRepository.initialize().catch(err => {
@@ -37,3 +40,5 @@ PostRepository.initialize().catch(err => {
     process.exit(1)
 })
 httpServer.listen(PORT, () => console.log(`The server is running on port ${PORT}`))
+
+export default httpServer

@@ -1,6 +1,7 @@
 import {createConnection, getConnection} from 'typeorm'
 import Post from './post'
 import {plainToClass} from 'class-transformer'
+import {NotFoundException} from '../notFoundException'
 
 const initialize = async () => {
     await createConnection()
@@ -18,6 +19,9 @@ const get = async (id: string) => {
     const postResponse = await getConnection().query(
         'SELECT * FROM posts WHERE id=$1', [id]
     )
+    if (postResponse.length === 0) {
+        throw new NotFoundException(id)
+    }
     const intermediate = {
         id: postResponse[0]?.id,
         userId: postResponse[0]?.userid,
