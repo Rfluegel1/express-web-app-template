@@ -18,4 +18,8 @@ export const update = async (id: string, userId: string | undefined, title: stri
     return post
 }
 
-export default {addPost, get, update}
+export const del = async (id: string) => {
+    await PostRepository.del(id)
+}
+
+export default {addPost, get, update, del}

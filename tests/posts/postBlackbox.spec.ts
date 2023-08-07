@@ -38,7 +38,7 @@ describe('Post Lifecycle', () => {
 
         // then
         expect(updateResponse.status).toEqual(StatusCodes.OK)
-        let updateMessage = updateResponse.data.message[0]
+        let updateMessage = updateResponse.data.message
         expect(updateMessage.id).toEqual(id)
         expect(updateMessage.userId).toEqual('theUpdatedUser')
         expect(updateMessage.title).toEqual('theUpdatedTitle')
@@ -47,8 +47,13 @@ describe('Post Lifecycle', () => {
         // when
         const deleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${id}`)
 
-        //then
+        // then
         expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
 
+        // when
+        const getAfterDeleteResponse = await axios.get(`http://127.0.0.1:8080/posts/${id}`)
+
+        // then
+        expect(getAfterDeleteResponse.status).toEqual(StatusCodes.NOT_FOUND)
     })
 })

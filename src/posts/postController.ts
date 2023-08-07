@@ -2,6 +2,7 @@ import {Request, Response} from 'express'
 import axios, {AxiosResponse} from 'axios'
 import Post from './post'
 import PostService from './postService'
+import postService from './postService'
 import {StatusCodes} from 'http-status-codes'
 
 
@@ -34,10 +35,8 @@ const updatePost = async (req: Request, res: Response) => {
 
 const deletePost = async (req: Request, res: Response) => {
     let id: string = req.params.id
-    await axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`)
-    return res.status(200).json({
-        message: 'post deleted successfully'
-    })
+    await postService.del(id)
+    return res.sendStatus(StatusCodes.NO_CONTENT)
 }
 
 const addPost = async (req: Request, res: Response) => {

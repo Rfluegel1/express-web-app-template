@@ -1,5 +1,6 @@
 import PostController from '../../src/posts/postController'
 import PostService from '../../src/posts/postService'
+import postService from '../../src/posts/postService'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 
@@ -43,7 +44,7 @@ describe('Post controller', () => {
     it('update should respond with the same data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
-        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the new message!'}
         const request = {
             params: {
                 id: id
@@ -105,5 +106,26 @@ describe('Post controller', () => {
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
     })
+    it('delPost should respond with a 204', async () => {
+        // given
+        let id = uuidv4()
+        const request = {
+            params: {id: id},
+        }
+        const response = {
+            sendStatus: jest.fn(function () {
+                return this
+            })
+        }
+
+        // when
+        await PostController.deletePost(request as any, response as any)
+
+        // then
+        expect(postService.del).toHaveBeenCalledWith(id)
+        expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
+    })
+
+
 })
 

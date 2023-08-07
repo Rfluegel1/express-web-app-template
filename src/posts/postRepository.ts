@@ -34,4 +34,11 @@ const update = async (post: Post) => {
     )
 }
 
-export default {initialize, post, get, update}
+const del = async (id: string) => {
+    await getConnection().query(
+        'DELETE FROM posts WHERE id=$1',
+        [id]
+    )
+}
+
+export default {initialize, post, get, update, del}

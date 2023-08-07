@@ -50,6 +50,20 @@ describe('repository functions work', () => {
         expect(actual.title).toEqual('the title')
         expect(actual.body).toEqual('the message!')
     })
+    it('delete removes from postgres', async () => {
+        //given
+        const id = uuidv4()
+        const query = jest.fn();
+        (getConnection as jest.Mock).mockReturnValue({query})
+        // when
+        await postRepository.del(id)
+        // then
+        expect(getConnection).toHaveBeenCalled()
+        expect(query).toHaveBeenCalledWith(
+            'DELETE FROM posts WHERE id=$1',
+            [id]
+        )
+    })
     it('update updates postgres', async () => {
         //given
         const mockPost = new Post('the new user', 'the new title', 'the new message!')

@@ -1,4 +1,4 @@
-import PostService, {get} from '../../src/posts/postService'
+import PostService, {del, get} from '../../src/posts/postService'
 import {v4 as uuidv4} from 'uuid'
 import PostRepository from '../../src/posts/postRepository'
 import {UUID_REG_EXP} from '../../src/contants'
@@ -37,7 +37,7 @@ describe('service functions work', () => {
         expect(result.body).toEqual('the message!')
         expect(result.id).toEqual(id)
     })
-    it('update only sets non undefined fields to updated Post', async () => {
+    it('update only sets defined fields to updated Post', async () => {
         //given
         const existingPost = new Post('old user', 'old title', 'old body')
         const expectedPost = {userId: 'old user', title: 'old title', body: 'the new message!'};
@@ -76,5 +76,13 @@ describe('service functions work', () => {
         expect(result.title).toEqual('the title')
         expect(result.body).toEqual('the message!')
         expect(result.id).toEqual(id)
+    })
+    it('delete calls to repo', async () => {
+        //given
+        const id = uuidv4()
+        // when
+        await del(id)
+        // then
+        expect(PostRepository.del).toHaveBeenCalledWith(id)
     })
 })
