@@ -31,6 +31,21 @@ const get = async (id: string) => {
     return plainToClass(Post, intermediate)
 }
 
+const getAll = async (): Promise<Post[]> => {
+    const queryResults = await getConnection().query('SELECT * FROM posts')
+    const convertedList = queryResults.map(result => {
+        return {
+            id: result?.id,
+            userId: result?.userid,
+            title: result?.title,
+            body: result?.body
+        }
+    })
+    return convertedList.map(convert => {
+        return plainToClass(Post, convert)
+    })
+}
+
 const update = async (post: Post) => {
     await getConnection().query(
         'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
@@ -45,4 +60,4 @@ const del = async (id: string) => {
     )
 }
 
-export default {initialize, post, get, update, del}
+export default {initialize, post, get, update, del, getAll}

@@ -64,4 +64,36 @@ describe('Post Lifecycle', () => {
         expect(getAfterDeleteResponse.status).toEqual(StatusCodes.NOT_FOUND)
         expect(getAfterDeleteResponse.data.message).toEqual(`Object not found for id=${id}`)
     })
+
+    it('get all returns all posts', async () => {
+        // given
+        const firstPost = new Post('theFirstUser', 'theFirstTitle', 'theFirstBody')
+        const secondPost = new Post('theSecondUser', 'theSecondTitle', 'theSecondBody')
+        const firstPostResponse = await axios.post('http://127.0.0.1:8080/posts', firstPost)
+        const secondPostResponse = await axios.post('http://127.0.0.1:8080/posts', secondPost)
+        expect(firstPostResponse.status).toEqual(StatusCodes.CREATED)
+        expect(secondPostResponse.status).toEqual(StatusCodes.CREATED)
+
+        // when
+        const getAllResponse = await axios.get('http://127.0.0.1:8080/')
+
+        // then
+        expect(getAllResponse.status).toEqual(StatusCodes.OK)
+        let posts = getAllResponse.data.message
+        let foundFirst = posts.find((post: Post) => post.id === firstPostResponse.data.message.id)
+        expect(foundFirst.userId).toEqual('theFirstUser')
+        expect(foundFirst.title).toEqual('theFirstTitle')
+        expect(foundFirst.body).toEqual('theFirstBody')
+        let foundSecond = posts.find((post: Post) => post.id === secondPostResponse.data.message.id)
+        expect(foundSecond.userId).toEqual('theSecondUser')
+        expect(foundSecond.title).toEqual('theSecondTitle')
+        expect(foundSecond.body).toEqual('theSecondBody')
+
+        // cleanup
+        const firstDeleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${firstPostResponse.data.message.id}`)
+        const secondDeleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${secondPostResponse.data.message.id}`)
+        expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+        expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+
+    })
 })

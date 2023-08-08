@@ -46,10 +46,40 @@ describe('repository functions work', () => {
             'SELECT * FROM posts WHERE id=$1',
             [id]
         )
+        expect(actual).toBeInstanceOf(Post)
         expect(actual.id).toEqual(id)
         expect(actual.userId).toEqual('the user')
         expect(actual.title).toEqual('the title')
         expect(actual.body).toEqual('the message!')
+    })
+    it('get all retrieves from postgres', async () => {
+        //given
+        const id1 = uuidv4()
+        const id2 = uuidv4()
+        const mockPost1 = {id: id1, userid: 'the user1', title: 'the title1', body: 'the message 1!'}
+        const mockPost2 = {id: id2, userid: 'the user2', title: 'the title2', body: 'the message 2!'}
+        const query = jest.fn(() => {
+            return [mockPost1, mockPost2]
+        });
+        (getConnection as jest.Mock).mockReturnValue({query})
+        // when
+        const actual = await postRepository.getAll()
+        // then
+        expect(getConnection).toHaveBeenCalled()
+        expect(query).toHaveBeenCalledWith(
+            'SELECT * FROM posts'
+        )
+        expect(actual.length).toEqual(2)
+        expect(actual[0]).toBeInstanceOf(Post)
+        expect(actual[0].id).toEqual(id1)
+        expect(actual[0].userId).toEqual('the user1')
+        expect(actual[0].title).toEqual('the title1')
+        expect(actual[0].body).toEqual('the message 1!')
+        expect(actual[1]).toBeInstanceOf(Post)
+        expect(actual[1].id).toEqual(id2)
+        expect(actual[1].userId).toEqual('the user2')
+        expect(actual[1].title).toEqual('the title2')
+        expect(actual[1].body).toEqual('the message 2!')
     })
     it('get when not found throws', async () => {
         //given
