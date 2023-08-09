@@ -7,6 +7,10 @@ export const addPost = async (userId: string, title: string, body: string) => {
     return post
 }
 
+export const getAll = async () => {
+    return await PostRepository.getAll()
+}
+
 export const get = async (id: string) => {
     return await PostRepository.get(id)
 }
@@ -22,4 +26,4 @@ export const del = async (id: string) => {
     await PostRepository.del(id)
 }
 
-export default {addPost, get, update, del}
+export default {addPost, get, update, del, getAll}

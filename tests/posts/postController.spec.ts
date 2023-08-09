@@ -108,6 +108,31 @@ describe('Post controller', () => {
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
     })
+    it('getAllPost should respond with the same data that is returned from the PostService', async () => {
+        // given
+        let id = uuidv4()
+        let id2 = uuidv4()
+        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost2 = {id: id2, userId: 'the user', title: 'the title', body: 'the message!'}
+        const request = {}
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            json: jest.fn(),
+        };
+
+        (PostService.getAll as jest.Mock).mockImplementation(() => {
+            return [mockPost, mockPost2]
+        })
+
+        // when
+        await PostController.getPosts(request as any, response as any)
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.json).toHaveBeenCalledWith({message: [mockPost, mockPost2]})
+    })
     it('getPost should next error that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
@@ -127,7 +152,7 @@ describe('Post controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(Error))
     })
-    it('delPost should respond with a 204', async () => {
+    it('delPost should call service and respond with a 204', async () => {
         // given
         let id = uuidv4()
         const request = {

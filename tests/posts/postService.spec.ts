@@ -1,4 +1,4 @@
-import PostService, {del, get} from '../../src/posts/postService'
+import PostService, {del, get, getAll} from '../../src/posts/postService'
 import {v4 as uuidv4} from 'uuid'
 import PostRepository from '../../src/posts/postRepository'
 import {UUID_REG_EXP} from '../../src/contants'
@@ -76,6 +76,30 @@ describe('service functions work', () => {
         expect(result.title).toEqual('the title')
         expect(result.body).toEqual('the message!')
         expect(result.id).toEqual(id)
+    })
+    it('getAll returns posts from repo', async () => {
+        //given
+        const id1 = uuidv4()
+        const id2 = uuidv4()
+        const mockPost1 = {id: id1, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost2 = {id: id2, userId: 'the user', title: 'the title', body: 'the message!'};
+
+        (PostRepository.getAll as jest.Mock).mockImplementation(() => {
+            return [mockPost1, mockPost2]
+        })
+        // when
+        const result = await getAll()
+        // then
+        expect(result.length).toEqual(2)
+        let firstPost = result.find((post: Post) => post.id === id1)
+        expect(firstPost.userId).toEqual('the user')
+        expect(firstPost.title).toEqual('the title')
+        expect(firstPost.body).toEqual('the message!')
+        let secondPost = result.find((post: Post) => post.id === id2)
+        expect(secondPost.userId).toEqual('the user')
+        expect(secondPost.title).toEqual('the title')
+        expect(secondPost.body).toEqual('the message!')
+        expect(secondPost.id).toEqual(id2)
     })
     it('delete calls to repo', async () => {
         //given

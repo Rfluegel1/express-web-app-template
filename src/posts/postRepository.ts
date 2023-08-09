@@ -3,6 +3,13 @@ import Post from './post'
 import {plainToClass} from 'class-transformer'
 import {NotFoundException} from '../notFoundException'
 
+interface QueryResult {
+    id: string;
+    userid: string; // Note that this matches the query result; adjust as needed
+    title: string;
+    body: string;
+}
+
 const initialize = async () => {
     await createConnection()
 }
@@ -33,7 +40,7 @@ const get = async (id: string) => {
 
 const getAll = async (): Promise<Post[]> => {
     const queryResults = await getConnection().query('SELECT * FROM posts')
-    const convertedList = queryResults.map(result => {
+    const convertedList = queryResults.map((result: QueryResult) => {
         return {
             id: result?.id,
             userId: result?.userid,
@@ -41,7 +48,7 @@ const getAll = async (): Promise<Post[]> => {
             body: result?.body
         }
     })
-    return convertedList.map(convert => {
+    return convertedList.map((convert: Object) => {
         return plainToClass(Post, convert)
     })
 }

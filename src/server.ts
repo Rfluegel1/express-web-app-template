@@ -23,11 +23,9 @@ app.use((req, res, next) => {
 
 app.use('/', routes)
 
-app.use((req, res) => {
+app.use((req, res, next) => {
     const error = new Error('not found')
-    return res.status(404).json({
-        message: error.message
-    })
+    next(error)
 })
 
 app.use(PostController.errorHandler)
