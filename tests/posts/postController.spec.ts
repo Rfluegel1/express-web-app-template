@@ -1,15 +1,23 @@
 import PostController from '../../src/posts/postController'
-import postController from '../../src/posts/postController'
-import PostService from '../../src/posts/postService'
-import postService from '../../src/posts/postService'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'
 
 // setup
-jest.mock('../../src/posts/postService')
+jest.mock('../../src/posts/postService', () => {
+    return jest.fn().mockImplementation(() => {
+        return {
+            addPost: jest.fn(),
+            get: jest.fn(),
+            getAll: jest.fn(),
+            del: jest.fn(),
+            update: jest.fn()
+        }
+    })
+})
 
 describe('Post controller', () => {
+    const postController = new PostController()
     it('addPost should respond with the same data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
@@ -28,7 +36,7 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (PostService.addPost as jest.Mock).mockImplementation((userId, title, body) => {
+        (postController.postService.addPost as jest.Mock).mockImplementation((userId, title, body) => {
             if (userId === 'the user' && title === 'the title' && body === 'the message!') {
                 return mockPost
             } else {
@@ -37,7 +45,7 @@ describe('Post controller', () => {
         })
 
         // when
-        await PostController.addPost(request as any, response as any)
+        await postController.addPost(request as any, response as any)
 
         // then
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
@@ -64,7 +72,7 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (PostService.update as jest.Mock).mockImplementation((sentId, userId, title, body) => {
+        (postController.postService.update as jest.Mock).mockImplementation((sentId, userId, title, body) => {
             if (sentId === id && userId === 'the user' && title === undefined && body === 'the new message!') {
                 return mockPost
             } else {
@@ -73,7 +81,7 @@ describe('Post controller', () => {
         })
 
         // when
-        await PostController.updatePost(request as any, response as any)
+        await postController.updatePost(request as any, response as any)
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
@@ -93,7 +101,7 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (PostService.get as jest.Mock).mockImplementation((sentId) => {
+        (postController.postService.get as jest.Mock).mockImplementation((sentId) => {
             if (id === sentId) {
                 return mockPost
             } else {
@@ -102,7 +110,7 @@ describe('Post controller', () => {
         })
 
         // when
-        await PostController.getPost(request as any, response as any, jest.fn())
+        await postController.getPost(request as any, response as any, jest.fn())
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
@@ -122,12 +130,12 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (PostService.getAll as jest.Mock).mockImplementation(() => {
+        (postController.postService.getAll as jest.Mock).mockImplementation(() => {
             return [mockPost, mockPost2]
         })
 
         // when
-        await PostController.getPosts(request as any, response as any)
+        await postController.getPosts(request as any, response as any)
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
@@ -141,7 +149,7 @@ describe('Post controller', () => {
         }
         const response = {};
 
-        (PostService.get as jest.Mock).mockImplementation(() => {
+        (postController.postService.get as jest.Mock).mockImplementation(() => {
             throw new Error
         })
         const next: NextFunction = jest.fn()
@@ -165,10 +173,10 @@ describe('Post controller', () => {
         }
 
         // when
-        await PostController.deletePost(request as any, response as any)
+        await postController.deletePost(request as any, response as any)
 
         // then
-        expect(postService.del).toHaveBeenCalledWith(id)
+        expect(postController.postService.del).toHaveBeenCalledWith(id)
         expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
     })
 

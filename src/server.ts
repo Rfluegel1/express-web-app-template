@@ -28,12 +28,12 @@ app.use((req, res, next) => {
     next(error)
 })
 
-app.use(PostController.errorHandler)
+app.use(new PostController().errorHandler.bind(PostController))
 
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080
 
-PostRepository.initialize().catch(err => {
+new PostRepository().initialize().catch(err => {
     console.error('Failed to connect to the database', err)
     process.exit(1)
 })

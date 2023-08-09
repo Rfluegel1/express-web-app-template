@@ -1,4 +1,4 @@
-import postRepository from '../../src/posts/postRepository'
+import PostRepository from '../../src/posts/postRepository'
 import {createConnection, getConnection} from 'typeorm'
 import {v4 as uuidv4} from 'uuid'
 import Post from '../../src/posts/post'
@@ -8,9 +8,10 @@ import {NotFoundException} from '../../src/notFoundException'
 jest.mock('typeorm')
 
 describe('repository functions work', () => {
+    const repository = new PostRepository()
     it('initialize creates connection to postgresql', async () => {
         //when
-        await postRepository.initialize()
+        await repository.initialize()
         //then
         expect(createConnection).toHaveBeenCalled()
     })
@@ -20,7 +21,7 @@ describe('repository functions work', () => {
         (getConnection as jest.Mock).mockReturnValue({query})
         const post = new Post('the user', 'the title', 'the message!')
         // when
-        await postRepository.post(post)
+        await repository.post(post)
         // then
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
@@ -39,7 +40,7 @@ describe('repository functions work', () => {
         });
         (getConnection as jest.Mock).mockReturnValue({query})
         // when
-        const actual = await postRepository.get(id)
+        const actual = await repository.get(id)
         // then
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
@@ -63,7 +64,7 @@ describe('repository functions work', () => {
         });
         (getConnection as jest.Mock).mockReturnValue({query})
         // when
-        const actual = await postRepository.getAll()
+        const actual = await repository.getAll()
         // then
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
@@ -88,7 +89,7 @@ describe('repository functions work', () => {
         });
         (getConnection as jest.Mock).mockReturnValue({query})
         // when and then
-        await expect(() => postRepository.get(uuidv4())).rejects.toThrow(NotFoundException)
+        await expect(() => repository.get(uuidv4())).rejects.toThrow(NotFoundException)
     })
     it('delete removes from postgres', async () => {
         //given
@@ -96,7 +97,7 @@ describe('repository functions work', () => {
         const query = jest.fn();
         (getConnection as jest.Mock).mockReturnValue({query})
         // when
-        await postRepository.del(id)
+        await repository.del(id)
         // then
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
@@ -112,7 +113,7 @@ describe('repository functions work', () => {
         });
         (getConnection as jest.Mock).mockReturnValue({query})
         // when
-        await postRepository.update(mockPost)
+        await repository.update(mockPost)
         // then
         expect(getConnection).toHaveBeenCalled()
         expect(query).toHaveBeenCalledWith(
