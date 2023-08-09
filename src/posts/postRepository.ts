@@ -1,6 +1,5 @@
 import {createConnection, getConnection} from 'typeorm'
 import Post from './post'
-import {plainToClass} from 'class-transformer'
 import {NotFoundException} from '../notFoundException'
 
 interface QueryResult {
@@ -26,33 +25,19 @@ export default class PostRepository {
     }
 
     async get(id: string) {
-        const postResponse = await getConnection().query(
+        const queryResult = await getConnection().query(
             'SELECT * FROM posts WHERE id=$1', [id]
         )
-        if (postResponse.length === 0) {
+        if (queryResult.length === 0) {
             throw new NotFoundException(id)
         }
-        const intermediate = {
-            id: postResponse[0]?.id,
-            userId: postResponse[0]?.userid,
-            title: postResponse[0]?.title,
-            body: postResponse[0]?.body
-        }
-        return plainToClass(Post, intermediate)
+        return new Post().postMapper(queryResult[0])
     }
 
     async getAll(): Promise<Post[]> {
         const queryResults = await getConnection().query('SELECT * FROM posts')
-        const convertedList = queryResults.map((result: QueryResult) => {
-            return {
-                id: result?.id,
-                userId: result?.userid,
-                title: result?.title,
-                body: result?.body
-            }
-        })
-        return convertedList.map((convert: Object) => {
-            return plainToClass(Post, convert)
+        return queryResults.map((queryResult: QueryResult) => {
+            return new Post().postMapper(queryResult)
         })
     }
 

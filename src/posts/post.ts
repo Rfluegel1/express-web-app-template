@@ -1,4 +1,5 @@
 import {v4 as uuidv4} from 'uuid'
+import {plainToClass} from 'class-transformer'
 
 export default class Post {
     id
@@ -23,5 +24,15 @@ export default class Post {
         if (body != undefined) {
             this.body = body
         }
+    }
+
+    postMapper(queryResult: any) {
+        const intermediate = {
+            id: queryResult?.id,
+            userId: queryResult?.userid,
+            title: queryResult?.title,
+            body: queryResult?.body
+        }
+        return plainToClass(Post, intermediate)
     }
 }
