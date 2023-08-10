@@ -26,6 +26,11 @@ and performance testing.
 
 ```npm test```
 
+## Run performance tests
+
+1. ```brew install k6```
+2. ```k6 run tests/postPerformance.spec.ts```
+
 ## Run end-2-end tests
 
 1. ```npx cypress open```
