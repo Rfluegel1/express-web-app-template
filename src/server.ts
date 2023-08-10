@@ -1,9 +1,11 @@
 import http from 'http'
-import express, {Express} from 'express'
+import express, {Express, Request, Response} from 'express'
 import morgan from 'morgan'
 import routes from './posts/postRoutes'
 import PostRepository from './posts/postRepository'
 import PostController from './posts/postController'
+import {StatusCodes} from 'http-status-codes'
+import {NotFoundException} from './notFoundException'
 
 const app: Express = express()
 
@@ -28,7 +30,15 @@ app.use((req, res, next) => {
     next(error)
 })
 
-app.use(new PostController().errorHandler.bind(PostController))
+app.use((function (err: any, req: Request, res: Response, next: any) {
+    if (err.message === 'not found') {
+        return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
+    }
+    if (err instanceof NotFoundException) {
+        return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
+    }
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Internal Server Error'})
+}).bind(PostController))
 
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080

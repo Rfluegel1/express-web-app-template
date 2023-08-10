@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from 'express'
 import PostService from './postService'
 import {StatusCodes} from 'http-status-codes'
-import {NotFoundException} from '../notFoundException'
 
 export default class PostController {
     postService = new PostService()
@@ -51,17 +50,6 @@ export default class PostController {
         return res.status(StatusCodes.CREATED).json({
             message: response
         })
-    }
-
-    errorHandler(err: any, req: Request, res: Response, next: any) {
-        if (err.message === 'not found') {
-            return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
-        }
-        if (err instanceof NotFoundException) {
-            // Handle the custom error and return a specific error code
-            return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
-        }
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Internal Server Error'})
     }
 }
 

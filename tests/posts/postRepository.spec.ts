@@ -1,11 +1,15 @@
 import PostRepository from '../../src/posts/postRepository'
-import {createConnection, getConnection} from 'typeorm'
 import {v4 as uuidv4} from 'uuid'
 import Post from '../../src/posts/post'
 import {NotFoundException} from '../../src/notFoundException'
 
 // setup
-jest.mock('typeorm')
+jest.mock('typeorm', () => ({
+    DataSource: jest.fn().mockImplementation(() => ({
+        query: jest.fn(),
+        initialize: jest.fn(),
+    })),
+}))
 
 describe('repository functions work', () => {
     const repository = new PostRepository()
@@ -13,18 +17,15 @@ describe('repository functions work', () => {
         //when
         await repository.initialize()
         //then
-        expect(createConnection).toHaveBeenCalled()
+        expect(repository.postDataSource.initialize).toHaveBeenCalled()
     })
     it('post saves to postgres', async () => {
         //given
-        const query = jest.fn();
-        (getConnection as jest.Mock).mockReturnValue({query})
         const post = new Post('the user', 'the title', 'the message!')
         // when
         await repository.post(post)
         // then
-        expect(getConnection).toHaveBeenCalled()
-        expect(query).toHaveBeenCalledWith(
+        expect(repository.postDataSource.query).toHaveBeenCalledWith(
             'INSERT INTO' +
             ' posts (id, userId, title, body) ' +
             'VALUES ($1, $2, $3, $4)',
@@ -33,20 +34,20 @@ describe('repository functions work', () => {
     })
     it('get retrieves from postgres', async () => {
         //given
-        const id = uuidv4()
-        const mockPost = {id: id, userid: 'the user', title: 'the title', body: 'the message!'}
-        const query = jest.fn(() => {
-            return [mockPost]
-        });
-        (getConnection as jest.Mock).mockReturnValue({query})
+        const id = uuidv4();
+        (repository.postDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
+            if (query === 'SELECT * FROM posts WHERE id=$1' && parameters[0] === id) {
+                return [{
+                    id: id,
+                    userid: 'the user',
+                    title: 'the title',
+                    body: 'the message!',
+                }]
+            }
+        }))
         // when
         const actual = await repository.get(id)
         // then
-        expect(getConnection).toHaveBeenCalled()
-        expect(query).toHaveBeenCalledWith(
-            'SELECT * FROM posts WHERE id=$1',
-            [id]
-        )
         expect(actual).toBeInstanceOf(Post)
         expect(actual.id).toEqual(id)
         expect(actual.userId).toEqual('the user')
@@ -58,18 +59,15 @@ describe('repository functions work', () => {
         const id1 = uuidv4()
         const id2 = uuidv4()
         const mockPost1 = {id: id1, userid: 'the user1', title: 'the title1', body: 'the message 1!'}
-        const mockPost2 = {id: id2, userid: 'the user2', title: 'the title2', body: 'the message 2!'}
-        const query = jest.fn(() => {
-            return [mockPost1, mockPost2]
-        });
-        (getConnection as jest.Mock).mockReturnValue({query})
+        const mockPost2 = {id: id2, userid: 'the user2', title: 'the title2', body: 'the message 2!'};
+        (repository.postDataSource.query as jest.Mock).mockImplementation(jest.fn((query) => {
+            if (query === 'SELECT * FROM posts') {
+                return [mockPost1, mockPost2]
+            }
+        }))
         // when
         const actual = await repository.getAll()
         // then
-        expect(getConnection).toHaveBeenCalled()
-        expect(query).toHaveBeenCalledWith(
-            'SELECT * FROM posts'
-        )
         expect(actual.length).toEqual(2)
         expect(actual[0]).toBeInstanceOf(Post)
         expect(actual[0].id).toEqual(id1)
@@ -84,23 +82,19 @@ describe('repository functions work', () => {
     })
     it('get when not found throws', async () => {
         //given
-        const query = jest.fn(() => {
+        (repository.postDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
             return []
-        });
-        (getConnection as jest.Mock).mockReturnValue({query})
+        }))
         // when and then
         await expect(() => repository.get(uuidv4())).rejects.toThrow(NotFoundException)
     })
     it('delete removes from postgres', async () => {
         //given
         const id = uuidv4()
-        const query = jest.fn();
-        (getConnection as jest.Mock).mockReturnValue({query})
         // when
         await repository.del(id)
         // then
-        expect(getConnection).toHaveBeenCalled()
-        expect(query).toHaveBeenCalledWith(
+        expect(repository.postDataSource.query).toHaveBeenCalledWith(
             'DELETE FROM posts WHERE id=$1',
             [id]
         )
@@ -108,15 +102,10 @@ describe('repository functions work', () => {
     it('update updates postgres', async () => {
         //given
         const mockPost = new Post('the new user', 'the new title', 'the new message!')
-        const query = jest.fn(() => {
-            return [mockPost]
-        });
-        (getConnection as jest.Mock).mockReturnValue({query})
         // when
         await repository.update(mockPost)
         // then
-        expect(getConnection).toHaveBeenCalled()
-        expect(query).toHaveBeenCalledWith(
+        expect(repository.postDataSource.query).toHaveBeenCalledWith(
             'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
             ['the new user', 'the new title', 'the new message!', mockPost.id]
         )
