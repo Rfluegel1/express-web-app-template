@@ -96,6 +96,17 @@ describe('Post Lifecycle', () => {
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
-
+    })
+    it('non uuid returns bad request and info', async () => {
+        // when
+        let getResponse
+        try {
+            getResponse = await axios.get('http://127.0.0.1:8080/posts/undefined')
+        } catch (error) {
+            getResponse = (error as AxiosError).response
+        }
+        // then
+        expect(getResponse.status).toEqual(StatusCodes.BAD_REQUEST)
+        expect(getResponse.data.message).toEqual('Parameter id not of type UUID for id=undefined')
     })
 })

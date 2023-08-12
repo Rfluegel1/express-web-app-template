@@ -6,6 +6,7 @@ import PostRepository from './posts/postRepository'
 import PostController from './posts/postController'
 import {StatusCodes} from 'http-status-codes'
 import {NotFoundException} from './notFoundException'
+import {BadRequestException} from './badRequestException'
 
 const app: Express = express()
 
@@ -36,6 +37,9 @@ app.use((function (err: any, req: Request, res: Response, next: any) {
     }
     if (err instanceof NotFoundException) {
         return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
+    }
+    if (err instanceof BadRequestException) {
+        return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
     }
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Internal Server Error'})
 }).bind(PostController))

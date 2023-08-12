@@ -2,6 +2,8 @@ import PostController from '../../src/posts/postController'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'
+import {NotFoundException} from '../../src/notFoundException'
+import {BadRequestException} from '../../src/badRequestException'
 
 // setup
 jest.mock('../../src/posts/postService', () => {
@@ -81,7 +83,7 @@ describe('Post controller', () => {
         })
 
         // when
-        await postController.updatePost(request as any, response as any)
+        await postController.updatePost(request as any, response as any, jest.fn())
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
@@ -150,7 +152,7 @@ describe('Post controller', () => {
         const response = {};
 
         (postController.postService.get as jest.Mock).mockImplementation(() => {
-            throw new Error
+            throw new NotFoundException('id')
         })
         const next: NextFunction = jest.fn()
 
@@ -158,7 +160,57 @@ describe('Post controller', () => {
         await postController.getPost(request as any, response as any, next)
 
         // then
-        expect(next).toHaveBeenCalledWith(expect.any(Error))
+        expect(next).toHaveBeenCalledWith(expect.any(NotFoundException))
+    })
+    it('getPost should next error when id is not UUID', async () => {
+        // given
+        const request = {
+            params: {id: 'undefined'},
+        }
+        const response = {}
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.getPost(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
+    it('delPost should next error when id is not UUID', async () => {
+        // given
+        const request = {
+            params: {id: 'undefined'},
+        }
+        const response = {}
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.deletePost(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
+    it('updatePost should next error when id is not UUID', async () => {
+        // given
+        const request = {
+            params: {id: 'undefined'},
+            body: {
+                userId: 'the user',
+                title: undefined,
+                body: 'the new message!'
+            },
+        }
+        const response = {}
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.updatePost(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
     it('delPost should call service and respond with a 204', async () => {
         // given
