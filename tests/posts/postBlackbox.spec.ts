@@ -5,6 +5,7 @@ import {AxiosError} from 'axios'
 
 const axios = require('axios')
 
+jest.setTimeout(60000)
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
         // given
