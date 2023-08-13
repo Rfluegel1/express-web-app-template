@@ -39,10 +39,6 @@ jobs:
       - name: Update NPM packages
         run: npm update
 
-      - name: Run Backend Server (Background)
-        run: npm run dev &
-        continue-on-error: false
-
       - name: Run Tests
         run: npm run test
 
