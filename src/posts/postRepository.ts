@@ -14,7 +14,7 @@ const dataSource = new DataSource({
     'host': 'localhost',
     'port': 5432,
     'username': 'reidfluegel',
-    'password': '',
+    'password': 'asd',
     'database': 'post',
     'synchronize': true,
     'entities': [
