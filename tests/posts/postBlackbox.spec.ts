@@ -5,6 +5,7 @@ import {AxiosError} from 'axios'
 import * as fs from 'fs'
 import {DataSource} from 'typeorm'
 import {ChildProcessWithoutNullStreams, spawn} from 'child_process'
+import * as path from 'path'
 
 const axios = require('axios')
 
@@ -31,7 +32,7 @@ beforeAll(async () => {
     await sleep(3000)
     // Create the post table
     const sql = fs.readFileSync(
-        '/Users/reidfluegel/workspaces/typescript-template/src/migrations.sql',
+        path.join(__dirname, '../../src/migrations.sql'),
         'utf8'
     )
     await dataSource.initialize()
