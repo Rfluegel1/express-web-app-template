@@ -4,28 +4,28 @@ import PostRepository from './postRepository'
 export default class PostService {
     postRepository = new PostRepository()
 
-    async addPost(userId: string, title: string, body: string) {
+    async createPost(userId: string, title: string, body: string) {
         const post = new Post(userId, title, body)
-        await this.postRepository.post(post)
+        await this.postRepository.createPost(post)
         return post
     }
 
-    async getAll() {
-        return await this.postRepository.getAll()
+    async deletePost(id: string) {
+        await this.postRepository.deletePost(id)
     }
 
-    async get(id: string) {
-        return await this.postRepository.get(id)
+    async getPost(id: string) {
+        return await this.postRepository.getPost(id)
     }
 
-    async update(id: string, userId: string | undefined, title: string | undefined, body: string) {
-        let post = await this.get(id)
+    async getAllPosts() {
+        return await this.postRepository.getAllPosts()
+    }
+
+    async updatePost(id: string, userId: string | undefined, title: string | undefined, body: string) {
+        let post = await this.getPost(id)
         post.updateDefinedFields(userId, title, body)
-        await this.postRepository.update(post)
+        await this.postRepository.updatePost(post)
         return post
-    }
-
-    async del(id: string) {
-        await this.postRepository.del(id)
     }
 }

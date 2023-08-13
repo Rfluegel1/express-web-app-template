@@ -8,6 +8,6 @@ router.get('/posts', postController.getPosts.bind(postController))
 router.get('/posts/:id', postController.getPost.bind(postController))
 router.put('/posts/:id', postController.updatePost.bind(postController))
 router.delete('/posts/:id', postController.deletePost.bind(postController))
-router.post('/posts', postController.addPost.bind(postController))
+router.post('/posts', postController.createPost.bind(postController))
 
 export = router

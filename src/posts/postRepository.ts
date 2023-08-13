@@ -28,7 +28,7 @@ export default class PostRepository {
         await this.postDataSource.initialize()
     }
 
-    async post(post: Post) {
+    async createPost(post: Post) {
         await this.postDataSource.query(
             'INSERT INTO ' +
             'posts (id, userId, title, body) ' +
@@ -37,7 +37,14 @@ export default class PostRepository {
         )
     }
 
-    async get(id: string) {
+    async deletePost(id: string) {
+        await this.postDataSource.query(
+            'DELETE FROM posts WHERE id=$1',
+            [id]
+        )
+    }
+
+    async getPost(id: string) {
         const queryResult = await this.postDataSource.query(
             'SELECT * FROM posts WHERE id=$1', [id]
         )
@@ -47,24 +54,17 @@ export default class PostRepository {
         return new Post().postMapper(queryResult[0])
     }
 
-    async getAll(): Promise<Post[]> {
+    async getAllPosts(): Promise<Post[]> {
         const queryResults = await this.postDataSource.query('SELECT * FROM posts')
         return queryResults.map((queryResult: QueryResult) => {
             return new Post().postMapper(queryResult)
         })
     }
 
-    async update(post: Post) {
+    async updatePost(post: Post) {
         await this.postDataSource.query(
             'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
             [post.userId, post.title, post.body, post.id]
-        )
-    }
-
-    async del(id: string) {
-        await this.postDataSource.query(
-            'DELETE FROM posts WHERE id=$1',
-            [id]
         )
     }
 }

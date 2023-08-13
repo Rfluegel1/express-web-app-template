@@ -8,7 +8,7 @@ export const options = {
 }
 
 export default function () {
-    const postBody = {userId: 'the user', title: 'the title', body: 'the message!'}
+    const postBody = {userId: 'the user', title: 'the title', body: 'the body'}
     const putBody = {userId: 'the new user', title: 'the new title', body: 'the new message!'}
     const postResponse = http.post(`http://127.0.0.1:8080/posts/`, postBody)
     const id = JSON.parse(postResponse.body).message.id

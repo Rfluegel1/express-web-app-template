@@ -9,37 +9,32 @@ import {BadRequestException} from '../../src/badRequestException'
 jest.mock('../../src/posts/postService', () => {
     return jest.fn().mockImplementation(() => {
         return {
-            addPost: jest.fn(),
-            get: jest.fn(),
-            getAll: jest.fn(),
-            del: jest.fn(),
-            update: jest.fn()
+            createPost: jest.fn(),
+            getPost: jest.fn(),
+            getAllPosts: jest.fn(),
+            deletePost: jest.fn(),
+            updatePost: jest.fn()
         }
     })
 })
 
 describe('Post controller', () => {
     const postController = new PostController()
-    it('addPost should respond with the same data that is returned from the PostService', async () => {
+    it('addPost should respond with data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
-        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the body'}
         const request = {
-            body: {
-                userId: 'the user',
-                title: 'the title',
-                body: 'the message!'
-            },
+            body: {userId: 'the user', title: 'the title', body: 'the body'}
         }
         const response = {
             status: jest.fn(function () {
                 return this
-            }),
-            json: jest.fn(),
+            }), json: jest.fn(),
         };
 
-        (postController.postService.addPost as jest.Mock).mockImplementation((userId, title, body) => {
-            if (userId === 'the user' && title === 'the title' && body === 'the message!') {
+        (postController.postService.createPost as jest.Mock).mockImplementation((userId, title, body) => {
+            if (userId === 'the user' && title === 'the title' && body === 'the body') {
                 return mockPost
             } else {
                 return null
@@ -47,13 +42,13 @@ describe('Post controller', () => {
         })
 
         // when
-        await postController.addPost(request as any, response as any)
+        await postController.createPost(request as any, response as any)
 
         // then
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
     })
-    it('update should respond with the same data that is returned from the PostService', async () => {
+    it('updatePost should respond with data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
         const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the new message!'}
@@ -74,7 +69,7 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (postController.postService.update as jest.Mock).mockImplementation((sentId, userId, title, body) => {
+        (postController.postService.updatePost as jest.Mock).mockImplementation((sentId, userId, title, body) => {
             if (sentId === id && userId === 'the user' && title === undefined && body === 'the new message!') {
                 return mockPost
             } else {
@@ -89,10 +84,10 @@ describe('Post controller', () => {
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
     })
-    it('getPost should respond with the same data that is returned from the PostService', async () => {
+    it('getPost should respond with data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
-        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the body'}
         const request = {
             params: {id: id},
         }
@@ -103,7 +98,7 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (postController.postService.get as jest.Mock).mockImplementation((sentId) => {
+        (postController.postService.getPost as jest.Mock).mockImplementation((sentId) => {
             if (id === sentId) {
                 return mockPost
             } else {
@@ -118,12 +113,12 @@ describe('Post controller', () => {
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.json).toHaveBeenCalledWith({message: mockPost})
     })
-    it('getAllPost should respond with the same data that is returned from the PostService', async () => {
+    it('getAllPosts should respond with data that is returned from the PostService', async () => {
         // given
         let id = uuidv4()
         let id2 = uuidv4()
-        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'}
-        const mockPost2 = {id: id2, userId: 'the user', title: 'the title', body: 'the message!'}
+        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the body'}
+        const mockPost2 = {id: id2, userId: 'the user', title: 'the title', body: 'the body'}
         const request = {}
         const response = {
             status: jest.fn(function () {
@@ -132,7 +127,7 @@ describe('Post controller', () => {
             json: jest.fn(),
         };
 
-        (postController.postService.getAll as jest.Mock).mockImplementation(() => {
+        (postController.postService.getAllPosts as jest.Mock).mockImplementation(() => {
             return [mockPost, mockPost2]
         })
 
@@ -151,7 +146,7 @@ describe('Post controller', () => {
         }
         const response = {};
 
-        (postController.postService.get as jest.Mock).mockImplementation(() => {
+        (postController.postService.getPost as jest.Mock).mockImplementation(() => {
             throw new NotFoundException('id')
         })
         const next: NextFunction = jest.fn()
@@ -177,7 +172,7 @@ describe('Post controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
-    it('delPost should next error when id is not UUID', async () => {
+    it('deletePost should next error when id is not UUID', async () => {
         // given
         const request = {
             params: {id: 'undefined'},
@@ -212,7 +207,7 @@ describe('Post controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
-    it('delPost should call service and respond with a 204', async () => {
+    it('deletePost should call service and respond with a 204', async () => {
         // given
         let id = uuidv4()
         const request = {
@@ -225,13 +220,11 @@ describe('Post controller', () => {
         }
 
         // when
-        await postController.deletePost(request as any, response as any)
+        await postController.deletePost(request as any, response as any, jest.fn())
 
         // then
-        expect(postController.postService.del).toHaveBeenCalledWith(id)
+        expect(postController.postService.deletePost).toHaveBeenCalledWith(id)
         expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
     })
-
-
 })
 

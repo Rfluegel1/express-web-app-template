@@ -7,116 +7,115 @@ import Post from '../../src/posts/post'
 jest.mock('../../src/posts/postRepository', () => {
     return jest.fn().mockImplementation(() => {
         return {
-            post: jest.fn(),
-            get: jest.fn(),
-            getAll: jest.fn(),
-            del: jest.fn(),
-            update: jest.fn()
+            createPost: jest.fn(),
+            getPost: jest.fn(),
+            getAllPosts: jest.fn(),
+            deletePost: jest.fn(),
+            updatePost: jest.fn()
         }
     })
 })
 
-describe('service functions work', () => {
+describe('Post service', () => {
     let service = new PostService()
-    it('post returns Post', async () => {
-        const expectedPost = {userId: 'the user', title: 'the title', body: 'the message!'}
+    it('CreatePost calls repository and returns Post', async () => {
+        const expectedPost = {userId: 'the user', title: 'the title', body: 'the body'}
         // when
-        let result = await service.addPost('the user', 'the title', 'the message!')
+        let result = await service.createPost('the user', 'the title', 'the body')
         // then
-        expect(service.postRepository.post).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
+        expect(service.postRepository.createPost).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
         expect(result.userId).toEqual('the user')
         expect(result.title).toEqual('the title')
-        expect(result.body).toEqual('the message!')
+        expect(result.body).toEqual('the body')
         expect(result.id).toMatch(UUID_REG_EXP)
     })
-    it('update returns updated Post', async () => {
+    it('updatePost gets from repository, calls repository to update, and returns Post', async () => {
         //given
         const id = uuidv4()
-        const expectedPost = {userId: 'the user', title: 'the title', body: 'the message!'};
-        (service.postRepository.get as jest.Mock).mockImplementation(jest.fn(() => {
+        const expectedPost = {userId: 'the user', title: 'the title', body: 'the body'};
+        (service.postRepository.getPost as jest.Mock).mockImplementation(jest.fn(() => {
             let post = new Post()
             post.id = id
             return post
         }))
         // when
-        let result = await service.update(id, 'the user', 'the title', 'the message!')
+        let result = await service.updatePost(id, 'the user', 'the title', 'the body')
         // then
-        expect(service.postRepository.update).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
+        expect(service.postRepository.updatePost).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
         expect(result.userId).toEqual('the user')
         expect(result.title).toEqual('the title')
-        expect(result.body).toEqual('the message!')
+        expect(result.body).toEqual('the body')
         expect(result.id).toEqual(id)
     })
-    it('update only sets defined fields to updated Post', async () => {
+    it('updatePost only sets defined fields on updated Post', async () => {
         //given
         const existingPost = new Post('old user', 'old title', 'old body')
-        const expectedPost = {userId: 'old user', title: 'old title', body: 'the new message!'};
-        (service.postRepository.get as jest.Mock).mockImplementation((sentId: string) => {
+        const expectedPost = {userId: 'old user', title: 'old title', body: 'new body'};
+        (service.postRepository.getPost as jest.Mock).mockImplementation((sentId: string) => {
             if (sentId === existingPost.id) {
                 return existingPost
-            } else {
-                return null
             }
         })
         // when
-        let result = await service.update(existingPost.id, undefined, undefined, 'the new message!')
+        let result = await service.updatePost(existingPost.id, undefined, undefined, 'new body')
         // then
-        expect(service.postRepository.update).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
+        expect(service.postRepository.updatePost).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
         expect(result.userId).toEqual('old user')
         expect(result.title).toEqual('old title')
-        expect(result.body).toEqual('the new message!')
+        expect(result.body).toEqual('new body')
         expect(result.id).toEqual(existingPost.id)
     })
-    it('get returns post from repo', async () => {
+    it('getPost returns posts from repository', async () => {
         //given
         const id = uuidv4()
-        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the message!'};
+        const mockPost = {id: id, userId: 'the user', title: 'the title', body: 'the body'};
 
-        (service.postRepository.get as jest.Mock).mockImplementation((sentId: string) => {
+        (service.postRepository.getPost as jest.Mock).mockImplementation((sentId: string) => {
             if (sentId === id) {
                 return mockPost
-            } else {
-                return null
             }
         })
         // when
-        const result = await service.get(id)
+        const result = await service.getPost(id)
         // then
         expect(result.userId).toEqual('the user')
         expect(result.title).toEqual('the title')
-        expect(result.body).toEqual('the message!')
+        expect(result.body).toEqual('the body')
         expect(result.id).toEqual(id)
     })
-    it('getAll returns posts from repo', async () => {
+    it('getAllPosts returns posts from repository', async () => {
         //given
         const id1 = uuidv4()
         const id2 = uuidv4()
-        const mockPost1 = {id: id1, userId: 'the user', title: 'the title', body: 'the message!'}
-        const mockPost2 = {id: id2, userId: 'the user', title: 'the title', body: 'the message!'};
+        const mockPost1 = new Post('the user', 'the title', 'the body')
+        const mockPost2 = new Post('the user', 'the title', 'the body')
+        mockPost1.id = id1
+        mockPost2.id = id2;
 
-        (service.postRepository.getAll as jest.Mock).mockImplementation(() => {
+        (service.postRepository.getAllPosts as jest.Mock).mockImplementation(() => {
             return [mockPost1, mockPost2]
         })
         // when
-        const result = await service.getAll()
+        const result = await service.getAllPosts()
         // then
         expect(result.length).toEqual(2)
-        let firstPost = result.find((post: Post) => post.id === id1)
-        expect(firstPost.userId).toEqual('the user')
-        expect(firstPost.title).toEqual('the title')
-        expect(firstPost.body).toEqual('the message!')
-        let secondPost = result.find((post: Post) => post.id === id2)
-        expect(secondPost.userId).toEqual('the user')
-        expect(secondPost.title).toEqual('the title')
-        expect(secondPost.body).toEqual('the message!')
-        expect(secondPost.id).toEqual(id2)
+        let firstPost = result.find((post) => post.id === id1)
+        expect(firstPost).toBeInstanceOf(Post)
+        expect(firstPost?.userId).toEqual('the user')
+        expect(firstPost?.title).toEqual('the title')
+        expect(firstPost?.body).toEqual('the body')
+        let secondPost = result.find((post) => post.id === id2)
+        expect(secondPost?.userId).toEqual('the user')
+        expect(secondPost?.title).toEqual('the title')
+        expect(secondPost?.body).toEqual('the body')
+        expect(secondPost?.id).toEqual(id2)
     })
     it('delete calls to repo', async () => {
         //given
         const id = uuidv4()
         // when
-        await service.del(id)
+        await service.deletePost(id)
         // then
-        expect(service.postRepository.del).toHaveBeenCalledWith(id)
+        expect(service.postRepository.deletePost).toHaveBeenCalledWith(id)
     })
 })

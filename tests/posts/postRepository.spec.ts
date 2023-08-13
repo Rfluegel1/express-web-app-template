@@ -11,50 +11,45 @@ jest.mock('typeorm', () => ({
     })),
 }))
 
-describe('repository functions work', () => {
+describe('Post repository', () => {
     const repository = new PostRepository()
-    it('initialize creates connection to postgresql', async () => {
+    it('initialize should initialize postDataSource', async () => {
         //when
         await repository.initialize()
         //then
         expect(repository.postDataSource.initialize).toHaveBeenCalled()
     })
-    it('post saves to postgres', async () => {
+    it('createPost inserts into postDataSource', async () => {
         //given
-        const post = new Post('the user', 'the title', 'the message!')
+        const post = new Post('the user', 'the title', 'the body')
         // when
-        await repository.post(post)
+        await repository.createPost(post)
         // then
         expect(repository.postDataSource.query).toHaveBeenCalledWith(
             'INSERT INTO' +
             ' posts (id, userId, title, body) ' +
             'VALUES ($1, $2, $3, $4)',
-            [post.id, 'the user', 'the title', 'the message!']
+            [post.id, 'the user', 'the title', 'the body']
         )
     })
-    it('get retrieves from postgres', async () => {
+    it('getPost selects from postDataSource', async () => {
         //given
         const id = uuidv4();
         (repository.postDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
             if (query === 'SELECT * FROM posts WHERE id=$1' && parameters[0] === id) {
-                return [{
-                    id: id,
-                    userid: 'the user',
-                    title: 'the title',
-                    body: 'the message!',
-                }]
+                return [{id: id, userid: 'the user', title: 'the title', body: 'the body',}]
             }
         }))
         // when
-        const actual = await repository.get(id)
+        const actual = await repository.getPost(id)
         // then
         expect(actual).toBeInstanceOf(Post)
         expect(actual.id).toEqual(id)
         expect(actual.userId).toEqual('the user')
         expect(actual.title).toEqual('the title')
-        expect(actual.body).toEqual('the message!')
+        expect(actual.body).toEqual('the body')
     })
-    it('get all retrieves from postgres', async () => {
+    it('getAllPosts selects from postDataSource', async () => {
         //given
         const id1 = uuidv4()
         const id2 = uuidv4()
@@ -66,7 +61,7 @@ describe('repository functions work', () => {
             }
         }))
         // when
-        const actual = await repository.getAll()
+        const actual = await repository.getAllPosts()
         // then
         expect(actual.length).toEqual(2)
         expect(actual[0]).toBeInstanceOf(Post)
@@ -80,30 +75,30 @@ describe('repository functions work', () => {
         expect(actual[1].title).toEqual('the title2')
         expect(actual[1].body).toEqual('the message 2!')
     })
-    it('get when not found throws', async () => {
+    it('getPost throws not found when query result is empty', async () => {
         //given
         (repository.postDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
             return []
         }))
         // when and then
-        await expect(() => repository.get(uuidv4())).rejects.toThrow(NotFoundException)
+        await expect(() => repository.getPost(uuidv4())).rejects.toThrow(NotFoundException)
     })
-    it('delete removes from postgres', async () => {
+    it('deletePost deletes from postDataSource', async () => {
         //given
         const id = uuidv4()
         // when
-        await repository.del(id)
+        await repository.deletePost(id)
         // then
         expect(repository.postDataSource.query).toHaveBeenCalledWith(
             'DELETE FROM posts WHERE id=$1',
             [id]
         )
     })
-    it('update updates postgres', async () => {
+    it('updatePost updates post in postDataSource', async () => {
         //given
         const mockPost = new Post('the new user', 'the new title', 'the new message!')
         // when
-        await repository.update(mockPost)
+        await repository.updatePost(mockPost)
         // then
         expect(repository.postDataSource.query).toHaveBeenCalledWith(
             'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
