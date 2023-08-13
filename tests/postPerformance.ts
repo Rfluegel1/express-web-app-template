@@ -14,6 +14,6 @@ export default function () {
     const id = JSON.parse(postResponse.body).message.id
     http.get(`http://127.0.0.1:8080/posts/${id}`)
     http.put(`http://127.0.0.1:8080/posts/${id}`, putBody)
-    http.del(`http://127.0.0.1:8080/posts/${id}`)
+    http.delete(`http://127.0.0.1:8080/posts/${id}`)
     sleep(1)
 }
