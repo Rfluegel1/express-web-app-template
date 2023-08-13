@@ -2,10 +2,52 @@ import Post from '../../src/posts/post'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../src/contants'
 import {AxiosError} from 'axios'
+import * as fs from 'fs'
+import {DataSource} from 'typeorm'
+import {ChildProcessWithoutNullStreams, spawn} from 'child_process'
 
 const axios = require('axios')
 
-jest.setTimeout(60000)
+const dataSource = new DataSource({
+    'type': 'postgres',
+    'host': 'localhost',
+    'port': 5432,
+    'username': 'reidfluegel',
+    'password': 'asd',
+    'database': 'post',
+    'synchronize': true,
+    'entities': [
+        'src/entity/**/*.ts'
+    ]
+})
+let server: ChildProcessWithoutNullStreams
+
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+beforeAll(async () => {
+    server = spawn('npm', ['run', 'dev'])
+    await sleep(3000)
+    // Create the post table
+    const sql = fs.readFileSync(
+        '/Users/reidfluegel/workspaces/typescript-template/src/migrations.sql',
+        'utf8'
+    )
+    await dataSource.initialize()
+    try {
+        await dataSource.query(sql)
+    } catch (error) {
+        if (error.message !== 'relation "posts" already exists') {
+            throw error
+        }
+    }
+})
+
+afterAll(async () => {
+    server.kill()
+    await dataSource.destroy()
+})
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
         // given
