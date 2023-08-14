@@ -23,20 +23,6 @@ const dataSource = new DataSource({
 })
 let server: ChildProcessWithoutNullStreams
 
-function createPostsTable() {
-    const sql = fs.readFileSync(
-        path.join(__dirname, '../../src/migrations.sql'),
-        'utf8'
-    )
-    dataSource.initialize()
-        .then(() => dataSource.query(sql))
-        .catch(error => {
-            if (error.message !== 'relation "posts" already exists') {
-                throw error
-            }
-        })
-}
-
 function startBackend(done: jest.DoneCallback) {
     server = spawn('npm', ['run', 'dev'])
     server.stdout.on('data', (data) => {
@@ -48,13 +34,23 @@ function startBackend(done: jest.DoneCallback) {
 }
 
 beforeAll((done) => {
-    createPostsTable()
-    startBackend(done)
+    const sql = fs.readFileSync(
+        path.join(__dirname, '../../src/migrations.sql'),
+        'utf8'
+    )
+    dataSource.initialize()
+        .then(() => dataSource.query(sql)
+            .then(() => startBackend(done)))
+        .catch(error => {
+            if (error.message !== 'relation "posts" already exists') {
+                throw error
+            }
+        })
 })
 
 afterAll(async () => {
-    server.kill()
     await dataSource.destroy()
+    server.kill()
 })
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
