@@ -31,6 +31,7 @@ async function createPostsTable() {
     await dataSource.initialize()
     try {
         await dataSource.query(sql)
+        console.log('query successful')
     } catch (error) {
         if ((error as QueryFailedError).message !== 'relation "posts" already exists') {
             throw error
@@ -41,6 +42,7 @@ async function createPostsTable() {
 async function startBackend() {
     server = spawn('npm', ['run', 'dev'])
     await waitForServerStart()
+    console.log('server start successful')
 }
 
 function waitForServerStart(): Promise<void> {
@@ -61,7 +63,9 @@ beforeAll(async () => {
 
 afterAll(async () => {
     server.kill('SIGTERM')
+    console.log('server killed')
     await dataSource.destroy()
+    console.log('datasource killeds')
 })
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
