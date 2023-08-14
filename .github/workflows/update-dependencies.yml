@@ -21,16 +21,16 @@ jobs:
           pwd
           ls
           cd usr
-          echo 'usr'
+          echo 'LS usr'
           ls
           cd local
-          echo 'local'
+          echo 'LS local'
           ls
           cd homebrew
-          echo 'homebrew'
+          echo 'LS homebrew'
           ls
           cd var
-          echo 'var'
+          echo 'LS var'
           ls
           mkdir /opt/homebrew/var/postgresql@14
           initdb /opt/homebrew/var/postgresql@14 -E utf8
