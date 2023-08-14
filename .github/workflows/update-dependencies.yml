@@ -16,6 +16,8 @@ jobs:
       - name: Install PostgreSQL
         run: |
           brew install postgresql
+          mkdir /opt/homebrew/var/postgresql@14
+          initdb /opt/homebrew/var/postgresql@14 -E utf8
           brew services start postgresql
 
       - name: Setup Database
