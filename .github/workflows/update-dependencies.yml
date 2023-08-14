@@ -20,7 +20,9 @@ jobs:
           cd ../../../../../
           pwd
           ls
-          cd opt
+          cd usr
+          ls
+          cd local
           ls
           cd homebrew
           ls
