@@ -7,40 +7,26 @@ on:
 
 jobs:
   update-and-test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: 'reidfluegel'
+          POSTGRES_PASSWORD: 'asd'
+          POSTGRES_DB: 'post'
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
-
-      - name: Install PostgreSQL
-        run: |
-          brew install postgresql
-          pwd
-          cd ../../../../../
-          pwd
-          ls
-          cd usr
-          echo 'LS usr'
-          ls
-          cd local
-          echo 'LS local'
-          ls
-          cd homebrew
-          echo 'LS homebrew'
-          ls
-          cd var
-          echo 'LS var'
-          ls
-          mkdir /opt/homebrew/var/postgresql@14
-          initdb /opt/homebrew/var/postgresql@14 -E utf8
-          brew services start postgresql
-
-      - name: Setup Database
-        run: |
-          createdb post
-          psql -c "CREATE USER reidfluegel WITH PASSWORD 'asd';"
-          psql -c "GRANT ALL PRIVILEGES ON DATABASE post TO reidfluegel;"
 
       - name: Use Node.js
         uses: actions/setup-node@v2
