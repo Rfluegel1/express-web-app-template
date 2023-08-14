@@ -1,6 +1,6 @@
-import {DataSource} from 'typeorm'
 import Post from './post'
 import {NotFoundException} from '../notFoundException'
+import {dataSource} from '../postDataSource'
 
 interface QueryResult {
     id: string;
@@ -9,23 +9,15 @@ interface QueryResult {
     body: string;
 }
 
-const dataSource = new DataSource({
-    'type': 'postgres',
-    'host': 'localhost',
-    'port': 5432,
-    'username': 'reidfluegel',
-    'password': 'asd',
-    'database': 'post',
-    'synchronize': true,
-    'entities': [
-        'src/entity/**/*.ts'
-    ]
-})
 export default class PostRepository {
     postDataSource = dataSource
 
     async initialize() {
         await this.postDataSource.initialize()
+    }
+
+    async destroy() {
+        await this.postDataSource.destroy()
     }
 
     async createPost(post: Post) {

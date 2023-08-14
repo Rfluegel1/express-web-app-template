@@ -8,6 +8,7 @@ jest.mock('typeorm', () => ({
     DataSource: jest.fn().mockImplementation(() => ({
         query: jest.fn(),
         initialize: jest.fn(),
+        destroy: jest.fn()
     })),
 }))
 
@@ -18,6 +19,12 @@ describe('Post repository', () => {
         await repository.initialize()
         //then
         expect(repository.postDataSource.initialize).toHaveBeenCalled()
+    })
+    it('destroy should destroy postDataSource', async () => {
+        //when
+        await repository.destroy()
+        //then
+        expect(repository.postDataSource.destroy).toHaveBeenCalled()
     })
     it('createPost inserts into postDataSource', async () => {
         //given

@@ -47,11 +47,29 @@ app.use((function (err: any, req: Request, res: Response, next: any) {
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080
 
-new PostRepository().initialize()
+let postRepository = new PostRepository()
+postRepository.initialize()
     .then(() => httpServer.listen(PORT, () => console.log(`The server is running on port ${PORT}`)))
     .catch(err => {
         console.error('Failed to connect to the database', err)
         process.exit(1)
     })
+
+const gracefulShutdown = () => {
+    console.log('\nStarting graceful shutdown...')
+
+    httpServer.close(() => {
+
+        postRepository.destroy()
+            .then(() => {
+                console.log('Server closed.')
+                process.exit(0)
+            })
+    })
+}
+
+// Handle different shutdown signals
+process.on('SIGTERM', gracefulShutdown)
+process.on('SIGINT', gracefulShutdown)
 
 export default httpServer
