@@ -1,9 +1,12 @@
+const wtf = require('wtfnode')
+const whyRunNodelog = require('why-is-node-running')
+
 import Post from '../../src/posts/post'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../src/contants'
 import {AxiosError} from 'axios'
 import * as fs from 'fs'
-import {DataSource, QueryFailedError} from 'typeorm'
+import {DataSource} from 'typeorm'
 import {ChildProcessWithoutNullStreams, spawn} from 'child_process'
 import * as path from 'path'
 
@@ -23,49 +26,41 @@ const dataSource = new DataSource({
 })
 let server: ChildProcessWithoutNullStreams
 
-async function createPostsTable() {
+function createPostsTable() {
     const sql = fs.readFileSync(
         path.join(__dirname, '../../src/migrations.sql'),
         'utf8'
     )
-    await dataSource.initialize()
-    try {
-        await dataSource.query(sql)
-        console.log('query successful')
-    } catch (error) {
-        if ((error as QueryFailedError).message !== 'relation "posts" already exists') {
-            throw error
-        }
-    }
-}
-
-async function startBackend() {
-    server = spawn('npm', ['run', 'dev'])
-    await waitForServerStart()
-    console.log('server start successful')
-}
-
-function waitForServerStart(): Promise<void> {
-    return new Promise((resolve) => {
-        server.stdout.on('data', (data) => {
-            const output = data.toString()
-            if (output.includes('The server is running on port 8080')) {
-                resolve()
+    dataSource.initialize()
+        .then(() => dataSource.query(sql))
+        .catch(error => {
+            if (error.message !== 'relation "posts" already exists') {
+                throw error
             }
         })
+}
+
+function startBackend(done: jest.DoneCallback) {
+    server = spawn('npm', ['run', 'dev'])
+    server.stdout.on('data', (data) => {
+        const output = data.toString()
+        if (output.includes('The server is running on port 8080')) {
+            done()
+        }
     })
 }
 
-beforeAll(async () => {
-    await createPostsTable()
-    await startBackend()
+beforeAll((done) => {
+    createPostsTable()
+    startBackend(done)
 })
 
 afterAll(async () => {
     server.kill('SIGTERM')
-    console.log('server killed')
     await dataSource.destroy()
-    console.log('datasource killeds')
+    wtf.dump()
+    whyRunNodelog()
+    console.log('process._getActiveHandles()', process._getActiveHandles())
 })
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
