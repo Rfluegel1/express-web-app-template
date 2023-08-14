@@ -20,6 +20,12 @@ jobs:
           cd ../../../../../
           pwd
           ls
+          cd opt
+          ls
+          cd homebrew
+          ls
+          cd var
+          ls
           mkdir /opt/homebrew/var/postgresql@14
           initdb /opt/homebrew/var/postgresql@14 -E utf8
           brew services start postgresql
