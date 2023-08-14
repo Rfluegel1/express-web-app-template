@@ -55,21 +55,4 @@ postRepository.initialize()
         process.exit(1)
     })
 
-const gracefulShutdown = () => {
-    console.log('\nStarting graceful shutdown...')
-
-    httpServer.close(() => {
-
-        postRepository.destroy()
-            .then(() => {
-                console.log('Server closed.')
-                process.exit(0)
-            })
-    })
-}
-
-// Handle different shutdown signals
-process.on('SIGTERM', gracefulShutdown)
-process.on('SIGINT', gracefulShutdown)
-
 export default httpServer
