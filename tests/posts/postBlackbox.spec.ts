@@ -54,9 +54,13 @@ beforeAll((done) => {
 
 afterAll((done) => {
     dataSource.destroy().then(() => {
-        server.disconnect()
-        server.kill('SIGTERM')
-        done()
+    })
+    server.kill('SIGTERM')
+    server.stdout.on('data', (data) => {
+        const output = data.toString()
+        if (output.includes('Server closed.')) {
+            done()
+        }
     })
 })
 
