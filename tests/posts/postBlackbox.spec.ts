@@ -53,15 +53,13 @@ beforeAll((done) => {
 })
 
 afterAll((done) => {
-    dataSource.destroy().then(() => {
-    })
-    server.kill('SIGTERM')
-    server.stdout.on('data', (data) => {
-        const output = data.toString()
-        if (output.includes('Server closed.')) {
-            done()
-        }
-    })
+    dataSource.destroy()
+        .then(() => {
+            server.kill('SIGTERM') // Send termination signal
+            server.on('exit', () => {
+                done() // Call done when the server process exits
+            })
+        })
 })
 
 describe('Post Lifecycle', () => {
