@@ -1,6 +1,3 @@
-const wtf = require('wtfnode')
-const whyRunNodelog = require('why-is-node-running')
-
 import Post from '../../src/posts/post'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../src/contants'
@@ -55,13 +52,15 @@ beforeAll((done) => {
     startBackend(done)
 })
 
-afterAll(async () => {
-    server.kill('SIGTERM')
-    await dataSource.destroy()
-    wtf.dump()
-    whyRunNodelog()
-    console.log('process._getActiveHandles()', process._getActiveHandles())
+afterAll((done) => {
+    server.kill()
+    dataSource.destroy().then(() => {
+        setTimeout(() => {
+            done()
+        }, 100)
+    })
 })
+
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
         // given
