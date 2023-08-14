@@ -53,12 +53,11 @@ beforeAll((done) => {
 })
 
 afterAll((done) => {
-    server.on('close', async () => {
-        dataSource.destroy()
-            .then(() => done())
+    dataSource.destroy().then(() => {
+        server.disconnect()
+        server.kill('SIGTERM')
+        done()
     })
-
-    server.kill('SIGTERM')
 })
 
 describe('Post Lifecycle', () => {
