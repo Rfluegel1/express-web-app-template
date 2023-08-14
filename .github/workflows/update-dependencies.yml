@@ -40,7 +40,7 @@ jobs:
         run: npm update
 
       - name: Run Tests
-        run: jest --detectOpenHandles
+        run: npm run test
 
       - name: Create PR if Tests Pass
         run: |
