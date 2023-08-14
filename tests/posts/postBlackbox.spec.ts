@@ -23,26 +23,33 @@ const dataSource = new DataSource({
 })
 let server: ChildProcessWithoutNullStreams
 
-function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
-
-beforeAll(async () => {
-    server = spawn('npm', ['run', 'dev'])
-    await sleep(3000)
-    // Create the post table
+function createPostsTable() {
     const sql = fs.readFileSync(
         path.join(__dirname, '../../src/migrations.sql'),
         'utf8'
     )
-    await dataSource.initialize()
-    try {
-        await dataSource.query(sql)
-    } catch (error) {
-        if (error.message !== 'relation "posts" already exists') {
-            throw error
+    dataSource.initialize()
+        .then(() => dataSource.query(sql))
+        .catch(error => {
+            if (error.message !== 'relation "posts" already exists') {
+                throw error
+            }
+        })
+}
+
+function startBackend(done: jest.DoneCallback) {
+    server = spawn('npm', ['run', 'dev'])
+    server.stdout.on('data', (data) => {
+        const output = data.toString()
+        if (output.includes('The server is running on port 8080')) {
+            done()
         }
-    }
+    })
+}
+
+beforeAll((done) => {
+    createPostsTable()
+    startBackend(done)
 })
 
 afterAll(async () => {

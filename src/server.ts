@@ -47,10 +47,11 @@ app.use((function (err: any, req: Request, res: Response, next: any) {
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080
 
-new PostRepository().initialize().catch(err => {
-    console.error('Failed to connect to the database', err)
-    process.exit(1)
-})
-httpServer.listen(PORT, () => console.log(`The server is running on port ${PORT}`))
+new PostRepository().initialize()
+    .then(() => httpServer.listen(PORT, () => console.log(`The server is running on port ${PORT}`)))
+    .catch(err => {
+        console.error('Failed to connect to the database', err)
+        process.exit(1)
+    })
 
 export default httpServer
