@@ -3,7 +3,7 @@ import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../src/contants'
 import {AxiosError} from 'axios'
 import * as fs from 'fs'
-import {DataSource} from 'typeorm'
+import {DataSource, QueryFailedError} from 'typeorm'
 import {ChildProcessWithoutNullStreams, spawn} from 'child_process'
 import * as path from 'path'
 
@@ -23,42 +23,45 @@ const dataSource = new DataSource({
 })
 let server: ChildProcessWithoutNullStreams
 
-function createPostsTable() {
+async function createPostsTable() {
     const sql = fs.readFileSync(
         path.join(__dirname, '../../src/migrations.sql'),
         'utf8'
     )
-    dataSource.initialize()
-        .then(() => dataSource.query(sql))
-        .catch(error => {
-            if (error.message !== 'relation "posts" already exists') {
-                throw error
-            }
-        })
+    await dataSource.initialize()
+    try {
+        await dataSource.query(sql)
+    } catch (error) {
+        if ((error as QueryFailedError).message !== 'relation "posts" already exists') {
+            throw error
+        }
+    }
 }
 
-function startBackend(done: jest.DoneCallback) {
+async function startBackend() {
     server = spawn('npm', ['run', 'dev'])
-    server.stdout.on('data', (data) => {
-        const output = data.toString()
-        if (output.includes('The server is running on port 8080')) {
-            done()
-        }
+    await waitForServerStart()
+}
+
+function waitForServerStart(): Promise<void> {
+    return new Promise((resolve) => {
+        server.stdout.on('data', (data) => {
+            const output = data.toString()
+            if (output.includes('The server is running on port 8080')) {
+                resolve()
+            }
+        })
     })
 }
 
-beforeAll((done) => {
-    createPostsTable()
-    startBackend(done)
+beforeAll(async () => {
+    await createPostsTable()
+    await startBackend()
 })
 
 afterAll(async () => {
-    console.log('killing server')
     server.kill('SIGTERM')
-    console.log('killed server')
-    console.log('killing datasource')
     await dataSource.destroy()
-    console.log('killed datasource')
 })
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
@@ -146,10 +149,8 @@ describe('Post Lifecycle', () => {
 
         } finally {
             // cleanup
-            console.log('deleting promotions')
             const firstDeleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${firstPostResponse.data.message.id}`)
             const secondDeleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${secondPostResponse.data.message.id}`)
-            console.log('deleted promotions')
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
