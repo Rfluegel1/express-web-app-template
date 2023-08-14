@@ -53,8 +53,12 @@ beforeAll((done) => {
 })
 
 afterAll(async () => {
-    server.kill()
+    console.log('killing server')
+    server.kill('SIGTERM')
+    console.log('killed server')
+    console.log('killing datasource')
     await dataSource.destroy()
+    console.log('killed datasource')
 })
 describe('Post Lifecycle', () => {
     it('is created, fetched, updated, and deleted', async () => {
@@ -142,8 +146,10 @@ describe('Post Lifecycle', () => {
 
         } finally {
             // cleanup
+            console.log('deleting promotions')
             const firstDeleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${firstPostResponse.data.message.id}`)
             const secondDeleteResponse = await axios.delete(`http://127.0.0.1:8080/posts/${secondPostResponse.data.message.id}`)
+            console.log('deleted promotions')
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
