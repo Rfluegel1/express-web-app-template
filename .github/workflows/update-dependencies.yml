@@ -48,8 +48,13 @@ jobs:
           git config --local user.name "GitHub Action"
           git checkout -b feature/update-dependencies
           git add package-lock.json package.json
-          git commit -m "Update NPM dependencies"
-          git push origin feature/update-dependencies
-          gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
+          # Check if there are any changes to commit
+          if git diff --exit-code --cached; then
+            echo "No changes to commit, skipping PR creation."
+          else
+            git commit -m "Update NPM dependencies"
+            git push origin feature/update-dependencies
+            gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
