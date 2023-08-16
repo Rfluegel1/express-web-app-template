@@ -1,10 +1,8 @@
 import {StatusCodes} from 'http-status-codes'
 import * as fs from 'fs'
 import {DataSource} from 'typeorm'
-import {ChildProcessWithoutNullStreams, spawn} from 'child_process'
 import * as path from 'path'
-
-const axios = require('axios')
+import axios from 'axios'
 
 const dataSource = new DataSource({
     'type': 'postgres',
@@ -18,45 +16,28 @@ const dataSource = new DataSource({
         'src/entity/**/*.ts'
     ]
 })
-let server: ChildProcessWithoutNullStreams
 
-function createPostsTable() {
+async function createPostsTable() {
     const sql = fs.readFileSync(
         path.join(__dirname, '../src/migrations.sql'),
         'utf8'
     )
-    dataSource.initialize()
-        .then(() => dataSource.query(sql))
-        .catch(error => {
-            if (error.message !== 'relation "posts" already exists') {
-                throw error
-            }
-        })
-}
-
-function startBackend(done: jest.DoneCallback) {
-    server = spawn('npm', ['run', 'dev'])
-    server.stdout.on('data', (data) => {
-        const output = data.toString()
-        if (output.includes('The server is running on port 8080')) {
-            done()
+    await dataSource.initialize()
+    try {
+        await dataSource.query(sql)
+    } catch (error) {
+        if (error.message !== 'relation "posts" already exists') {
+            throw error
         }
-    })
+    }
 }
 
-beforeAll((done: jest.DoneCallback) => {
-    createPostsTable()
-    startBackend(done)
+beforeAll(async () => {
+    await createPostsTable()
 })
 
-afterAll((done: jest.DoneCallback) => {
-    dataSource.destroy()
-        .then(() => {
-            server.kill('SIGTERM')
-            server.on('exit', () => {
-                done()
-            })
-        })
+afterAll(async () => {
+    await dataSource.destroy()
 })
 
 describe('Health check resource', () => {
