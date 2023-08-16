@@ -1,7 +1,9 @@
 import http from 'http'
 import express, {Express, Request, Response} from 'express'
 import morgan from 'morgan'
-import routes from './posts/postRoutes'
+import postRoutes from './posts/postRoutes'
+import healthCheckRoutes from './healthCheck/healthCheckRoutes'
+import heartbeatRoutes from './heartbeat/heartbeatRoutes'
 import PostRepository from './posts/postRepository'
 import PostController from './posts/postController'
 import {StatusCodes} from 'http-status-codes'
@@ -24,7 +26,9 @@ app.use((req, res, next) => {
     next()
 })
 
-app.use('/', routes)
+app.use('/', postRoutes)
+app.use('/', healthCheckRoutes)
+app.use('/', heartbeatRoutes)
 
 app.use((req, res, next) => {
     const error = new Error('not found')

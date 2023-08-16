@@ -52,12 +52,12 @@ beforeAll((done) => {
     startBackend(done)
 })
 
-afterAll((done) => {
+afterAll((done: jest.DoneCallback) => {
     dataSource.destroy()
         .then(() => {
-            server.kill('SIGTERM') // Send termination signal
+            server.kill('SIGTERM')
             server.on('exit', () => {
-                done() // Call done when the server process exits
+                done()
             })
         })
 })
