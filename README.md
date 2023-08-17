@@ -22,6 +22,15 @@ and performance testing.
 1. ```brew install postgresql@14```
 2. ```createdb post```
 
+note*:
+brew does not create a database folder for postgresql@14
+which may lead to errors starting the service with brew
+or interacting in general. Consider checking error logs.
+These are the steps I had to complete on macOS to make brew play nicely
+
+1. navigate to /opt/homebrew/var
+2. ``mkdir postgresql@14``
+
 ## Run unit tests
 
 ```npm test```
