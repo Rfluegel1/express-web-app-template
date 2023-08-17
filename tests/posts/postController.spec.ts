@@ -30,7 +30,7 @@ describe('Post controller', () => {
         const response = {
             status: jest.fn(function () {
                 return this
-            }), json: jest.fn(),
+            }), send: jest.fn(),
         };
 
         (postController.postService.createPost as jest.Mock).mockImplementation((userId, title, body) => {
@@ -45,7 +45,7 @@ describe('Post controller', () => {
         await postController.createPost(request as any, response as any)
 
         // then
-        expect(response.json).toHaveBeenCalledWith({message: mockPost})
+        expect(response.send).toHaveBeenCalledWith({message: mockPost})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
     })
     it('updatePost should respond with data that is returned from the PostService', async () => {
@@ -66,7 +66,7 @@ describe('Post controller', () => {
             status: jest.fn(function () {
                 return this
             }),
-            json: jest.fn(),
+            send: jest.fn(),
         };
 
         (postController.postService.updatePost as jest.Mock).mockImplementation((sentId, userId, title, body) => {
@@ -82,7 +82,7 @@ describe('Post controller', () => {
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.json).toHaveBeenCalledWith({message: mockPost})
+        expect(response.send).toHaveBeenCalledWith({message: mockPost})
     })
     it('getPost should respond with data that is returned from the PostService', async () => {
         // given
@@ -95,7 +95,7 @@ describe('Post controller', () => {
             status: jest.fn(function () {
                 return this
             }),
-            json: jest.fn(),
+            send: jest.fn(),
         };
 
         (postController.postService.getPost as jest.Mock).mockImplementation((sentId) => {
@@ -111,7 +111,7 @@ describe('Post controller', () => {
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.json).toHaveBeenCalledWith({message: mockPost})
+        expect(response.send).toHaveBeenCalledWith({message: mockPost})
     })
     it('getAllPosts should respond with data that is returned from the PostService', async () => {
         // given
@@ -124,7 +124,7 @@ describe('Post controller', () => {
             status: jest.fn(function () {
                 return this
             }),
-            json: jest.fn(),
+            send: jest.fn(),
         };
 
         (postController.postService.getAllPosts as jest.Mock).mockImplementation(() => {
@@ -136,7 +136,7 @@ describe('Post controller', () => {
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.json).toHaveBeenCalledWith({message: [mockPost, mockPost2]})
+        expect(response.send).toHaveBeenCalledWith({message: [mockPost, mockPost2]})
     })
     it('getPost should next error that is returned from the PostService', async () => {
         // given

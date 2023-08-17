@@ -3,42 +3,43 @@ import PostService from './postService'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../contants'
 import {BadRequestException} from '../badRequestException'
+import Post from './post'
 
 export default class PostController {
-    postService = new PostService()
+    postService: PostService = new PostService()
 
-    async createPost(req: Request, res: Response) {
-        let title: string = req.body.title
-        let body: string = req.body.body
-        let userId: string = req.body.userId
-        const response = await this.postService.createPost(userId, title, body)
-        return res.status(StatusCodes.CREATED).json({
-            message: response
+    async createPost(request: Request, response: Response) {
+        let title: string = request.body.title
+        let body: string = request.body.body
+        let userId: string = request.body.userId
+        const post: Post = await this.postService.createPost(userId, title, body)
+        return response.status(StatusCodes.CREATED).send({
+            message: post
         })
     }
 
-    async deletePost(req: Request, res: Response, next: NextFunction) {
-        let id: string = req.params.id
+    async deletePost(request: Request, response: Response, next: NextFunction) {
+        let id: string = request.params.id
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
         try {
             await this.postService.deletePost(id)
-            return res.sendStatus(StatusCodes.NO_CONTENT)
+            return response.sendStatus(StatusCodes.NO_CONTENT)
         } catch (error) {
             next(error)
         }
     }
 
-    async getPost(req: Request, res: Response, next: NextFunction) {
-        let id: string = req.params.id
-        let post
+    async getPost(request: Request, response: Response, next: NextFunction) {
+        let id: string = request.params.id
+        let post: Post
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
         try {
             post = await this.postService.getPost(id)
-            return res.status(200).json({
+            return response.status(200).send({
                 message: post
             })
         } catch (error) {
@@ -46,24 +47,24 @@ export default class PostController {
         }
     }
 
-    async getPosts(req: Request, res: Response) {
-        const posts = await this.postService.getAllPosts()
-        return res.status(200).json({
+    async getPosts(request: Request, response: Response) {
+        const posts: Post[] = await this.postService.getAllPosts()
+        return response.status(200).send({
             message: posts
         })
     }
 
-    async updatePost(req: Request, res: Response, next: NextFunction) {
-        let id: string = req.params.id
-        let userId: string = req.body.userId
-        let title: string = req.body.title
-        let body: string = req.body.body
+    async updatePost(request: Request, res: Response, next: NextFunction) {
+        const id: string = request.params.id
+        const userId: string = request.body.userId
+        const title: string = request.body.title
+        const body: string = request.body.body
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
         try {
-            let post = await this.postService.updatePost(id, userId, title, body)
-            return res.status(200).json({
+            let post: Post = await this.postService.updatePost(id, userId, title, body)
+            return res.status(200).send({
                 message: post
             })
         } catch (error) {

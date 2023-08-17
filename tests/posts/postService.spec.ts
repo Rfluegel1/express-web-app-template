@@ -17,11 +17,11 @@ jest.mock('../../src/posts/postRepository', () => {
 })
 
 describe('Post service', () => {
-    let service = new PostService()
+    let service: PostService = new PostService()
     it('CreatePost calls repository and returns Post', async () => {
         const expectedPost = {userId: 'the user', title: 'the title', body: 'the body'}
         // when
-        let result = await service.createPost('the user', 'the title', 'the body')
+        let result: Post = await service.createPost('the user', 'the title', 'the body')
         // then
         expect(service.postRepository.createPost).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
         expect(result.userId).toEqual('the user')
@@ -47,24 +47,29 @@ describe('Post service', () => {
         expect(result.body).toEqual('the body')
         expect(result.id).toEqual(id)
     })
-    it('updatePost only sets defined fields on updated Post', async () => {
-        //given
-        const existingPost = new Post('old user', 'old title', 'old body')
-        const expectedPost = {userId: 'old user', title: 'old title', body: 'new body'};
-        (service.postRepository.getPost as jest.Mock).mockImplementation((sentId: string) => {
-            if (sentId === existingPost.id) {
-                return existingPost
-            }
+    it.each`
+    userId        | title          | body          | expected
+    ${undefined}  | ${undefined}   | ${undefined}  | ${{userId: 'old user', title: 'old title', body: 'old body'}}
+    ${'new user'} | ${'new title'} | ${'new body'} | ${{userId: 'new user', title: 'new title', body: 'new body'}}
+    `('updatePost only sets defined fields on updated Post',
+        async ({userId, title, body, expected}) => {
+            //given
+            const existingPost = new Post('old user', 'old title', 'old body');
+            (service.postRepository.getPost as jest.Mock).mockImplementation((sentId: string) => {
+                if (sentId === existingPost.id) {
+                    return existingPost
+                }
+            })
+            // when
+            let result = await service.updatePost(existingPost.id, userId, title, body)
+            // then
+            expect(service.postRepository.updatePost).toHaveBeenCalledWith(expect.objectContaining(expected))
+            expect(result.userId).toEqual(expected.userId)
+            expect(result.title).toEqual(expected.title)
+            expect(result.body).toEqual(expected.body)
+            expect(result.id).toEqual(existingPost.id)
         })
-        // when
-        let result = await service.updatePost(existingPost.id, undefined, undefined, 'new body')
-        // then
-        expect(service.postRepository.updatePost).toHaveBeenCalledWith(expect.objectContaining(expectedPost))
-        expect(result.userId).toEqual('old user')
-        expect(result.title).toEqual('old title')
-        expect(result.body).toEqual('new body')
-        expect(result.id).toEqual(existingPost.id)
-    })
+
     it('getPost returns posts from repository', async () => {
         //given
         const id = uuidv4()

@@ -16,12 +16,12 @@ app.use(morgan('dev'))
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*')
-    res.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'GET PATCH DELETE POST')
-        return res.status(200).json({})
+app.use((request, response, next) => {
+    response.header('Access-Control-Allow-Origin', '*')
+    response.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
+    if (request.method === 'OPTIONS') {
+        response.header('Access-Control-Allow-Methods', 'GET PATCH DELETE POST')
+        return response.status(200).send({})
     }
     next()
 })
@@ -30,32 +30,33 @@ app.use('/', postRoutes)
 app.use('/', healthCheckRoutes)
 app.use('/', heartbeatRoutes)
 
-app.use((req, res, next) => {
-    const error = new Error('not found')
+app.use((request, response, next) => {
+    const error: Error = new Error('not found')
     next(error)
 })
 
-app.use((function (err: any, req: Request, res: Response, next: any) {
-    if (err.message === 'not found') {
-        return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
+// next is needed to be properly bound with node
+app.use((function (error: any, request: Request, response: Response, next: any) {
+    if (error.message === 'not found') {
+        return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
     }
-    if (err instanceof NotFoundException) {
-        return res.status(StatusCodes.NOT_FOUND).json({message: err.message})
+    if (error instanceof NotFoundException) {
+        return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
     }
-    if (err instanceof BadRequestException) {
-        return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+    if (error instanceof BadRequestException) {
+        return response.status(StatusCodes.BAD_REQUEST).send({message: error.message})
     }
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'Internal Server Error'})
+    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Internal Server Error'})
 }).bind(PostController))
 
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080
 
-let postRepository = new PostRepository()
+let postRepository: PostRepository = new PostRepository()
 postRepository.initialize()
     .then(() => httpServer.listen(PORT, () => console.log(`The server is running on port ${PORT}`)))
-    .catch(err => {
-        console.error('Failed to connect to the database', err)
+    .catch(error => {
+        console.error('Failed to connect to the database', error)
         process.exit(1)
     })
 

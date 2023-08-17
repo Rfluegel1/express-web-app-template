@@ -2,31 +2,30 @@ import {v4 as uuidv4} from 'uuid'
 import {plainToClass} from 'class-transformer'
 
 export default class Post {
-    id
-    body
-    title
-    userId
+    id: string = uuidv4()
+    body: string
+    title: string
+    userId: string
 
-    constructor(userId = '', title = '', body = '') {
-        this.id = uuidv4()
+    constructor(userId: string = '', title: string = '', body: string = '') {
         this.body = body
         this.title = title
         this.userId = userId
     }
 
-    updateDefinedFields(userId: string | undefined, title: string | undefined, body: string) {
-        if (userId != undefined) {
+    updateDefinedFields(userId: string, title: string, body: string): void {
+        if (userId !== undefined) {
             this.userId = userId
         }
-        if (title != undefined) {
+        if (title !== undefined) {
             this.title = title
         }
-        if (body != undefined) {
+        if (body !== undefined) {
             this.body = body
         }
     }
 
-    postMapper(queryResult: any) {
+    postMapper(queryResult: any): Post {
         const intermediate = {
             id: queryResult?.id,
             userId: queryResult?.userid,
@@ -35,4 +34,5 @@ export default class Post {
         }
         return plainToClass(Post, intermediate)
     }
+
 }

@@ -1,6 +1,7 @@
 import Post from './post'
 import {NotFoundException} from '../notFoundException'
 import {dataSource} from '../postDataSource'
+import {DataSource} from 'typeorm'
 
 interface QueryResult {
     id: string;
@@ -10,17 +11,17 @@ interface QueryResult {
 }
 
 export default class PostRepository {
-    postDataSource = dataSource
+    postDataSource: DataSource = dataSource
 
-    async initialize() {
+    async initialize(): Promise<void> {
         await this.postDataSource.initialize()
     }
 
-    async destroy() {
+    async destroy(): Promise<void> {
         await this.postDataSource.destroy()
     }
 
-    async createPost(post: Post) {
+    async createPost(post: Post): Promise<void> {
         await this.postDataSource.query(
             'INSERT INTO ' +
             'posts (id, userId, title, body) ' +
@@ -29,14 +30,14 @@ export default class PostRepository {
         )
     }
 
-    async deletePost(id: string) {
+    async deletePost(id: string): Promise<void> {
         await this.postDataSource.query(
             'DELETE FROM posts WHERE id=$1',
             [id]
         )
     }
 
-    async getPost(id: string) {
+    async getPost(id: string): Promise<Post> {
         const queryResult = await this.postDataSource.query(
             'SELECT * FROM posts WHERE id=$1', [id]
         )
@@ -53,7 +54,7 @@ export default class PostRepository {
         })
     }
 
-    async updatePost(post: Post) {
+    async updatePost(post: Post): Promise<void> {
         await this.postDataSource.query(
             'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
             [post.userId, post.title, post.body, post.id]
