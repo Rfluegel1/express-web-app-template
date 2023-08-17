@@ -4,7 +4,7 @@ import {UUID_REG_EXP} from '../../src/contants'
 describe('Post object', () => {
     it('default constructor sets default values', () => {
         // when
-        let result = new Post()
+        const result: Post = new Post()
         // then
         expect(result.userId).toEqual('')
         expect(result.id).toMatch(UUID_REG_EXP)
@@ -13,7 +13,7 @@ describe('Post object', () => {
     })
     it('values constructor sets values', () => {
         // when
-        let result = new Post('the user', 'the title', 'the body')
+        const result: Post = new Post('the user', 'the title', 'the body')
         // then
         expect(result.userId).toEqual('the user')
         expect(result.id).toMatch(UUID_REG_EXP)
