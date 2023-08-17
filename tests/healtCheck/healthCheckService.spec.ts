@@ -20,43 +20,52 @@ describe('Health check service', () => {
             // then
             expect(mockedAxios.get).toHaveBeenCalledWith('http://127.0.0.1:8080/posts')
             expect(dataSource.query).toBeCalledWith('SELECT 1')
-            expect(actual.database).toEqual('connected')
-            expect(actual.request).toEqual('serving')
+            expect(actual.result).toEqual('success')
+            expect(actual.integrations.database.result).toEqual('success')
+            expect(actual.integrations.database.details).toEqual('')
+            expect(actual.integrations.post_resource.result).toEqual('success')
+            expect(actual.integrations.post_resource.details).toEqual('')
         })
-    it('healthcheck sets database to disconnected when there is an error thrown',
+    it('healthcheck sets result and database to failure when there is an error thrown',
         async () => {
             // given
             mockedAxios.get.mockResolvedValue({
                 status: 200,
             })
-            dataSource.query = jest.fn().mockRejectedValue(new Error())
+            dataSource.query = jest.fn().mockRejectedValue(new Error('error message'))
             // when
             const actual: any = await healthCheckService.healthcheck()
             // then
-            expect(actual.database).toEqual('disconnected')
+            expect(actual.result).toEqual('failure')
+            expect(actual.integrations.database.result).toEqual('failure')
+            expect(actual.integrations.database.details).toEqual('error message')
         })
 
     it('healthcheck sets request to dropped on the floor when there is an error thrown',
         async () => {
             // given
-            mockedAxios.get.mockRejectedValue(new Error())
+            mockedAxios.get.mockRejectedValue(new Error('error message'))
             dataSource.query = jest.fn().mockResolvedValue({})
             // when
             const actual: any = await healthCheckService.healthcheck()
             // then
-            expect(actual.request).toEqual('dropped on the floor')
+            expect(actual.result).toEqual('failure')
+            expect(actual.integrations.post_resource.result).toEqual('failure')
+            expect(actual.integrations.post_resource.details).toEqual('error message')
         })
 
-    it('healthcheck sets request to dropped on the floor when status code is not OK',
+    it('healthcheck sets request to dropped on the floor when status code is CREATED',
         async () => {
             // given
             mockedAxios.get.mockResolvedValue({
-                status: StatusCodes.NOT_FOUND,
+                status: StatusCodes.CREATED,
             })
             dataSource.query = jest.fn().mockResolvedValue({})
             // when
             const actual: any = await healthCheckService.healthcheck()
             // then
-            expect(actual.request).toEqual('dropped on the floor')
+            expect(actual.result).toEqual('failure')
+            expect(actual.integrations.post_resource.result).toEqual('failure')
+            expect(actual.integrations.post_resource.details).toContain(`${StatusCodes.CREATED}`)
         })
 })

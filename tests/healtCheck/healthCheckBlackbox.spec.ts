@@ -11,7 +11,10 @@ describe('Health check resource', () => {
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)
         let getData = getResponse.data
-        expect(getData.database).toEqual('connected')
-        expect(getData.request).toEqual('serving')
+        expect(getData.result).toEqual('success')
+        expect(getData.integrations.database.result).toEqual('success')
+        expect(getData.integrations.database.details).toEqual('')
+        expect(getData.integrations.post_resource.result).toEqual('success')
+        expect(getData.integrations.post_resource.details).toEqual('')
     })
 })
