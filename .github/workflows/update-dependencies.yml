@@ -49,7 +49,7 @@ jobs:
           branch_name="automated/update-dependencies"
 
           # Check if there are changes
-          git diff --exit-code || git diff --staged --exit-code
+          git diff --exit-code > /dev/null || git diff --staged --exit-code > /dev/null
           if [ $? -ne 0 ]; then
             # Check if branch already exists
             git fetch origin $branch_name
