@@ -3,7 +3,8 @@ import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../../src/backend/contants'
 import axios, {AxiosError} from 'axios'
 
-require('../postTableSetup')
+const setupPostTable = require('../postTableSetup')
+setupPostTable()
 
 describe('Post resource', () => {
     it('is created, fetched, updated, and deleted', async () => {

@@ -1,7 +1,8 @@
 import {StatusCodes} from 'http-status-codes'
 import axios from 'axios'
 
-require('../postTableSetup')
+const setupPostTable = require('../postTableSetup')
+setupPostTable()
 
 describe('Health check resource', () => {
     it('should return happy if database connection is healthy and requests are being served', async () => {
