@@ -53,7 +53,7 @@ jobs:
             echo "No changes to commit, skipping PR creation."
           else
             git commit -m "Update NPM dependencies"
-            git push origin "automated/update-dependencies-$(date +%s)"
+            git push origin feature/update-dependencies
             gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
           fi
         env:
