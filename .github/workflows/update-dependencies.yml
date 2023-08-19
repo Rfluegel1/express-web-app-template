@@ -42,32 +42,19 @@ jobs:
       - name: Run Tests
         run: npm run test
 
-      - name: Update NPM packages and create PR if needed
+      - name: Create PR if Tests Pass
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          branch_name="automated/update-dependencies"
-
-          # Check if there are changes
-          git diff --exit-code > /dev/null || git diff --staged --exit-code > /dev/null
-          if [ $? -ne 0 ]; then
-            # Check if branch already exists
-            git fetch origin $branch_name
-            if git show-ref --quiet refs/remotes/origin/$branch_name; then
-              echo "Branch already exists, deleting it."
-              # Close associated PR
-              gh pr close --delete-branch --repo ${{ github.repository }} $branch_name || true
-              # Delete remote branch
-              git push origin --delete $branch_name || true
-            fi
-
-            # Create new branch
-            git checkout -b $branch_name
-            git add package-lock.json package.json
+          git checkout -b feature/update-dependencies
+          git add package-lock.json package.json
+          # Check if there are any changes to commit
+          if git diff --exit-code --cached; then
+            echo "No changes to commit, skipping PR creation."
+          else
             git commit -m "Update NPM dependencies"
-            git push origin $branch_name
+            git push origin "automated/update-dependencies-$(date +%s)"
             gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
