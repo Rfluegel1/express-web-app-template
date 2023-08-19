@@ -1,4 +1,4 @@
-import HeartbeatController from '../src/heartbeat/heartbeatController'
+import HeartbeatController from '../../src/backend/heartbeat/heartbeatController'
 
 describe('Heartbeat function', () => {
     let heartbeatController: HeartbeatController = new HeartbeatController()

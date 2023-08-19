@@ -1,6 +1,6 @@
-import HealthCheckService from '../../src/healthCheck/healthCheckService'
+import HealthCheckService from '../../../src/backend/healthCheck/healthCheckService'
 import axios from 'axios'
-import {dataSource} from '../../src/postDataSource'
+import {dataSource} from '../../../src/backend/postDataSource'
 import {StatusCodes} from 'http-status-codes'
 
 // setup

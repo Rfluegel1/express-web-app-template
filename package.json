@@ -2,16 +2,18 @@
   "name": "typescript-template",
   "version": "1.0.0",
   "description": "This project is designed to be a starting point for a typescript web application",
-  "main": "src/server.ts",
+  "main": "src/backend/server.ts",
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "coverage": "jest --coverage",
-    "dev": "nodemon src/server.ts",
+    "dev": "nodemon src/backend/server.ts",
     "build": "rm -rf build/ && prettier --write source/ && tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@testing-library/jest-dom": "^6.0.1",
+    "@testing-library/react": "^14.0.0",
     "@types/axios": "^0.14.0",
     "@types/morgan": "^1.9.4",
     "axios": "^1.4.0",
@@ -22,6 +24,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
     "pg": "^8.11.1",
+    "react": "^18.2.0",
     "ts-node": "^10.9.1",
     "typeorm": "^0.3.17",
     "uuid": "^9.0.0"

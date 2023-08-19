@@ -1,12 +1,12 @@
-import PostController from '../../src/posts/postController'
+import PostController from '../../../src/backend/posts/postController'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'
-import {NotFoundException} from '../../src/notFoundException'
-import {BadRequestException} from '../../src/badRequestException'
+import {NotFoundException} from '../../../src/backend/notFoundException'
+import {BadRequestException} from '../../../src/backend/badRequestException'
 
 // setup
-jest.mock('../../src/posts/postService', () => {
+jest.mock('../../../src/backend/posts/postService', () => {
     return jest.fn().mockImplementation(() => {
         return {
             createPost: jest.fn(),

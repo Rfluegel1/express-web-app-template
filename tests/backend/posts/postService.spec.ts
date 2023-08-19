@@ -1,10 +1,10 @@
-import PostService from '../../src/posts/postService'
+import PostService from '../../../src/backend/posts/postService'
 import {v4 as uuidv4} from 'uuid'
-import {UUID_REG_EXP} from '../../src/contants'
-import Post from '../../src/posts/post'
+import {UUID_REG_EXP} from '../../../src/backend/contants'
+import Post from '../../../src/backend/posts/post'
 
 // setup
-jest.mock('../../src/posts/postRepository', () => {
+jest.mock('../../../src/backend/posts/postRepository', () => {
     return jest.fn().mockImplementation(() => {
         return {
             createPost: jest.fn(),

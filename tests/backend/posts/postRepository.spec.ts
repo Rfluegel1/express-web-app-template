@@ -1,7 +1,7 @@
-import PostRepository from '../../src/posts/postRepository'
+import PostRepository from '../../../src/backend/posts/postRepository'
 import {v4 as uuidv4} from 'uuid'
-import Post from '../../src/posts/post'
-import {NotFoundException} from '../../src/notFoundException'
+import Post from '../../../src/backend/posts/post'
+import {NotFoundException} from '../../../src/backend/notFoundException'
 
 // setup
 jest.mock('typeorm', () => ({
