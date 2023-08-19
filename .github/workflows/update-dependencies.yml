@@ -46,14 +46,15 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git checkout -b feature/update-dependencies
+          branch_name="automated/update-dependencies-$(date +%s)"
+          git checkout -b $branch_name
           git add package-lock.json package.json
           # Check if there are any changes to commit
           if git diff --exit-code --cached; then
             echo "No changes to commit, skipping PR creation."
           else
             git commit -m "Update NPM dependencies"
-            git push origin feature/update-dependencies
+            git push origin $branch_name
             gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
           fi
         env:
