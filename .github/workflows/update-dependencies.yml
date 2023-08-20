@@ -40,7 +40,7 @@ jobs:
         run: npm update
 
       - name: Run Tests
-        run: npm run test
+        run: npm run test:github
 
       - name: Create PR if Tests Pass
         run: |

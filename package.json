@@ -4,8 +4,8 @@
   "description": "This project is designed to be a starting point for a typescript web application",
   "main": "src/backend/server.ts",
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles --forceExit",
-    "coverage": "jest --coverage",
+    "test:github": "jest --runInBand --forceExit",
+    "test": "jest --detectOpenHandles --coverage",
     "backend": "nodemon src/backend/server.ts",
     "frontend": "webpack-dev-server --mode development --open --hot",
     "build": "rm -rf build/ && prettier --write source/ && tsc"
@@ -23,7 +23,6 @@
     "jest-editor-support": "^31.1.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
-    "pg": "^8.11.3",
     "react": "^18.2.0",
     "react-router-dom": "^6.15.0",
     "ts-node": "^10.9.1",
