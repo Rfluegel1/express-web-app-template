@@ -13,7 +13,6 @@ beforeAll(() => {
         {id: 2, userId: 'User 2', title: 'Post 2', body: 'Body 2'}
     ];
     (axios.get as jest.Mock).mockResolvedValue({data: posts})
-
 })
 
 describe('PostsList component', () => {
@@ -25,7 +24,6 @@ describe('PostsList component', () => {
         await waitFor(() => {
             expect(screen.getByText('Loading...')).toBeInTheDocument()
         })
-
     })
 
     test('fetches and displays posts', async () => {
@@ -44,12 +42,15 @@ describe('PostsList component', () => {
     })
 
     test('displays an error if fetching posts fails', async () => {
-        let error: Error = new Error('An error occurred');
+        // given
+        const error: Error = new Error('An error occurred');
         (axios.get as jest.Mock).mockRejectedValueOnce(error)
         console.error = jest.fn()
 
+        // when
         render(<PostList/>)
 
+        // thens
         await waitFor(() => {
             expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
             expect(console.error).toHaveBeenCalledWith('An error occurred while fetching the posts:', error)
