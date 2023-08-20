@@ -50,7 +50,7 @@ describe('PostsList component', () => {
         // when
         render(<PostList/>)
 
-        // thens
+        // then
         await waitFor(() => {
             expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
             expect(console.error).toHaveBeenCalledWith('An error occurred while fetching the posts:', error)
