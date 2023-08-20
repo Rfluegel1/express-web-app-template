@@ -9,7 +9,7 @@ const PostList = () => {
         // Fetch all posts from the backend
         axios.get('http://127.0.0.1:8080/posts')
             .then((response) => {
-                setPosts(response.data)
+                setPosts(response.data.message)
                 setLoading(false)
             })
             .catch((error) => {
@@ -24,6 +24,14 @@ const PostList = () => {
             {loading
                 ? <div>Loading...</div>
                 : <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                    </tr>
+                    </thead>
                     <tbody>
                     {posts.map((post: any) => (
                         <tr key={post.id}>

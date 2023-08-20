@@ -7,11 +7,11 @@ and performance testing.
 
 ## Run front end locally
 
-```node server.js```
+``` npm run frontend ```
 
 ## Run backend
 
-```npm run dev```
+```npm run backend```
 
 ## Run database
 
@@ -33,7 +33,7 @@ These are the steps I had to complete on macOS to make brew play nicely
 
 ## Run unit tests
 
-```npm test```
+```npm run test```
 
 ## Run performance tests
 

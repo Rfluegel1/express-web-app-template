@@ -12,7 +12,7 @@ beforeAll(() => {
         {id: 1, userId: 'User 1', title: 'Post 1', body: 'Body 1'},
         {id: 2, userId: 'User 2', title: 'Post 2', body: 'Body 2'}
     ];
-    (axios.get as jest.Mock).mockResolvedValue({data: posts})
+    (axios.get as jest.Mock).mockResolvedValue({data: {message: posts}})
 })
 
 describe('PostsList component', () => {
