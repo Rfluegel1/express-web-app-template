@@ -39,8 +39,11 @@ jobs:
       - name: Update NPM packages
         run: npm update
 
-      - name: Run Tests
-        run: npm run test:github
+      - name: Run Backend Tests
+        run: npm run test:github backend
+          
+      - name: Run Frontend Tests
+        run: npm run test:github frontend
 
       - name: Create PR if Tests Pass
         run: |
