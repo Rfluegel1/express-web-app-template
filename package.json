@@ -8,7 +8,7 @@
     "test": "jest --detectOpenHandles --coverage",
     "backend": "nodemon src/backend/server.ts",
     "frontend": "webpack-dev-server --mode development --open --hot",
-    "clear": "rm -rf node_modules && npm cache clean --force"
+    "clean": "rm -rf node_modules && npm cache clean --force"
   },
   "author": "",
   "license": "ISC",
