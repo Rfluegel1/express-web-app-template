@@ -32,7 +32,7 @@ const PostList = () => {
                         <th>Content</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id={'postRows'}>
                     {posts.map((post: any) => (
                         <tr key={post.id}>
                             <td>{post.id}</td>
