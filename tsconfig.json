@@ -112,5 +112,9 @@
     "skipLibCheck": true,
     /* Skip type checking all .d.ts files. */
     "jsx": "react-jsx"
-  }
+  },
+  "exclude": [
+    "./cypress.config.ts",
+    "cypress"
+  ]
 }

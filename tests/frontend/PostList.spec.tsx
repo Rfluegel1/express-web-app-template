@@ -1,7 +1,14 @@
 import React from 'react'
-import {render, screen, waitFor} from '@testing-library/react'
+import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import PostList from '../../src/frontend/PostList'
 import axios from 'axios'
+import {MemoryRouter} from 'react-router-dom'
+
+const mockNavigate = jest.fn()
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'), // This line will copy all the exports from the actual module
+    useNavigate: () => mockNavigate,
+}))
 
 jest.mock('axios', () => ({
     get: jest.fn()
@@ -54,6 +61,23 @@ describe('PostsList component', () => {
         await waitFor(() => {
             expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
             expect(console.error).toHaveBeenCalledWith('An error occurred while fetching the posts:', error)
+        })
+    })
+    test('create post button redirects to details page', async () => {
+        // given
+        render(
+            <MemoryRouter>
+                <PostList/>
+            </MemoryRouter>
+        )
+        const button = await screen.findByText('Create Post')
+
+        // when
+        fireEvent.click(button)
+
+        // then
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith('/posts')
         })
     })
 })

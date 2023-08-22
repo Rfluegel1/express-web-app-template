@@ -1,12 +1,18 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
 
 const PostList = () => {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        // Fetch all posts from the backend
+        fetchAllPosts()
+    }, [])
+
+
+    const fetchAllPosts = () => {
         axios.get('http://127.0.0.1:8080/posts')
             .then((response) => {
                 setPosts(response.data.message)
@@ -16,8 +22,11 @@ const PostList = () => {
                 console.error('An error occurred while fetching the posts:', error)
                 setLoading(false)
             })
-    }, [])
+    }
 
+    const handleRedirect = () => {
+        navigate('/posts')
+    }
 
     return (
         <div>
@@ -43,6 +52,7 @@ const PostList = () => {
                     ))}
                     </tbody>
                 </table>}
+            <button onClick={handleRedirect} id={'createPost'}>Create Post</button>
         </div>
     )
 }

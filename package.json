@@ -8,7 +8,9 @@
     "test": "jest --detectOpenHandles --coverage",
     "backend": "nodemon src/backend/server.ts",
     "frontend": "webpack-dev-server --mode development --open --hot",
-    "clean": "rm -rf node_modules && npm cache clean --force"
+    "clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force",
+    "fullstack": "npm run backend & npm run frontend",
+    "cypress": "npx cypress open"
   },
   "author": "",
   "license": "ISC",
