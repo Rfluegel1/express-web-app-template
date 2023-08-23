@@ -52,13 +52,14 @@ jobs:
           branch_name="automated/update-dependencies-$(date +%s)"
           git checkout -b $branch_name
           git add package-lock.json package.json
-          # Check if there are any changes to commit
-          if git diff --exit-code --cached; then
-            echo "No changes to commit, skipping PR creation."
-          else
+          # Check if there are any changes to commit in package.json
+          if git diff --exit-code --cached --name-only | grep -q 'package.json'; then
+            echo "Changes found in package.json, creating PR."
             git commit -m "Update NPM dependencies"
             git push origin $branch_name
             gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
+          else
+            echo "No changes to package.json, skipping PR creation."
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
