@@ -3,14 +3,19 @@ const {spawn} = require('child_process')
 let backendServer
 let frontendServer
 
-const startServer = (command: any, args: any, successMessage: any) => new Promise((resolve, reject) => {
+const startServer = (command: string, args: string[], successMessage: any) => new Promise((resolve, reject) => {
     const server = spawn(command, args)
     server.stdout.on('data', (data: any) => {
         const output = data.toString()
+        console.log(`${args[1]} stdout: ${data}`)
         if (output.includes(successMessage)) {
             resolve(server)
         }
     })
+    server.stderr.on('data', (data: any) => {
+        console.error(`${args[1]} stderr: ${data}`)
+    })
+
     server.on('error', reject)
 })
 
