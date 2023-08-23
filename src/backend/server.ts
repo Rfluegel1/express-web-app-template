@@ -19,8 +19,8 @@ app.use(express.json())
 app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*')
     response.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
+    response.header('Access-Control-Allow-Methods', 'GET,PATCH,DELETE,POST')
     if (request.method === 'OPTIONS') {
-        response.header('Access-Control-Allow-Methods', 'GET PATCH DELETE POST')
         return response.status(200).send({})
     }
     next()
