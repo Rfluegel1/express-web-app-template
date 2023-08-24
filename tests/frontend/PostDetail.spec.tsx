@@ -8,6 +8,13 @@ import {v4 as uuidv4} from 'uuid'
 jest.mock('axios', () => ({
     post: jest.fn()
 }))
+
+const mockNavigate = jest.fn()
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'), // This line will copy all the exports from the actual module
+    useNavigate: () => mockNavigate,
+}))
+
 describe('PostDetail component', () => {
     test('renders id, title, and body text fields on load', async () => {
         // when
@@ -62,6 +69,18 @@ describe('PostDetail component', () => {
                 body: 'jest body'
             }, {headers: {'Content-Type': 'application/json'}})
             expect(screen.getByText(`ID Label: ${id}`)).toBeInTheDocument()
+        })
+    })
+    test('back arrow takes you to list page', async () => {
+        // given
+        render(<PostDetail/>)
+
+        // when
+        fireEvent.click(screen.getByText('<--'))
+
+        // then
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith('/')
         })
     })
 })

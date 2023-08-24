@@ -1,10 +1,13 @@
 import React, {useState} from 'react'
 import axios from 'axios'
+import {useNavigate} from 'react-router-dom'
 
 const PostDetail = () => {
     const [id, setId] = useState('undefined')
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
+    const navigate = useNavigate()
+
 
     const handleTitle = (event: any) => {
         setTitle(event.target.value)
@@ -31,8 +34,15 @@ const PostDetail = () => {
             )
     }
 
+    const handleBack = () => {
+        navigate('/')
+    }
+
     return (
         <div>
+            <div>
+                <button id={'toListPage'} onClick={handleBack}>{'<--'}</button>
+            </div>
             <div>
                 <div id={'id'}>ID Label: {id}</div>
             </div>
