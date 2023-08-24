@@ -4,7 +4,7 @@ import * as fs from 'fs'
 
 export default async () => {
     const startBackend = () => new Promise((resolve) => {
-        const server = spawn('npm', ['run', 'backend'])
+        const server = spawn('ts-node', ['src/backend/server.ts'])
         let pid = server.pid?.toString() ? server.pid?.toString() : 'pid undefined'
         console.log('created pid : ', pid)
         fs.writeFileSync(path.join(__dirname, 'server.pid'), pid)
