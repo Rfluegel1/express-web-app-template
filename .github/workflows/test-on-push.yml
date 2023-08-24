@@ -40,9 +40,6 @@ jobs:
       - name: Run Backend Tests
         run: npm run test:github backend
 
-      - name: Check What's On Port 8080
-        run: lsof -i :8080
-
       - name: Run Frontend Tests
         run: npm run test:github frontend
 
