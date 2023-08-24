@@ -6,6 +6,7 @@ export default async () => {
     const startBackend = () => new Promise((resolve) => {
         const server = spawn('npm', ['run', 'backend'])
         let pid = server.pid?.toString() ? server.pid?.toString() : 'pid undefined'
+        console.log('created pid : ', pid)
         fs.writeFileSync(path.join(__dirname, 'server.pid'), pid)
         server.stdout.on('data', (data) => {
             const output = data.toString()
