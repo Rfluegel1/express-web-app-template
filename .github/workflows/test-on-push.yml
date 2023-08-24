@@ -5,7 +5,7 @@ on:
     branches:
       - main
   workflow_dispatch: # Manual trigger
-  
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -45,4 +45,5 @@ jobs:
         run: npm run test:github frontend
 
       - name: Run e2e Test
+        uses: cypress-io/github-action@v5
         run: npm run e2e
