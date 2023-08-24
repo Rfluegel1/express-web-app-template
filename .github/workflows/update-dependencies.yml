@@ -34,8 +34,11 @@ jobs:
         with:
           node-version: 18.16.0
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install dependencies
+        # runs "npm i" as well
+        uses: cypress-io/github-action@v5
+        with:
+          runTests: false
 
       - name: Update NPM packages
         run: npm update
@@ -45,6 +48,14 @@ jobs:
 
       - name: Run Frontend Tests
         run: npm run test:github frontend
+
+      - name: Run e2e Test
+        uses: cypress-io/github-action@v5
+        with:
+          install: false
+          start: |
+            npm run backend
+            npm run frontend
 
       - name: Create PR if Tests Pass
         run: |
