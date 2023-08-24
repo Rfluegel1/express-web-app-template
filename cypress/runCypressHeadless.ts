@@ -20,7 +20,7 @@ const startServer = (command: string, args: string[], successMessage: any) => ne
 })
 
 const runCypress = () => new Promise<void>((resolve, reject) => {
-    const cypress = spawn('cypress', ['run', '--headless'], {stdio: 'inherit'})
+    const cypress = spawn('cypress', ['run', '--headless', '--browser', 'chrome'], {stdio: 'inherit'})
 
     cypress.on('close', (code: any) => {
         if (code !== 0) {

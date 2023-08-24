@@ -38,9 +38,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Use Cypress
-        uses: cypress-io/github-action@v5
-
       - name: Run Backend Tests
         run: npm run test:github backend
 
