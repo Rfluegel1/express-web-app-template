@@ -46,4 +46,7 @@ jobs:
 
       - name: Run e2e Test
         uses: cypress-io/github-action@v5
-        run: npm run e2e
+        with:
+          build: npm run backend
+          start: npm run frontend
+          browser: chrome
