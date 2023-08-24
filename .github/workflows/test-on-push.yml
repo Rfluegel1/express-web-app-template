@@ -44,5 +44,10 @@ jobs:
       - name: Run Frontend Tests
         run: npm run test:github frontend
 
+      - name: Install dependencies
+        uses: cypress-io/github-action@v5
+        with:
+          runTests: false
+
       - name: Run e2e Test
         run: npm run e2e
