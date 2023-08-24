@@ -24,8 +24,12 @@ const PostList = () => {
             })
     }
 
-    const handleRedirect = () => {
+    const handleCreate = () => {
         navigate('/posts')
+    }
+
+    const handleView = (id: string) => {
+        navigate(`/posts/${id}`)
     }
 
     return (
@@ -43,7 +47,7 @@ const PostList = () => {
                     </thead>
                     <tbody id={'postRows'}>
                     {posts.map((post: any) => (
-                        <tr key={post.id}>
+                        <tr onClick={() => handleView(post.id)} key={post.id}>
                             <td>{post.id}</td>
                             <td>{post.userId}</td>
                             <td>{post.title}</td>
@@ -52,7 +56,7 @@ const PostList = () => {
                     ))}
                     </tbody>
                 </table>}
-            <button onClick={handleRedirect} id={'createPost'}>Create Post</button>
+            <button onClick={handleCreate} id={'createPost'}>Create Post</button>
         </div>
     )
 }

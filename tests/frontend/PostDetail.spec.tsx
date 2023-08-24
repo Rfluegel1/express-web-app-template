@@ -3,16 +3,19 @@ import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import PostDetail from '../../src/frontend/PostDetail'
 import axios from 'axios'
 import {v4 as uuidv4} from 'uuid'
+import {useParams} from 'react-router-dom'
 
 
 jest.mock('axios', () => ({
-    post: jest.fn()
+    post: jest.fn(),
+    get: jest.fn()
 }))
 
-const mockNavigate = jest.fn()
+const mockUseNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'), // This line will copy all the exports from the actual module
-    useNavigate: () => mockNavigate,
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => mockUseNavigate,
+    useParams: jest.fn()
 }))
 
 describe('PostDetail component', () => {
@@ -22,7 +25,7 @@ describe('PostDetail component', () => {
 
         // then
         await waitFor(() => {
-            expect(screen.getByText('ID Label: undefined')).toBeInTheDocument()
+            expect(screen.getByText('ID Label:')).toBeInTheDocument()
             expect(screen.getByLabelText('Title Label:')).toBeInTheDocument()
             expect(screen.getByLabelText('Body Label:')).toBeInTheDocument()
             const inputs = container.querySelectorAll('input')
@@ -80,7 +83,22 @@ describe('PostDetail component', () => {
 
         // then
         await waitFor(() => {
-            expect(mockNavigate).toHaveBeenCalledWith('/')
+            expect(mockUseNavigate).toHaveBeenCalledWith('/')
+        })
+    })
+    test('useParams id is populated on screen and calls backend', async () => {
+        //given
+        (useParams as jest.Mock).mockReturnValue({id: '123'});
+        (axios.get as jest.Mock).mockResolvedValue({data: {message: {title: 'the title', body: 'the body'}}})
+
+        // when
+        render(<PostDetail/>)
+
+        // then
+        await waitFor(() => {
+            screen.getByText('ID Label: 123')
+            screen.getByDisplayValue('the title')
+            screen.getByDisplayValue('the body')
         })
     })
 })

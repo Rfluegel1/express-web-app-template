@@ -2,7 +2,6 @@ import React from 'react'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
 import PostList from '../../src/frontend/PostList'
 import axios from 'axios'
-import {MemoryRouter} from 'react-router-dom'
 
 const mockNavigate = jest.fn()
 jest.mock('react-router-dom', () => ({
@@ -65,11 +64,7 @@ describe('PostsList component', () => {
     })
     test('create post button redirects to details page', async () => {
         // given
-        render(
-            <MemoryRouter>
-                <PostList/>
-            </MemoryRouter>
-        )
+        render(<PostList/>)
         const button = await screen.findByText('Create Post')
 
         // when
@@ -78,6 +73,19 @@ describe('PostsList component', () => {
         // then
         await waitFor(() => {
             expect(mockNavigate).toHaveBeenCalledWith('/posts')
+        })
+    })
+    test('clicked rows redirect to specific detail page', async () => {
+        // given
+        render(<PostList/>)
+        const row = await screen.findByText('1')
+
+        // when
+        fireEvent.click(row)
+
+        // then
+        await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith('/posts/1')
         })
     })
 })

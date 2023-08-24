@@ -1,13 +1,24 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import axios from 'axios'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 
 const PostDetail = () => {
-    const [id, setId] = useState('undefined')
+    const parameters = useParams()
+    const [id, setId] = useState('')
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
     const navigate = useNavigate()
 
+    useEffect(() => {
+        if (parameters?.id) {
+            setId(parameters.id)
+            axios.get(`http://127.0.0.1:8080/posts/${parameters.id}`)
+                .then((response) => {
+                    setTitle(response.data.message.title)
+                    setBody(response.data.message.body)
+                })
+        }
+    }, [])
 
     const handleTitle = (event: any) => {
         setTitle(event.target.value)
