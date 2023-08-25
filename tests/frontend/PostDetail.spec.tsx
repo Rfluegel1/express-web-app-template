@@ -9,7 +9,8 @@ import {useParams} from 'react-router-dom'
 jest.mock('axios', () => ({
     post: jest.fn(),
     get: jest.fn(),
-    put: jest.fn()
+    put: jest.fn(),
+    delete: jest.fn()
 }))
 
 const mockUseNavigate = jest.fn()
@@ -119,6 +120,23 @@ describe('PostDetail component', () => {
                 title: '',
                 body: ''
             }, {headers: {'Content-Type': 'application/json'}})
+        })
+    })
+
+    test('deletes when delete button is clicked and navigates to listing page', async () => {
+        // given
+        (useParams as jest.Mock).mockReturnValue({id: '123'});
+        (axios.get as jest.Mock).mockResolvedValue({data: {message: {title: 'the title', body: 'the body'}}});
+        (axios.delete as jest.Mock).mockResolvedValue({})
+        render(<PostDetail/>)
+
+        // when
+        fireEvent.click(screen.getByText('Delete'))
+
+        // then
+        await waitFor(() => {
+            expect(axios.delete).toHaveBeenCalledWith('http://127.0.0.1:8080/posts/123')
+            expect(mockUseNavigate).toHaveBeenCalledWith('/')
         })
     })
 })

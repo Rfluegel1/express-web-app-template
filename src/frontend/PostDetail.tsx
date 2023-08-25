@@ -60,6 +60,13 @@ const PostDetail = () => {
         navigate('/')
     }
 
+    const handleDelete = () => {
+        axios.delete(`http://127.0.0.1:8080/posts/${id}`)
+            .then(() => {
+                navigate('/')
+            })
+    }
+
     return (
         <div>
             <div>
@@ -84,7 +91,12 @@ const PostDetail = () => {
                 value={body}
                 onChange={handleBody}
             />
-            <button onClick={handleSubmit} id={'submit'}>Submit</button>
+            <div>
+                <button onClick={handleSubmit} id={'submit'}>Submit</button>
+            </div>
+            <div>
+                <button onClick={handleDelete} id={'delete'}>Delete</button>
+            </div>
         </div>
     )
 }

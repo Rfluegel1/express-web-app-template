@@ -66,4 +66,19 @@ describe('Post lifecycle', () => {
         cy.get('#titleField').should('have.value', 'updated cypress title')
         cy.get('#bodyField').should('have.value', 'updated cypress body')
     })
+
+    it('clicking delete button navigates to listing page and post is not present', () => {
+        //given
+        cy.contains(uuid).scrollIntoView()
+        cy.contains(uuid).click()
+
+        // when
+        cy.get('#delete').click()
+
+        // then
+        cy.url().should('not.include', '/posts')
+        cy.get('table').within(() => {
+            cy.contains(uuid).should('not.exist')
+        })
+    })
 })
