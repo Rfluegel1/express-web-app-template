@@ -30,19 +30,30 @@ const PostDetail = () => {
 
     const handleSubmit = (event: any) => {
         event.preventDefault()
-        axios.post('http://127.0.0.1:8080/posts', {
-            title: title,
-            body: body
-        }, {headers: {'Content-Type': 'application/json'}})
-            .then((response) => {
-                setId(response.data.message.id)
-            })
-            .catch((error) => {
-                    console.log('title: ', title)
-                    console.log('body: ', body)
-                    console.log(error)
-                }
-            )
+        if (id) {
+            axios.put(`http://127.0.0.1:8080/posts/${id}`, {
+                title: title,
+                body: body
+            }, {headers: {'Content-Type': 'application/json'}})
+                .then((response) => {
+                    setTitle(response.data.message.title)
+                    setBody(response.data.message.body)
+                })
+        } else {
+            axios.post('http://127.0.0.1:8080/posts', {
+                title: title,
+                body: body
+            }, {headers: {'Content-Type': 'application/json'}})
+                .then((response) => {
+                    setId(response.data.message.id)
+                })
+                .catch((error) => {
+                        console.log('title: ', title)
+                        console.log('body: ', body)
+                        console.log(error)
+                    }
+                )
+        }
     }
 
     const handleBack = () => {

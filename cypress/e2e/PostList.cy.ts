@@ -49,5 +49,21 @@ describe('Post lifecycle', () => {
         cy.get('#titleField').should('have.value', 'cypress title')
         cy.get('#bodyField').should('have.value', 'cypress body')
     })
-    // Add more tests as needed...
+
+    it('editing title and body when there is an id updates fields', () => {
+        // given
+        cy.contains(uuid).scrollIntoView()
+        cy.contains(uuid).click()
+        cy.get('#titleField').clear().type('updated cypress title')
+        cy.get('#bodyField').clear().type('updated cypress body')
+        cy.get('#submit').click()
+
+        // when
+        cy.reload()
+
+        // then
+        cy.get('#id').should('contain', `ID Label: ${uuid}`)
+        cy.get('#titleField').should('have.value', 'updated cypress title')
+        cy.get('#bodyField').should('have.value', 'updated cypress body')
+    })
 })

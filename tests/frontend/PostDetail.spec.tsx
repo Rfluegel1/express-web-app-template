@@ -8,7 +8,8 @@ import {useParams} from 'react-router-dom'
 
 jest.mock('axios', () => ({
     post: jest.fn(),
-    get: jest.fn()
+    get: jest.fn(),
+    put: jest.fn()
 }))
 
 const mockUseNavigate = jest.fn()
@@ -99,6 +100,25 @@ describe('PostDetail component', () => {
             screen.getByText('ID Label: 123')
             screen.getByDisplayValue('the title')
             screen.getByDisplayValue('the body')
+        })
+    })
+
+    test('updates when submit is clicked and id is already populated', async () => {
+        // given
+        (useParams as jest.Mock).mockReturnValue({id: '123'});
+        (axios.get as jest.Mock).mockResolvedValue({data: {message: {title: 'the title', body: 'the body'}}});
+        (axios.put as jest.Mock).mockResolvedValue({data: {message: {title: '', body: ''}}})
+        render(<PostDetail/>)
+
+        // when
+        fireEvent.click(screen.getByText('Submit'))
+
+        // then
+        await waitFor(() => {
+            expect(axios.put).toHaveBeenCalledWith('http://127.0.0.1:8080/posts/123', {
+                title: '',
+                body: ''
+            }, {headers: {'Content-Type': 'application/json'}})
         })
     })
 })
