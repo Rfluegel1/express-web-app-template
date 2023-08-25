@@ -7,6 +7,7 @@ import {StatusCodes} from 'http-status-codes'
 import {NotFoundException} from './notFoundException'
 import {BadRequestException} from './badRequestException'
 import PostController from './posts/postController'
+import path from 'path'
 
 const app: Express = express()
 
@@ -23,6 +24,9 @@ app.use((request, response, next) => {
     }
     next()
 })
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '/../../dist')))
 
 app.use('/', postRoutes)
 app.use('/', healthCheckRoutes)
@@ -46,5 +50,10 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
     }
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Internal Server Error'})
 }).bind(PostController))
+
+// The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/../../dist/index.html'))
+})
 
 export default app
