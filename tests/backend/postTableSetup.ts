@@ -17,7 +17,7 @@ const dataSource: DataSource = new DataSource({
 
 async function createPostsTable() {
     const sql: string = fs.readFileSync(
-        path.join(__dirname, '../../src/backend/migrations.sql'),
+        path.join(__dirname, '../../src/backend/migrations/001_create_post_table.sql'),
         'utf8'
     )
     await dataSource.initialize()

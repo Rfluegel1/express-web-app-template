@@ -9,6 +9,12 @@ import {BadRequestException} from './badRequestException'
 import PostController from './posts/postController'
 import path from 'path'
 
+const env = process.env.NODE_ENV || 'development'
+const envFile = `.env.${env}`
+require('dotenv').config({path: envFile})
+
+console.log(`Using properties from ${envFile}`)
+
 const app: Express = express()
 
 app.use(morgan('dev'))
