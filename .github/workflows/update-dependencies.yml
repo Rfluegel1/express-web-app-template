@@ -15,7 +15,7 @@ jobs:
         image: postgres:latest
         env:
           POSTGRES_USER: 'reidfluegel'
-          POSTGRES_PASSWORD: 'password'
+          POSTGRES_PASSWORD: 'pswrd'
           POSTGRES_DB: 'post'
         ports:
           - 5432:5432
