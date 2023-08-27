@@ -1,4 +1,9 @@
 *.idea
-/node_modules
+/.github
 /coverage
+/cypress
+/node_modules
 /tests
+.gitignore
+jest.config.js
+README.md

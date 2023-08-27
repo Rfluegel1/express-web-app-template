@@ -1,3 +1,6 @@
+const env = process.env.NODE_ENV || 'development'
+require('dotenv').config({path: `.env.${env}`})
+
 import http from 'http'
 import PostRepository from './posts/postRepository'
 import app from './app'

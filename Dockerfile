@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 8080
 
 # Specify the command to run when the container starts
-CMD [ "ts-node", "src/backend/server.ts" ]
+CMD [ "npx", "ts-node", "src/backend/server.ts" ]
