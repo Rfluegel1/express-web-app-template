@@ -4,8 +4,8 @@
   "description": "This project is designed to be a starting point for a typescript web application",
   "main": "src/backend/server.ts",
   "scripts": {
-    "test:github": "NODE_ENV=development DB_HOSTNAME=localhost DB_USERNAME=reidfluegel DB_PASSWORD=password DB_DATABASE=post jest --runInBand",
-    "test": "NODE_ENV=development DB_HOSTNAME=localhost DB_USERNAME=reidfluegel DB_PASSWORD=password DB_DATABASE=post jest --detectOpenHandles --coverage",
+    "test:github": "NODE_ENV=development jest --runInBand",
+    "test": "NODE_ENV=development jest --detectOpenHandles --coverage",
     "backend": "nodemon src/backend/server.ts",
     "frontend": "webpack-dev-server --mode development --hot",
     "clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force",
