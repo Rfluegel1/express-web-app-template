@@ -7,11 +7,12 @@ export const dataSource: DataSource = new DataSource({
     'username': process.env.DB_USERNAME,
     'password': process.env.DB_PASSWORD,
     'database': process.env.DB_DATABASE,
-    'synchronize': true,
+    'synchronize': process.env.DB_SYNCHRONIZE === 'true',
     'entities': [
         'src/entity/**/*.ts'
     ],
     migrations: [
         'src/backend/migrations/*.ts'
-    ]
+    ],
+    migrationsRun: true
 })
