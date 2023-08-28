@@ -1,3 +1,5 @@
+const isStaging = process.env.NODE_ENV === 'staging';
+
 module.exports = {
     projects: [
         {
@@ -5,11 +7,12 @@ module.exports = {
             testEnvironment: 'node',
             testMatch: ['<rootDir>/tests/backend/**/*.spec.ts'],
             moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-            globalSetup: '<rootDir>/tests/backend/globalSetup.ts',
-            globalTeardown: '<rootDir>/tests/backend/globalTeardown.ts',
+            globalSetup: isStaging ? undefined : '<rootDir>/tests/backend/globalSetup.ts',
+            globalTeardown: isStaging ? undefined : '<rootDir>/tests/backend/globalTeardown.ts',
             transform: {
                 '^.+\\.jsx?$': 'babel-jest', '^.+\\.tsx?$': 'ts-jest'
             },
+            setupFilesAfterEnv: ['<rootDir>/tests/backend/jest.setup.ts']
         },
         {
             displayName: 'frontend',

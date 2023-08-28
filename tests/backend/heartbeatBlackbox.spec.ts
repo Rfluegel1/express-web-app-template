@@ -4,7 +4,7 @@ import axios from 'axios'
 describe('Heartbeat resource', () => {
     it('should return version of the application', async () => {
         // when
-        const getResponse = await axios.get(`http://127.0.0.1:8080/heartbeat`)
+        const getResponse = await axios.get(`${process.env.BASE_URL}/heartbeat`)
 
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)

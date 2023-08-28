@@ -5,6 +5,7 @@
   "main": "src/backend/server.ts",
   "scripts": {
     "test:github": "NODE_ENV=development jest --runInBand",
+    "test:staging": "NODE_ENV=staging jest blackbox --detectOpenHandles",
     "test": "NODE_ENV=development jest --detectOpenHandles --coverage",
     "backend": "nodemon src/backend/server.ts",
     "frontend": "webpack-dev-server --mode development --hot",
