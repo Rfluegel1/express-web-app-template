@@ -14,7 +14,6 @@
     "cypress": "npx cypress open",
     "e2e": "ts-node cypress/runCypressHeadless.ts",
     "build": "webpack --mode production",
-    "migrations": "npx typeorm-ts-node-esm migration:run -d ./src/backend/postDataSource.ts",
     "migrations:revert": "npx typeorm-ts-node-esm migration:revert -d ./src/backend/postDataSource.ts",
     "migrations:create": "if [ -z \"$npm_config_name\" ]; then echo 'Missing --name'; exit 1; else typeorm migration:create ./src/backend/migrations/$npm_config_name; fi"
   },
