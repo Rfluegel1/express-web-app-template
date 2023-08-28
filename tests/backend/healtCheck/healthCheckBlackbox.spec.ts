@@ -1,6 +1,8 @@
 import {StatusCodes} from 'http-status-codes'
 import axios from 'axios'
 
+jest.setTimeout(30000)
+
 describe('Health check resource', () => {
     it('should return happy if database connection is healthy and requests are being served', async () => {
         // when

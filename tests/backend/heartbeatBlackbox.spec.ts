@@ -1,6 +1,7 @@
 import {StatusCodes} from 'http-status-codes'
 import axios from 'axios'
 
+jest.setTimeout(30000)
 describe('Heartbeat resource', () => {
     it('should return version of the application', async () => {
         // when

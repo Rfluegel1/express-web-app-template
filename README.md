@@ -27,7 +27,6 @@ updates.
 ### Run database
 
 1. ```brew services start postgresql@14```
-2. ```npm run migrations```
 
 ### To create a new migration
 
