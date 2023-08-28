@@ -58,9 +58,7 @@ jobs:
             npm run frontend
 
       - name: Install Flyctl
-        run: |
-          curl -L https://fly.io/install.sh | sh
-          echo "/home/runner/.fly" >> $GITHUB_PATH
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Staging with Fly
         if: success()
