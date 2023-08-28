@@ -4,7 +4,7 @@ describe('Post lifecycle', () => {
     let uuid
 
     beforeEach(() => {
-        cy.visit('http://localhost:3000/')
+        cy.visit(`${Cypress.env('BASE_URL')}/`)
     })
 
     it('clicking create button opens details page', () => {
