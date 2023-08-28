@@ -1,37 +1,43 @@
 # typescript-template
 
 This project is designed to be a starting point for a typescript web application with unit, integration, blackbox, e2e,
-and performance testing. There is also github action files for continuous integration and deployment, and dependency
+and performance testing. There is also GitHub action files for continuous integration and deployment, and dependency
 updates.
 
 ```npm install```
 
-## Run front end
+## Development environment commands
+
+### Run front end
 
 ``` npm run frontend ```
 
-## Create static web pages for backend
+### Create static web pages for backend
 
 ```npm run build```
 
-## Run backend
+### Run backend
 
 ```npm run backend```
 
-## Run backend and frontend
+### Run backend and frontend
 
 ```npm run fullstack```
 
-## Run database
+### Run database
 
 1. ```brew services start postgresql@14```
 2. ```npm run migrations```
 
-### To roll back a bad migration
+### To create a new migration
+
+```npm run migrations:create --name=<name>```
+
+#### To roll back a bad migration
 
 ```npm run migrations:revert```
 
-#### Install postgresql@14
+##### Install postgresql@14
 
 1. ```brew install postgresql@14```
 2. ```createdb post```
@@ -45,50 +51,50 @@ These are the steps I had to complete on macOS to make brew play nicely
 1. navigate to /opt/homebrew/var
 2. ``mkdir postgresql@14``
 
-## Run unit and blackbox tests
+### Run unit and blackbox tests
 
 ```npm run test```
 
-### Run tests as they are in github actions
+#### Run tests as they are in GitHub actions
 
 ```npm run test:github```
 
 note*: make sure port 8080 is available
 
-## Run end-to-end tests
+### Run end-to-end tests
 
-### Open cypress application
+#### Open cypress application
 
 ```npm run cypress```
 
-### Start fullstack and run headless
+#### Start fullstack and run headless
 
 ```npm run e2e```
 
 note*: make sure port 8080 and 3000 are available
 
-## Run performance tests
+### Run performance tests
 
 1. ```brew install k6```
 2. ```k6 run tests/postPerformance.ts```
 
-## Manually test backend responses
+### Manually test backend responses
 
 1. ```brew install insomnia```
 2. import from file ```insomnia-config.json```
 
-## Remove node modules and cache
+### Remove node modules and cache
 
 ```npm run clean```
 
-## Deploy to staging environment
+### Deploy to staging environment
 
-### First time
+#### First time
 
 1. ```brew install flyctl```
 2. ```flyctl login```
 
-### Every time
+#### Every time
 
 1. ```npm run build```
 2. ```flylctl deploy```
@@ -128,3 +134,16 @@ Assign Ctrl+S to "Format and Save"
 4. Change the interpreter to ts-node (~/workspaces/typescript-template/node_modules/.bin/ts-node)
 5. Set working directory to ~/workspaces/typescript-template
 6. Set Javascript file to src/backend/server.ts
+
+## GitHub actions
+
+### Test on push
+
+Every push to main will run the test of push (test-on-push.yml) GitHub action. This will run all unit, blackbox, and
+end-to-end tests against a fresh linux virtual machine.
+
+### Update dependencies
+
+Every morning a chron job will execute the update dependencies (update-dependencies.yml) GitHub action. This will first
+run the command ```npm update``` and then run all unit, blackbox, and end-to-end tests. Upon passing with changes in
+package.json from main, a pull request will automatically be created.
