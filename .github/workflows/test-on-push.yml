@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      APP_NAME: 'some_value'
+      APP_NAME: 'typescript-template'
     timeout-minutes: 10
 
     services:
