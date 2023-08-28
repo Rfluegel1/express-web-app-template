@@ -49,7 +49,7 @@ jobs:
       - name: Run Frontend Tests (Development)
         run: npm run test:github frontend
 
-      - name: Run e2e Test (Development)
+      - name: Run e2e Tests (Development)
         uses: cypress-io/github-action@v5
         with:
           install: false
@@ -73,3 +73,6 @@ jobs:
 
       - name: Run Blackbox Tests (Staging)
         run: npm run test:staging
+
+      - name: Run e2e Tests (Staging)
+        run: npm run e2e:staging

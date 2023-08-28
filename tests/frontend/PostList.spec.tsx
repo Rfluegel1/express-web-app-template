@@ -38,6 +38,7 @@ describe('PostsList component', () => {
 
         // then
         await waitFor(() => {
+            expect(axios.get).toHaveBeenCalledWith('http://127.0.0.1:8080/posts')
             expect(screen.getByText('Post 1')).toBeInTheDocument()
             expect(screen.getByText('User 1')).toBeInTheDocument()
             expect(screen.getByText('Body 1')).toBeInTheDocument()

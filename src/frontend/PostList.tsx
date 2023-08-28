@@ -13,7 +13,7 @@ const PostList = () => {
 
 
     const fetchAllPosts = () => {
-        axios.get('http://127.0.0.1:8080/posts')
+        axios.get(`${process.env.BASE_URL}/posts`)
             .then((response) => {
                 setPosts(response.data.message)
                 setLoading(false)

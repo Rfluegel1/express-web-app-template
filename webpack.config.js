@@ -1,6 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
+const environment = process.env.ENV ? process.env.ENV : 'development';
+console.log(environment)
 module.exports = {
     devtool: 'inline-source-map',
     mode: 'development',
@@ -37,6 +40,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: './src/frontend/index.html',
         }),
+        new Dotenv({path: `./.env.${environment}`,})
     ],
     resolve: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
