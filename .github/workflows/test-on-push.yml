@@ -61,7 +61,7 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Build Frontend
-        run: npm run build
+        run: npm run build:staging
 
       - name: Deploy to Staging with Fly
         if: success()
