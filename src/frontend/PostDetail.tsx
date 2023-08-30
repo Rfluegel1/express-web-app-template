@@ -12,7 +12,7 @@ const PostDetail = () => {
     useEffect(() => {
         if (parameters?.id) {
             setId(parameters.id)
-            axios.get(`${process.env.BASE_URL}/posts/${parameters.id}`)
+            axios.get(`${process.env.BASE_URL}/api/posts/${parameters.id}`)
                 .then((response) => {
                     setTitle(response.data.message.title)
                     setBody(response.data.message.body)
@@ -31,7 +31,7 @@ const PostDetail = () => {
     const handleSubmit = (event: any) => {
         event.preventDefault()
         if (id) {
-            axios.put(`${process.env.BASE_URL}/posts/${id}`, {
+            axios.put(`${process.env.BASE_URL}/api/posts/${id}`, {
                 title: title,
                 body: body
             }, {headers: {'Content-Type': 'application/json'}})
@@ -40,7 +40,7 @@ const PostDetail = () => {
                     setBody(response.data.message.body)
                 })
         } else {
-            axios.post(`${process.env.BASE_URL}/posts`, {
+            axios.post(`${process.env.BASE_URL}/api/posts`, {
                 title: title,
                 body: body
             }, {headers: {'Content-Type': 'application/json'}})
@@ -61,7 +61,7 @@ const PostDetail = () => {
     }
 
     const handleDelete = () => {
-        axios.delete(`${process.env.BASE_URL}/posts/${id}`)
+        axios.delete(`${process.env.BASE_URL}/api/posts/${id}`)
             .then(() => {
                 navigate('/')
             })

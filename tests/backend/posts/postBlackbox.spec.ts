@@ -12,7 +12,7 @@ describe('Post resource', () => {
         const updatePost: Post = new Post('theUpdatedUser', 'theUpdatedTitle', 'theUpdatedBody')
 
         // when
-        const postResponse = await axios.post(`${process.env.BASE_URL}/posts`, post)
+        const postResponse = await axios.post(`${process.env.BASE_URL}/api/posts`, post)
 
         // then
         expect(postResponse.status).toEqual(StatusCodes.CREATED)
@@ -24,7 +24,7 @@ describe('Post resource', () => {
 
         // when
         const id = postMessage.id
-        const getResponse = await axios.get(`${process.env.BASE_URL}/posts/${id}`)
+        const getResponse = await axios.get(`${process.env.BASE_URL}/api/posts/${id}`)
 
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)
@@ -35,7 +35,7 @@ describe('Post resource', () => {
         expect(getMessage.body).toEqual('theBody')
 
         // when
-        const updateResponse = await axios.put(`${process.env.BASE_URL}/posts/${id}`, updatePost)
+        const updateResponse = await axios.put(`${process.env.BASE_URL}/api/posts/${id}`, updatePost)
 
         // then
         expect(updateResponse.status).toEqual(StatusCodes.OK)
@@ -46,7 +46,7 @@ describe('Post resource', () => {
         expect(updateMessage.body).toEqual('theUpdatedBody')
 
         // when
-        const deleteResponse = await axios.delete(`${process.env.BASE_URL}/posts/${id}`)
+        const deleteResponse = await axios.delete(`${process.env.BASE_URL}/api/posts/${id}`)
 
         // then
         expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
@@ -55,7 +55,7 @@ describe('Post resource', () => {
         let getAfterDeleteResponse
 
         try {
-            getAfterDeleteResponse = await axios.get(`${process.env.BASE_URL}/posts/${id}`)
+            getAfterDeleteResponse = await axios.get(`${process.env.BASE_URL}/api/posts/${id}`)
         } catch (error) {
             getAfterDeleteResponse = (error as AxiosError).response
         }
@@ -69,13 +69,13 @@ describe('Post resource', () => {
         // given
         const firstPost: Post = new Post('theFirstUser', 'theFirstTitle', 'theFirstBody')
         const secondPost: Post = new Post('theSecondUser', 'theSecondTitle', 'theSecondBody')
-        const firstPostResponse = await axios.post(`${process.env.BASE_URL}/posts`, firstPost)
-        const secondPostResponse = await axios.post(`${process.env.BASE_URL}/posts`, secondPost)
+        const firstPostResponse = await axios.post(`${process.env.BASE_URL}/api/posts`, firstPost)
+        const secondPostResponse = await axios.post(`${process.env.BASE_URL}/api/posts`, secondPost)
         expect(firstPostResponse.status).toEqual(StatusCodes.CREATED)
         expect(secondPostResponse.status).toEqual(StatusCodes.CREATED)
         try {
             // when
-            const getAllResponse = await axios.get(`${process.env.BASE_URL}/posts`)
+            const getAllResponse = await axios.get(`${process.env.BASE_URL}/api/posts`)
 
             // then
             expect(getAllResponse.status).toEqual(StatusCodes.OK)
@@ -92,8 +92,8 @@ describe('Post resource', () => {
             expect(foundSecond.body).toEqual('theSecondBody')
         } finally {
             // cleanup
-            const firstDeleteResponse = await axios.delete(`${process.env.BASE_URL}/posts/${firstPostResponse.data.message.id}`)
-            const secondDeleteResponse = await axios.delete(`${process.env.BASE_URL}/posts/${secondPostResponse.data.message.id}`)
+            const firstDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/posts/${firstPostResponse.data.message.id}`)
+            const secondDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/posts/${secondPostResponse.data.message.id}`)
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
@@ -102,7 +102,7 @@ describe('Post resource', () => {
         // when
         let getResponse
         try {
-            getResponse = await axios.get(`${process.env.BASE_URL}/posts/undefined`)
+            getResponse = await axios.get(`${process.env.BASE_URL}/api/posts/undefined`)
         } catch (error) {
             getResponse = (error as AxiosError).response
         }

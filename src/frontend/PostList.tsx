@@ -13,7 +13,7 @@ const PostList = () => {
 
 
     const fetchAllPosts = () => {
-        axios.get(`${process.env.BASE_URL}/posts`)
+        axios.get(`${process.env.BASE_URL}/api/posts`)
             .then((response) => {
                 setPosts(response.data.message)
                 setLoading(false)

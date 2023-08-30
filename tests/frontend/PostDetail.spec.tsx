@@ -69,7 +69,7 @@ describe('PostDetail component', () => {
 
         // then
         await waitFor(() => {
-            expect(axios.post).toHaveBeenCalledWith('http://127.0.0.1:8080/posts', {
+            expect(axios.post).toHaveBeenCalledWith('http://127.0.0.1:8080/api/posts', {
                 title: 'jest title',
                 body: 'jest body'
             }, {headers: {'Content-Type': 'application/json'}})
@@ -116,7 +116,7 @@ describe('PostDetail component', () => {
 
         // then
         await waitFor(() => {
-            expect(axios.put).toHaveBeenCalledWith('http://127.0.0.1:8080/posts/123', {
+            expect(axios.put).toHaveBeenCalledWith('http://127.0.0.1:8080/api/posts/123', {
                 title: '',
                 body: ''
             }, {headers: {'Content-Type': 'application/json'}})
@@ -135,7 +135,7 @@ describe('PostDetail component', () => {
 
         // then
         await waitFor(() => {
-            expect(axios.delete).toHaveBeenCalledWith('http://127.0.0.1:8080/posts/123')
+            expect(axios.delete).toHaveBeenCalledWith('http://127.0.0.1:8080/api/posts/123')
             expect(mockUseNavigate).toHaveBeenCalledWith('/')
         })
     })

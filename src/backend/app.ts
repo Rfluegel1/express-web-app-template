@@ -28,9 +28,14 @@ app.use((request, response, next) => {
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '/../../dist')))
 
-app.use('/', postRoutes)
+app.use('/api', postRoutes)
 app.use('/', healthCheckRoutes)
 app.use('/', heartbeatRoutes)
+
+// The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname + '/../../dist/index.html'))
+})
 
 app.use((request, response, next) => {
     const error: Error = new Error('not found')
@@ -50,10 +55,5 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
     }
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Internal Server Error'})
 }).bind(PostController))
-
-// The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/../../dist/index.html'))
-})
 
 export default app
