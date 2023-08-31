@@ -32,6 +32,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Check for src changes
+        id: check_changes
+        run: |
+          git diff --name-only HEAD^ HEAD | grep 'src/' && echo "SRC_CHANGED=true" || echo "SRC_CHANGED=false"
+        continue-on-error: true
+
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -64,7 +70,7 @@ jobs:
         run: npm run build:staging
 
       - name: Deploy to Staging with Fly
-        if: success()
+        if: success() && steps.check_changes.outputs.SRC_CHANGED == 'true'
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
