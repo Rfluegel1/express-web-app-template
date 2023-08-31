@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # Manual trigger
 
 jobs:
-  update-and-test:
+  run-performance-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
