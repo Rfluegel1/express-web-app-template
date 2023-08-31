@@ -104,7 +104,7 @@ describe('PostDetail component', () => {
         })
     })
 
-    test('updates when submit is clicked and id is already populated', async () => {
+    test('updates when update is clicked and id is already populated', async () => {
         // given
         (useParams as jest.Mock).mockReturnValue({id: '123'});
         (axios.get as jest.Mock).mockResolvedValue({data: {message: {title: 'the title', body: 'the body'}}});
@@ -112,7 +112,7 @@ describe('PostDetail component', () => {
         render(<PostDetail/>)
 
         // when
-        fireEvent.click(screen.getByText('Submit'))
+        fireEvent.click(screen.getByText('Update'))
 
         // then
         await waitFor(() => {

@@ -92,7 +92,7 @@ const PostDetail = () => {
                 onChange={handleBody}
             />
             <div>
-                <button onClick={handleSubmit} id={'submit'}>Submit</button>
+                <button onClick={handleSubmit} id={'submit'}>{id ? 'Update' : 'Submit'}</button>
             </div>
             <div>
                 <button onClick={handleDelete} id={'delete'}>Delete</button>
