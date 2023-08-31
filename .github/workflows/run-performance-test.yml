@@ -1,0 +1,20 @@
+name: Update NPM Dependencies and Test
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Run daily at 3 AM
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  update-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run k6 local test
+        uses: grafana/k6-action@v0.3.0
+        with:
+          filename: tests/backend/postPerformance.ts
+          flags: --env BASE_URL=https://typescript-template.fly.dev

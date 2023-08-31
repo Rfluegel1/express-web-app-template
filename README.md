@@ -75,7 +75,7 @@ note*: make sure port 8080 and 3000 are available
 ### Run performance tests
 
 1. ```brew install k6```
-2. ```k6 run tests/postPerformance.ts```
+2. ```k6 run tests/backend/postPerformance.ts```
 
 ### Manually test backend responses
 
