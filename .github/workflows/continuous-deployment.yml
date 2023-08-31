@@ -64,9 +64,11 @@ jobs:
             npm run frontend
 
       - name: Install Flyctl
+        if: success() && steps.check_changes.outputs.SRC_CHANGED == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Build Frontend
+        if: success() && steps.check_changes.outputs.SRC_CHANGED == 'true'
         run: npm run build:staging
 
       - name: Deploy to Staging with Fly
