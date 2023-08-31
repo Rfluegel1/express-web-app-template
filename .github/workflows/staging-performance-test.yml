@@ -1,4 +1,4 @@
-name: Run Performance Test
+name: Staging Performance Test
 
 on:
   schedule:
@@ -6,14 +6,14 @@ on:
   workflow_dispatch: # Manual trigger
 
 jobs:
-  run-performance-test:
+  staging-performance-test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Run k6 local test
+      - name: Run k6 test
         uses: grafana/k6-action@v0.3.0
         with:
           filename: tests/backend/postPerformance.ts

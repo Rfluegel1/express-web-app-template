@@ -1,0 +1,22 @@
+name: Staging Behavioral Test
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # Run daily at 3 AM
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  staging-behavioral-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        # runs "npm i" as well
+        uses: cypress-io/github-action@v5
+        with:
+          runTests: false
+      - name: Run e2e Tests
+        run: npm run e2e:staging

@@ -1,4 +1,4 @@
-name: Run Tests on Push to Main
+name: Continuous Deployment
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Manual trigger
 
 jobs:
-  test:
+  continuous-deployment:
     runs-on: ubuntu-latest
     env:
       APP_NAME: 'typescript-template'
