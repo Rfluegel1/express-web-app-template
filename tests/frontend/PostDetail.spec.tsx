@@ -23,7 +23,7 @@ jest.mock('react-router-dom', () => ({
 describe('PostDetail component', () => {
     test('renders id, title, and body text fields on load', async () => {
         // when
-        const {container} = render(<PostDetail/>)
+        const {container, queryByText} = render(<PostDetail/>)
 
         // then
         await waitFor(() => {
@@ -34,6 +34,8 @@ describe('PostDetail component', () => {
             expect(inputs.length).toEqual(2)
             expect(inputs[0]).toHaveAttribute('id', 'titleField')
             expect(inputs[1]).toHaveAttribute('id', 'bodyField')
+            expect(screen.getByText('Submit')).toBeInTheDocument()
+            expect(queryByText('Delete')).toBeNull()
         })
     })
 

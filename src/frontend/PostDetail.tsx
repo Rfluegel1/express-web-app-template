@@ -94,9 +94,12 @@ const PostDetail = () => {
             <div>
                 <button onClick={handleSubmit} id={'submit'}>{id ? 'Update' : 'Submit'}</button>
             </div>
-            <div>
-                <button onClick={handleDelete} id={'delete'}>Delete</button>
-            </div>
+            {id
+                ? <div>
+                    <button onClick={handleDelete} id={'delete'}>Delete</button>
+                </div>
+                : ''
+            }
         </div>
     )
 }
