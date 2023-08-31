@@ -1,4 +1,4 @@
-name: Update NPM Dependencies and Test
+name: Run Performance Test
 
 on:
   schedule:
