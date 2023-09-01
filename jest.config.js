@@ -11,7 +11,8 @@ module.exports = {
             globalTeardown: isStaging ? undefined : '<rootDir>/tests/backend/globalTeardown.ts',
             transform: {
                 '^.+\\.jsx?$': 'babel-jest', '^.+\\.tsx?$': 'ts-jest'
-            }
+            },
+            setupFilesAfterEnv: isStaging ? ['<rootDir>/tests/backend/jest.stagingSetup.ts'] : undefined
         },
         {
             displayName: 'frontend',
