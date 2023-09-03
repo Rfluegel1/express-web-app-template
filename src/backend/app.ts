@@ -8,6 +8,7 @@ import {NotFoundException} from './exceptions/notFoundException'
 import {BadRequestException} from './exceptions/badRequestException'
 import PostController from './posts/postController'
 import path from 'path'
+import {DatabaseException} from './exceptions/DatabaseException'
 
 const app: Express = express()
 
@@ -53,7 +54,10 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
     if (error instanceof BadRequestException) {
         return response.status(StatusCodes.BAD_REQUEST).send({message: error.message})
     }
-    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Internal Server Error'})
+    if (error instanceof DatabaseException) {
+        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
+    }
+    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})
 }).bind(PostController))
 
 export default app

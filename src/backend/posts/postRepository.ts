@@ -39,13 +39,20 @@ export default class PostRepository {
     }
 
     async getPost(id: string): Promise<Post> {
-        const queryResult = await this.postDataSource.query(
-            'SELECT * FROM posts WHERE id=$1', [id]
-        )
-        if (queryResult.length === 0) {
+        const result = await this.executeWithCatch(async () => {
+            const queryResult = await this.postDataSource.query(
+                'SELECT * FROM posts WHERE id=$1', [id]
+            )
+            if (queryResult.length === 0) {
+                return null
+            }
+            return new Post().postMapper(queryResult[0])
+        })
+
+        if (result === null) {
             throw new NotFoundException(id)
         }
-        return new Post().postMapper(queryResult[0])
+        return result
     }
 
     async getAllPosts(): Promise<Post[]> {
@@ -62,9 +69,9 @@ export default class PostRepository {
         )
     }
 
-    async executeWithCatch(action: () => Promise<any>): Promise<void> {
+    async executeWithCatch(action: () => Promise<any>): Promise<any> {
         try {
-            await action()
+            return await action()
         } catch (error) {
             console.error(error)
             throw new DatabaseException()
