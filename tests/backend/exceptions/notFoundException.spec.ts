@@ -1,4 +1,4 @@
-import {NotFoundException} from '../../src/backend/notFoundException'
+import {NotFoundException} from '../../../src/backend/exceptions/notFoundException'
 
 describe('custom not found exception', () => {
     it('constructor sets id and name', async () => {

@@ -1,4 +1,4 @@
-import {DatabaseException} from '../../src/backend/DatabaseException'
+import {DatabaseException} from '../../../src/backend/exceptions/DatabaseException'
 
 describe('custom not found exception', () => {
     it('constructor returns message and sets name', async () => {

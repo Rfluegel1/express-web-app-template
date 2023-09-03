@@ -1,7 +1,8 @@
 import Post from './post'
-import {NotFoundException} from '../notFoundException'
+import {NotFoundException} from '../exceptions/notFoundException'
 import {dataSource} from '../postDataSource'
 import {DataSource} from 'typeorm'
+import {DatabaseException} from '../exceptions/DatabaseException'
 
 interface QueryResult {
     id: string;
@@ -14,7 +15,12 @@ export default class PostRepository {
     postDataSource: DataSource = dataSource
 
     async initialize(): Promise<void> {
-        await this.postDataSource.initialize()
+        try {
+            await this.postDataSource.initialize()
+        } catch (error) {
+            console.error(error)
+            throw new DatabaseException()
+        }
     }
 
     async destroy(): Promise<void> {

@@ -1,4 +1,4 @@
-import {BadRequestException} from '../../src/backend/badRequestException'
+import {BadRequestException} from '../../../src/backend/exceptions/badRequestException'
 
 describe('custom bad request exception', () => {
     it('constructor sets message and name', async () => {

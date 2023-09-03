@@ -1,7 +1,7 @@
 import PostRepository from '../../../src/backend/posts/postRepository'
 import {v4 as uuidv4} from 'uuid'
 import Post from '../../../src/backend/posts/post'
-import {NotFoundException} from '../../../src/backend/notFoundException'
+import {NotFoundException} from '../../../src/backend/exceptions/notFoundException'
 
 // setup
 jest.mock('typeorm', () => ({
@@ -12,6 +12,8 @@ jest.mock('typeorm', () => ({
     })),
 }))
 
+jest.mock('console')
+
 describe('Post repository', () => {
     const repository = new PostRepository()
     it('initialize should initialize postDataSource', async () => {
@@ -19,6 +21,20 @@ describe('Post repository', () => {
         await repository.initialize()
         //then
         expect(repository.postDataSource.initialize).toHaveBeenCalled()
+    })
+    it('initialize should log actual error and throw db error', async () => {
+        // given
+        console.error = jest.fn()
+        let error = new Error('DB Error');
+        (repository.postDataSource.initialize as jest.Mock).mockRejectedValue(error)
+
+        // when
+        await repository.initialize().catch(() => {
+        })
+
+        // then
+        expect(console.error).toHaveBeenCalledWith(error)
+        await expect(repository.initialize()).rejects.toThrow('Error interacting with the database')
     })
     it('destroy should destroy postDataSource', async () => {
         //when
