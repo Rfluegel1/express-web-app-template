@@ -23,19 +23,23 @@ export default class PostRepository {
     }
 
     async createPost(post: Post): Promise<void> {
-        await this.postDataSource.query(
-            'INSERT INTO ' +
-            'posts (id, userId, title, body) ' +
-            'VALUES ($1, $2, $3, $4)',
-            [post.id, post.userId, post.title, post.body]
-        )
+        await this.executeWithCatch(async () => {
+            await this.postDataSource.query(
+                'INSERT INTO ' +
+                'posts (id, userId, title, body) ' +
+                'VALUES ($1, $2, $3, $4)',
+                [post.id, post.userId, post.title, post.body]
+            )
+        })
     }
 
     async deletePost(id: string): Promise<void> {
-        await this.postDataSource.query(
-            'DELETE FROM posts WHERE id=$1',
-            [id]
-        )
+        await this.executeWithCatch(async () => {
+            await this.postDataSource.query(
+                'DELETE FROM posts WHERE id=$1',
+                [id]
+            )
+        })
     }
 
     async getPost(id: string): Promise<Post> {
@@ -56,17 +60,21 @@ export default class PostRepository {
     }
 
     async getAllPosts(): Promise<Post[]> {
-        const queryResults = await this.postDataSource.query('SELECT * FROM posts')
-        return queryResults.map((queryResult: QueryResult) => {
-            return new Post().postMapper(queryResult)
+        return this.executeWithCatch(async () => {
+            const queryResults = await this.postDataSource.query('SELECT * FROM posts')
+            return queryResults.map((queryResult: QueryResult) => {
+                return new Post().postMapper(queryResult)
+            })
         })
     }
 
     async updatePost(post: Post): Promise<void> {
-        await this.postDataSource.query(
-            'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
-            [post.userId, post.title, post.body, post.id]
-        )
+        await this.executeWithCatch(async () => {
+            await this.postDataSource.query(
+                'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
+                [post.userId, post.title, post.body, post.id]
+            )
+        })
     }
 
     async executeWithCatch(action: () => Promise<any>): Promise<any> {
