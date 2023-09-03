@@ -27,20 +27,24 @@ describe('Post repository', () => {
         console.error = jest.fn()
         let error = new Error('DB Error');
         (repository.postDataSource.initialize as jest.Mock).mockRejectedValue(error)
-
-        // when
-        await repository.initialize().catch(() => {
-        })
-
-        // then
-        expect(console.error).toHaveBeenCalledWith(error)
+        // expect
         await expect(repository.initialize()).rejects.toThrow('Error interacting with the database')
+        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('destroy should destroy postDataSource', async () => {
         //when
         await repository.destroy()
         //then
         expect(repository.postDataSource.destroy).toHaveBeenCalled()
+    })
+    it('destroy should log actual error and throws db error', async () => {
+        // given
+        console.error = jest.fn()
+        let error = new Error('DB Error');
+        (repository.postDataSource.destroy as jest.Mock).mockRejectedValue(error)
+        //expect
+        await expect(repository.destroy()).rejects.toThrow('Error interacting with the database')
+        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('createPost inserts into postDataSource', async () => {
         //given

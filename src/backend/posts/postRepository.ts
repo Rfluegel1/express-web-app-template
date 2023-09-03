@@ -15,16 +15,11 @@ export default class PostRepository {
     postDataSource: DataSource = dataSource
 
     async initialize(): Promise<void> {
-        try {
-            await this.postDataSource.initialize()
-        } catch (error) {
-            console.error(error)
-            throw new DatabaseException()
-        }
+        await this.executeWithCatch(() => this.postDataSource.initialize())
     }
 
     async destroy(): Promise<void> {
-        await this.postDataSource.destroy()
+        await this.executeWithCatch(() => this.postDataSource.destroy())
     }
 
     async createPost(post: Post): Promise<void> {
@@ -65,5 +60,14 @@ export default class PostRepository {
             'UPDATE posts SET userId=$1, title=$2, body=$3 WHERE id=$4',
             [post.userId, post.title, post.body, post.id]
         )
+    }
+
+    async executeWithCatch(action: () => Promise<any>): Promise<void> {
+        try {
+            await action()
+        } catch (error) {
+            console.error(error)
+            throw new DatabaseException()
+        }
     }
 }
