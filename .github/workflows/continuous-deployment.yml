@@ -37,7 +37,13 @@ jobs:
       - name: Check for src changes
         id: check_changes
         run: |
-          git diff --name-only HEAD^ HEAD | grep 'src/' && echo "SRC_CHANGED=true" || echo "SRC_CHANGED=false"
+          if git diff --name-only HEAD^ HEAD | grep -q 'src/'; then
+            echo "SRC_CHANGED=true" >> $GITHUB_ENV
+            echo "::set-output name=SRC_CHANGED::true"
+          else
+            echo "SRC_CHANGED=false" >> $GITHUB_ENV
+            echo "::set-output name=SRC_CHANGED::false"
+          fi
         continue-on-error: true
 
       - name: Use Node.js
