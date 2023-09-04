@@ -43,6 +43,10 @@ const PostDetail = () => {
                     setTitle(response.data.message.title)
                     setBody(response.data.message.body)
                 })
+                .catch((error) => {
+                    setError(true)
+                    console.error('An error occurred while fetching the post:', error)
+                })
         } else {
             axios.post(`${process.env.BASE_URL}/api/posts`, {
                 title: title,
@@ -52,9 +56,8 @@ const PostDetail = () => {
                     setId(response.data.message.id)
                 })
                 .catch((error) => {
-                        console.log('title: ', title)
-                        console.log('body: ', body)
-                        console.log(error)
+                        setError(true)
+                        console.error('An error occurred while fetching the post:', error)
                     }
                 )
         }
@@ -68,6 +71,10 @@ const PostDetail = () => {
         axios.delete(`${process.env.BASE_URL}/api/posts/${id}`)
             .then(() => {
                 navigate('/')
+            })
+            .catch((error) => {
+                setError(true)
+                console.error('An error occurred while fetching the post:', error)
             })
     }
 
