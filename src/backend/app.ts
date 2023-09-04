@@ -9,6 +9,12 @@ import {BadRequestException} from './exceptions/badRequestException'
 import PostController from './posts/postController'
 import path from 'path'
 import {DatabaseException} from './exceptions/DatabaseException'
+import {logger} from './Logger'
+import {v4} from 'uuid'
+
+const cls = require('cls-hooked')
+const namespace = cls.createNamespace('global')
+
 
 const app: Express = express()
 
@@ -20,10 +26,15 @@ app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*')
     response.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
     response.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
+    const requestId: any = v4()
     if (request.method === 'OPTIONS') {
         return response.status(200).send({})
     }
-    next()
+    namespace.run(() => {
+        namespace.set('logger', logger.child({requestId}))
+        console.log('Middleware Logger: ', namespace.get('logger'))
+        next()
+    })
 })
 
 // Serve static files from the React app
@@ -55,8 +66,11 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
         return response.status(StatusCodes.BAD_REQUEST).send({message: error.message})
     }
     if (error instanceof DatabaseException) {
+        namespace.get('logger').error(error.message)
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
     }
+    namespace.get('logger').error(error.message)
+    console.error(error.message)
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})
 }).bind(PostController))
 

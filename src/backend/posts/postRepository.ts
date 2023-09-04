@@ -4,6 +4,9 @@ import {dataSource} from '../postDataSource'
 import {DataSource} from 'typeorm'
 import {DatabaseException} from '../exceptions/DatabaseException'
 
+const cls = require('cls-hooked')
+const πnamespace = cls.createNamespace('global')
+
 interface QueryResult {
     id: string;
     userid: string; // Note that this matches the query result; adjust as needed

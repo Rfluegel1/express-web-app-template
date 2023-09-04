@@ -1,6 +1,8 @@
 import Post from './post'
 import PostRepository from './postRepository'
 
+const cls = require('cls-hooked')
+const namespace = cls.getNamespace('global')
 
 export default class PostService {
     postRepository = new PostRepository()
@@ -16,6 +18,8 @@ export default class PostService {
     }
 
     async getPost(id: string): Promise<Post> {
+        // console.log('service Logger: ', namespace.get('logger'))
+        // namespace.get('logger').info('getting')
         return await this.postRepository.getPost(id)
     }
 
