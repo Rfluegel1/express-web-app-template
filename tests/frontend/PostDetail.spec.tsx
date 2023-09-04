@@ -36,6 +36,7 @@ describe('PostDetail component', () => {
             expect(inputs[1]).toHaveAttribute('id', 'bodyField')
             expect(screen.getByText('Submit')).toBeInTheDocument()
             expect(queryByText('Delete')).toBeNull()
+            expect(container.querySelector('.error-banner')).not.toBeInTheDocument()
         })
     })
 
@@ -103,6 +104,22 @@ describe('PostDetail component', () => {
             screen.getByText('ID Label: 123')
             screen.getByDisplayValue('the title')
             screen.getByDisplayValue('the body')
+        })
+    })
+
+    test('displays an error if fetching post fails', async () => {
+        // given
+        const error: Error = new Error('500');
+        (axios.get as jest.Mock).mockRejectedValueOnce(error)
+        console.error = jest.fn()
+
+        // when
+        render(<PostDetail/>)
+
+        // then
+        await waitFor(() => {
+            expect(screen.getByText('An error occurred')).toBeInTheDocument()
+            expect(console.error).toHaveBeenCalledWith('An error occurred while fetching the post:', error)
         })
     })
 

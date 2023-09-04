@@ -7,6 +7,7 @@ const PostDetail = () => {
     const [id, setId] = useState('')
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
+    const [error, setError] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -16,7 +17,10 @@ const PostDetail = () => {
                 .then((response) => {
                     setTitle(response.data.message.title)
                     setBody(response.data.message.body)
-                })
+                }).catch((error) => {
+                setError(true)
+                console.error('An error occurred while fetching the post:', error)
+            })
         }
     }, [])
 
@@ -69,6 +73,7 @@ const PostDetail = () => {
 
     return (
         <div>
+            {error && <div className="error-banner">An error occurred</div>}
             <div>
                 <button id={'toListPage'} onClick={handleBack}>{'<--'}</button>
             </div>
