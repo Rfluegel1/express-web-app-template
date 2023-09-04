@@ -5,6 +5,7 @@ import {useNavigate} from 'react-router-dom'
 const PostList = () => {
     const [posts, setPosts] = useState([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -19,6 +20,7 @@ const PostList = () => {
                 setLoading(false)
             })
             .catch((error) => {
+                setError(true)
                 console.error('An error occurred while fetching the posts:', error)
                 setLoading(false)
             })
@@ -34,6 +36,8 @@ const PostList = () => {
 
     return (
         <div>
+            {error && <div className="error-banner">An error occurred</div>}
+
             {loading
                 ? <div>Loading...</div>
                 : <table>

@@ -24,11 +24,17 @@ beforeAll(() => {
 describe('PostsList component', () => {
     test('renders loading message initially', async () => {
         // when
-        render(<PostList/>)
+        const {container} = render(<PostList/>)
 
         // then
         await waitFor(() => {
             expect(screen.getByText('Loading...')).toBeInTheDocument()
+        })
+        await waitFor(() => {
+            expect(screen.getByText('Create Post')).toBeInTheDocument()
+        })
+        await waitFor(() => {
+            expect(container.querySelector('.error-banner')).not.toBeInTheDocument()
         })
     })
 
@@ -50,7 +56,7 @@ describe('PostsList component', () => {
 
     test('displays an error if fetching posts fails', async () => {
         // given
-        const error: Error = new Error('An error occurred');
+        const error: Error = new Error('500');
         (axios.get as jest.Mock).mockRejectedValueOnce(error)
         console.error = jest.fn()
 
@@ -60,6 +66,7 @@ describe('PostsList component', () => {
         // then
         await waitFor(() => {
             expect(screen.queryByText('Loading...')).not.toBeInTheDocument()
+            expect(screen.getByText('An error occurred')).toBeInTheDocument()
             expect(console.error).toHaveBeenCalledWith('An error occurred while fetching the posts:', error)
         })
     })

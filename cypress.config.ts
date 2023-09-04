@@ -5,11 +5,18 @@ require('dotenv').config({path: `.env.${env}`})
 
 export default defineConfig({
     env: {
-        BASE_URL: process.env.CYPRESS_BASE_URL
+        BASE_URL: process.env.CYPRESS_BASE_URL,
     },
     e2e: {
         setupNodeEvents(on, config) {
             // implement node event listeners here
+        },
+    },
+
+    component: {
+        devServer: {
+            framework: 'react',
+            bundler: 'webpack',
         },
     },
 })
