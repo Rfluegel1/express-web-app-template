@@ -65,7 +65,7 @@ jobs:
           git checkout -b $branch_name
           git add package-lock.json package.json
           # Check if there are any changes to commit in package.json
-          if git diff --exit-code --cached --name-only | grep -q 'package.json'; then
+          if git diff --exit-code --cached --name-only | grep -q 'package-lock.json'; then
             echo "Changes found in package.json, creating PR."
             git commit -m "Update NPM dependencies"
             git push origin $branch_name
