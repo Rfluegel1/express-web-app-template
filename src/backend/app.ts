@@ -32,7 +32,6 @@ app.use((request, response, next) => {
     }
     namespace.run(() => {
         namespace.set('logger', logger.child({requestId}))
-        console.log('Middleware Logger: ', namespace.get('logger'))
         next()
     })
 })
@@ -66,11 +65,8 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
         return response.status(StatusCodes.BAD_REQUEST).send({message: error.message})
     }
     if (error instanceof DatabaseException) {
-        namespace.get('logger').error(error.message)
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
     }
-    namespace.get('logger').error(error.message)
-    console.error(error.message)
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})
 }).bind(PostController))
 

@@ -18,6 +18,14 @@ jest.mock('../../../src/backend/posts/postService', () => {
     })
 })
 
+jest.mock('../../../src/backend/Logger', () => ({
+    getLogger: jest.fn(() => {
+        return {
+            info: jest.fn()
+        }
+    })
+}))
+
 describe('Post controller', () => {
     const postController = new PostController()
     it('addPost responds with data that is returned from the PostService', async () => {

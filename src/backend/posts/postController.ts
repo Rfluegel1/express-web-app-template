@@ -4,6 +4,7 @@ import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../contants'
 import {BadRequestException} from '../exceptions/badRequestException'
 import Post from './post'
+import {getLogger} from '../Logger'
 
 export default class PostController {
     postService: PostService = new PostService()
@@ -48,6 +49,7 @@ export default class PostController {
     }
 
     async getPosts(request: Request, response: Response) {
+        getLogger().info('Starting getAll request')
         const posts: Post[] = await this.postService.getAllPosts()
         return response.status(200).send({
             message: posts
