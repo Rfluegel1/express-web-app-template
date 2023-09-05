@@ -26,10 +26,10 @@ app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*')
     response.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
     response.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
-    const requestId: any = v4()
     if (request.method === 'OPTIONS') {
         return response.status(200).send({})
     }
+    const requestId: any = v4()
     namespace.run(() => {
         namespace.set('logger', logger.child({requestId}))
         next()
