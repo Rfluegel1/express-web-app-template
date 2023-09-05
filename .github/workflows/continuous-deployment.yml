@@ -37,12 +37,19 @@ jobs:
       - name: Check for src changes
         id: check_changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q 'src/'; then
-            echo "SRC_CHANGED=true" >> $GITHUB_ENV
-            echo "::set-output name=SRC_CHANGED::true"
+          if git diff --name-only HEAD^ HEAD | \
+            { grep -q 'src/' || \
+              grep -q 'package-lock.json' || \
+              grep -q 'babel.config.js' || \
+              grep -q 'Dockerfile' || \
+              grep -q 'fly.toml' || \
+              grep -q 'tsconfig.json' || \
+              grep -q 'webpack.config.js'; }; then
+          echo "PROD_CHANGED=true" >> $GITHUB_ENV
+          echo "::set-output name=PROD_CHANGED::true"
           else
-            echo "SRC_CHANGED=false" >> $GITHUB_ENV
-            echo "::set-output name=SRC_CHANGED::false"
+          echo "PROD_CHANGED=false" >> $GITHUB_ENV
+          echo "::set-output name=PROD_CHANGED::false"
           fi
         continue-on-error: true
 
@@ -72,15 +79,15 @@ jobs:
             npm run frontend
 
       - name: Install Flyctl
-        if: success() && steps.check_changes.outputs.SRC_CHANGED == 'true'
+        if: success() && steps.check_changes.outputs.PROD_CHANGED == 'true'
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Build Frontend
-        if: success() && steps.check_changes.outputs.SRC_CHANGED == 'true'
+        if: success() && steps.check_changes.outputs.PROD_CHANGED == 'true'
         run: npm run build:staging
 
       - name: Deploy to Staging with Fly
-        if: success() && steps.check_changes.outputs.SRC_CHANGED == 'true'
+        if: success() && steps.check_changes.outputs.PROD_CHANGED == 'true'
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
