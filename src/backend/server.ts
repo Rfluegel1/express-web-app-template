@@ -20,7 +20,7 @@ postRepository.initialize()
     })
 
 const gracefulShutdown = () => {
-    logger.info('\nShutting down gracefully...')
+    logger.info('Shutting down gracefully...')
     httpServer.close(async () => {
         await postRepository.destroy()
         logger.info('Closed all connections')
