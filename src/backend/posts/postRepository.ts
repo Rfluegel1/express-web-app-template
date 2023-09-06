@@ -81,7 +81,6 @@ export default class PostRepository {
         try {
             return await action()
         } catch (error) {
-            console.error(error)
             throw new DatabaseException()
         }
     }

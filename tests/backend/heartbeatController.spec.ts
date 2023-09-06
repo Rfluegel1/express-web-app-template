@@ -1,5 +1,12 @@
 import HeartbeatController from '../../src/backend/heartbeat/heartbeatController'
 
+jest.mock('../../src/backend/Logger', () => ({
+    getLogger: jest.fn(() => {
+        return {
+            info: jest.fn()
+        }
+    })
+}))
 describe('Heartbeat function', () => {
     let heartbeatController: HeartbeatController = new HeartbeatController()
 

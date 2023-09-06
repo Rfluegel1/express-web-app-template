@@ -1,6 +1,7 @@
 import {dataSource} from '../postDataSource'
 import axios from 'axios'
 import {StatusCodes} from 'http-status-codes'
+import {getLogger} from '../Logger'
 
 export default class HealthCheckService {
     async healthcheck() {
@@ -20,6 +21,7 @@ export default class HealthCheckService {
         try {
             await dataSource.query('SELECT 1')
         } catch (error: any) {
+            getLogger().error('Healthcheck for datasource failed!', error)
             response.result = 'failure'
             response.integrations.database.result = 'failure'
             response.integrations.database.details = error.message
@@ -32,6 +34,7 @@ export default class HealthCheckService {
                 response.integrations.post_resource.details = `GET returned status code=${getResponse.status}`
             }
         } catch (error: any) {
+            getLogger().error('Healthcheck for post resource failed!', error)
             response.result = 'failure'
             response.integrations.post_resource.result = 'failure'
             response.integrations.post_resource.details = error.message

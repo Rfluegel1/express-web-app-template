@@ -10,6 +10,14 @@ jest.mock('../../../src/backend/healthCheck/healthCheckService', () => {
     })
 })
 
+jest.mock('../../../src/backend/Logger', () => ({
+    getLogger: jest.fn(() => {
+        return {
+            info: jest.fn()
+        }
+    })
+}))
+
 describe('Healthcheck controller function', () => {
     let healthCheckController = new HealthCheckController()
     let request: any = {}

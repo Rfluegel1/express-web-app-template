@@ -5,6 +5,14 @@ import {StatusCodes} from 'http-status-codes'
 
 // setup
 jest.mock('axios')
+
+jest.mock('../../../src/backend/Logger', () => ({
+    getLogger: jest.fn(() => {
+        return {
+            error: jest.fn()
+        }
+    })
+}))
 describe('Health check service', () => {
     const healthCheckService: HealthCheckService = new HealthCheckService()
     const mockedAxios = axios as jest.Mocked<typeof axios>
