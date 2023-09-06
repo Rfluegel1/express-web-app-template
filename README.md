@@ -47,7 +47,7 @@ which may lead to errors starting the service with brew
 or interacting in general. Consider checking error logs.
 These are the steps I had to complete on macOS to make brew play nicely
 
-1. navigate to /opt/homebrew/var
+1. navigate to /opt/homebrew/var (hint: run ```brew info postgresql@14``` to see where config location is)
 2. ``mkdir postgresql@14``
 
 ### Run unit and blackbox tests
@@ -86,7 +86,7 @@ note*: make sure port 8080 and 3000 are available
 
 ```npm run clean```
 
-### Deploy to staging environment
+### Deploy to staging environment (Prefer GitHub action when possible)
 
 #### First time
 
@@ -136,13 +136,54 @@ Assign Ctrl+S to "Format and Save"
 
 ## GitHub actions
 
-### Test on push
+### Continuous deployment
 
-Every push to main will run the test of push (test-on-push.yml) GitHub action. This will run all unit, blackbox, and
-end-to-end tests against a fresh linux virtual machine.
+Every push to main will run the continuous deployment (continuous-deployment.yml) GitHub action. This will run all unit,
+blackbox, and
+end-to-end tests against a fresh linux virtual machine, deploy the application to staging if there are production code
+changes,
+and run blackbox and e2e tests against staging
 
 ### Update dependencies
 
 Every morning a chron job will execute the update dependencies (update-dependencies.yml) GitHub action. This will first
 run the command ```npm update``` and then run all unit, blackbox, and end-to-end tests. Upon passing with changes in
-package.json from main, a pull request will automatically be created.
+package-lock.json from main, a pull request will automatically be created.
+
+### Staging behavioral test
+
+Every morning a chron job will execute the staging behavioral test (staging-behavioral-test.yml) GitHub action. This
+will
+run blackbox and e2e tests against the staging environment.
+
+### Staging performance test
+
+Every morning a chron job will execute the staging performance test (staging-performance-test.yml) GitHub action. This
+will
+run k6 tests against the staging environment.
+
+### Deploy to staging
+
+Only manual triggers will run this job. This will deploy main code to staging.
+
+## Local Application Logs
+
+### Install loki
+
+```brew install loki```
+
+### Install promtail
+
+1. ```brew install promtail```
+2. Change config file to point at logs (hint: run ```brew info promtail`` to find config location)
+
+### Install grafana
+
+1. ```brew install grafana```
+2. Change ini file to listen on port 4000 (hint: run ```brew info grafana``` to find ini location)
+
+### Run services
+
+1. ```brew services run loki```
+2. ```brew services run promtail```
+3. ```brew services run grafana```
