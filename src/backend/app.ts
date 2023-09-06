@@ -9,7 +9,7 @@ import {BadRequestException} from './exceptions/badRequestException'
 import PostController from './posts/postController'
 import path from 'path'
 import {DatabaseException} from './exceptions/DatabaseException'
-import {logger} from './Logger'
+import {getLogger, logger} from './Logger'
 import {v4} from 'uuid'
 
 const cls = require('cls-hooked')
@@ -49,13 +49,14 @@ app.get('*', (req, res) => {
 })
 
 app.use((request, response, next) => {
-    const error: Error = new Error('not found')
+    const error: Error = new Error('Path not found')
     next(error)
 })
 
 // next is needed to be properly bound with node
 app.use((function (error: any, request: Request, response: Response, next: any) {
-    if (error.message === 'not found') {
+    getLogger().error(error)
+    if (error.message === 'Path not found') {
         return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
     }
     if (error instanceof NotFoundException) {
