@@ -13,24 +13,23 @@ let postRepository: PostRepository = new PostRepository()
 postRepository.initialize()
     .then(() => httpServer.listen(PORT, () => {
         logger.info(`The server is running on port ${PORT}`)
-        console.log(`The server is running on port ${PORT}`)
     }))
     .catch(error => {
-        console.error('Failed to connect to the database', error)
+        logger.error('Failed to connect to the database', error)
         process.exit(1)
     })
 
 const gracefulShutdown = () => {
-    console.log('\nShutting down gracefully...')
+    logger.info('\nShutting down gracefully...')
     httpServer.close(async () => {
         await postRepository.destroy()
-        console.log('Closed all connections')
+        logger.info('Closed all connections')
         process.exit(0)
     })
 
     // Force close server after 5 secs
     setTimeout(() => {
-        console.error('Could not close connections in time, forcefully shutting down')
+        logger.error('Could not close connections in time, forcefully shutting down')
         process.exit(1)
     }, 5000)
 }

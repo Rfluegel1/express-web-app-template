@@ -1,5 +1,4 @@
 import express, {Express, Request, Response} from 'express'
-import morgan from 'morgan'
 import postRoutes from './posts/postRoutes'
 import healthCheckRoutes from './healthCheck/healthCheckRoutes'
 import heartbeatRoutes from './heartbeat/heartbeatRoutes'
@@ -18,7 +17,6 @@ const namespace = cls.createNamespace('global')
 
 const app: Express = express()
 
-app.use(morgan('dev'))
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
@@ -55,19 +53,32 @@ app.use((request, response, next) => {
 
 // next is needed to be properly bound with node
 app.use((function (error: any, request: Request, response: Response, next: any) {
-    getLogger().error(error)
+    let errorWithStatus = {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        status: StatusCodes.INTERNAL_SERVER_ERROR
+    }
     if (error.message === 'Path not found') {
+        errorWithStatus.status = StatusCodes.NOT_FOUND
+        getLogger().error(errorWithStatus)
         return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
     }
     if (error instanceof NotFoundException) {
+        errorWithStatus.status = StatusCodes.NOT_FOUND
+        getLogger().error(errorWithStatus)
         return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
     }
     if (error instanceof BadRequestException) {
+        errorWithStatus.status = StatusCodes.BAD_REQUEST
+        getLogger().error(errorWithStatus)
         return response.status(StatusCodes.BAD_REQUEST).send({message: error.message})
     }
     if (error instanceof DatabaseException) {
+        getLogger().error(errorWithStatus)
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
     }
+    getLogger().error(errorWithStatus)
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})
 }).bind(PostController))
 

@@ -16,7 +16,7 @@ export default class PostController {
         let userId: string = request.body.userId
         try {
             const post: Post = await this.postService.createPost(userId, title, body)
-            getLogger().info('Sending create post response')
+            getLogger().info('Sending create post response', {status: StatusCodes.CREATED})
             return response.status(StatusCodes.CREATED).send({
                 message: post
             })
@@ -33,7 +33,7 @@ export default class PostController {
         }
         try {
             await this.postService.deletePost(id)
-            getLogger().info('Sending delete post response')
+            getLogger().info('Sending delete post response', {status: StatusCodes.NO_CONTENT})
             return response.sendStatus(StatusCodes.NO_CONTENT)
         } catch (error) {
             next(error)
@@ -49,8 +49,8 @@ export default class PostController {
         }
         try {
             post = await this.postService.getPost(id)
-            getLogger().info('Sending get post response')
-            return response.status(200).send({
+            getLogger().info('Sending get post response', {status: StatusCodes.OK})
+            return response.status(StatusCodes.OK).send({
                 message: post
             })
         } catch (error) {
@@ -62,8 +62,8 @@ export default class PostController {
         getLogger().info('Received get all posts request')
         try {
             const posts: Post[] = await this.postService.getAllPosts()
-            getLogger().info('Sending get all posts request')
-            return response.status(200).send({
+            getLogger().info('Sending get all posts request', {status: StatusCodes.OK})
+            return response.status(StatusCodes.OK).send({
                 message: posts
             })
         } catch (error) {
@@ -82,8 +82,8 @@ export default class PostController {
         }
         try {
             let post: Post = await this.postService.updatePost(id, userId, title, body)
-            getLogger().info('Sending update post request')
-            return res.status(200).send({
+            getLogger().info('Sending update post request', {status: StatusCodes.OK})
+            return res.status(StatusCodes.OK).send({
                 message: post
             })
         } catch (error) {
