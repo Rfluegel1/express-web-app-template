@@ -10,7 +10,7 @@ export default class PostController {
     postService: PostService = new PostService()
 
     async createPost(request: Request, response: Response) {
-        getLogger().info('Received create post request')
+        getLogger().info('Received create post request', {requestBody: request.body})
         let title: string = request.body.title
         let body: string = request.body.body
         let userId: string = request.body.userId
@@ -22,7 +22,7 @@ export default class PostController {
     }
 
     async deletePost(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received delete post request')
+        getLogger().info('Received delete post request', {requestParam: request.params})
         let id: string = request.params.id
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
@@ -37,7 +37,7 @@ export default class PostController {
     }
 
     async getPost(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received get post request')
+        getLogger().info('Received get post request', {requestParam: request.params})
         let id: string = request.params.id
         let post: Post
         if (!id.match(UUID_REG_EXP)) {
@@ -64,7 +64,7 @@ export default class PostController {
     }
 
     async updatePost(request: Request, res: Response, next: NextFunction) {
-        getLogger().info('Received update post request')
+        getLogger().info('Received update post request', {requestParam: request.params, requestBody: request.body})
         const id: string = request.params.id
         const userId: string = request.body.userId
         const title: string = request.body.title
