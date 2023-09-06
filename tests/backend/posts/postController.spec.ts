@@ -4,6 +4,7 @@ import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'
 import {NotFoundException} from '../../../src/backend/exceptions/notFoundException'
 import {BadRequestException} from '../../../src/backend/exceptions/badRequestException'
+import {DatabaseException} from '../../../src/backend/exceptions/DatabaseException'
 
 // setup
 jest.mock('../../../src/backend/posts/postService', () => {
@@ -49,11 +50,29 @@ describe('Post controller', () => {
         })
 
         // when
-        await postController.createPost(request as any, response as any)
+        await postController.createPost(request as any, response as any, jest.fn())
 
         // then
         expect(response.send).toHaveBeenCalledWith({message: mockPost})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
+    })
+    it('createPost should next error that is returned from the PostService', async () => {
+        // given
+        const request = {
+            body: {userId: 'the user', title: 'the title', body: 'the body'}
+        }
+        const response = {};
+
+        (postController.postService.createPost as jest.Mock).mockImplementation(() => {
+            throw new DatabaseException()
+        })
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.createPost(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
     })
     it('updatePost responds with data that is returned from the PostService', async () => {
         // given
@@ -139,11 +158,27 @@ describe('Post controller', () => {
         })
 
         // when
-        await postController.getPosts(request as any, response as any)
+        await postController.getPosts(request as any, response as any, jest.fn())
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.send).toHaveBeenCalledWith({message: [mockPost, mockPost2]})
+    })
+    it('getAllPosts should next error that is returned from the PostService', async () => {
+        // given
+        const request = {}
+        const response = {};
+
+        (postController.postService.getAllPosts as jest.Mock).mockImplementation(() => {
+            throw new DatabaseException()
+        })
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.getPosts(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
     })
     it('getPost should next error that is returned from the PostService', async () => {
         // given

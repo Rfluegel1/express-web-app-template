@@ -9,16 +9,20 @@ import {getLogger} from '../Logger'
 export default class PostController {
     postService: PostService = new PostService()
 
-    async createPost(request: Request, response: Response) {
+    async createPost(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received create post request', {requestBody: request.body})
         let title: string = request.body.title
         let body: string = request.body.body
         let userId: string = request.body.userId
-        const post: Post = await this.postService.createPost(userId, title, body)
-        getLogger().info('Sending create post response')
-        return response.status(StatusCodes.CREATED).send({
-            message: post
-        })
+        try {
+            const post: Post = await this.postService.createPost(userId, title, body)
+            getLogger().info('Sending create post response')
+            return response.status(StatusCodes.CREATED).send({
+                message: post
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 
     async deletePost(request: Request, response: Response, next: NextFunction) {
@@ -54,13 +58,17 @@ export default class PostController {
         }
     }
 
-    async getPosts(request: Request, response: Response) {
+    async getPosts(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get all posts request')
-        const posts: Post[] = await this.postService.getAllPosts()
-        getLogger().info('Sending get all posts request')
-        return response.status(200).send({
-            message: posts
-        })
+        try {
+            const posts: Post[] = await this.postService.getAllPosts()
+            getLogger().info('Sending get all posts request')
+            return response.status(200).send({
+                message: posts
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 
     async updatePost(request: Request, res: Response, next: NextFunction) {

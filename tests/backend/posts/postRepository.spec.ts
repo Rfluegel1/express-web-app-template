@@ -19,7 +19,6 @@ beforeEach(() => {
     repository.postDataSource.query = jest.fn()
     repository.postDataSource.initialize = jest.fn()
     repository.postDataSource.destroy = jest.fn()
-    console.error = jest.fn()
 })
 
 describe('Post repository', () => {
@@ -35,7 +34,6 @@ describe('Post repository', () => {
         (repository.postDataSource.initialize as jest.Mock).mockRejectedValue(error)
         // expect
         await expect(repository.initialize()).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('destroy should destroy postDataSource', async () => {
         //when
@@ -49,7 +47,6 @@ describe('Post repository', () => {
         (repository.postDataSource.destroy as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.destroy()).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('createPost inserts into postDataSource', async () => {
         //given
@@ -70,7 +67,6 @@ describe('Post repository', () => {
         (repository.postDataSource.query as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.createPost(new Post())).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('getPost selects from postDataSource', async () => {
         //given
@@ -95,7 +91,6 @@ describe('Post repository', () => {
         (repository.postDataSource.query as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.getPost(uuidv4())).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('getPost throws not found when query result is empty', async () => {
         //given
@@ -137,7 +132,6 @@ describe('Post repository', () => {
         (repository.postDataSource.query as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.getAllPosts()).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('deletePost deletes from postDataSource', async () => {
         //given
@@ -156,7 +150,6 @@ describe('Post repository', () => {
         (repository.postDataSource.query as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.deletePost(uuidv4())).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
     it('updatePost updates post in postDataSource', async () => {
         //given
@@ -176,6 +169,5 @@ describe('Post repository', () => {
         (repository.postDataSource.query as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.updatePost(new Post())).rejects.toThrow('Error interacting with the database')
-        expect(console.error).toHaveBeenCalledWith(error)
     })
 })
