@@ -1,6 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 import axios from 'axios'
+import {UUID_REG_EXP} from '../../src/backend/contants'
 
 beforeAll(() => {
     if (process.env.NODE_ENV !== 'development') {
@@ -27,35 +28,37 @@ describe('Logging', () => {
         expect(combinedLogs).toContain(`The server is running on port 8080`)
     })
 
-    it('logs that a request was made to get all with a request id', (done) => {
-        let checks = 0
-        const checkLogs = () => {
+    it('logs that a request was made to get all with a request id', async () => {
+        const checkLogs = async () => {
             let filepath = path.join(__dirname, '../../development.combined.log')
             const combinedLogs = fs.readFileSync(filepath).toString()
             const logLines = combinedLogs.split('\n')
 
             for (const line of logLines) {
-                if (line.includes('Starting getAll request')) {
-                    const requestIdMatch = line.match(/"requestId":"([a-fA-F0-9\-]+)"/)
+                if (line.includes('Received get all posts request')) {
+                    const requestIdMatch = line.match(new RegExp(`"requestId":"(${UUID_REG_EXP.source})"`))
                     if (requestIdMatch) {
-                        done()
                         return
                     }
                 }
             }
 
-            checks++
-            if (checks > 30) {
-                done(new Error('Log with requestId not found'))
-            }
-            setTimeout(checkLogs, 100)
+            throw new Error('Log with requestId not found')
         }
 
+        await axios.get('http://127.0.0.1:8080/api/posts')
 
-        axios.get('http://127.0.0.1:8080/api/posts').then(() => {
-            checkLogs()
-        })
+        let retries = 30
+        while (retries > 0) {
+            try {
+                await checkLogs()
+                return
+            } catch (e) {
+                retries--
+                await new Promise(r => setTimeout(r, 100))
+            }
+        }
 
-
+        throw new Error('Log with requestId not found after 30 retries')
     })
 })
