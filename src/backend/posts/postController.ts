@@ -8,15 +8,16 @@ import {getLogger} from '../Logger'
 
 export default class PostController {
     postService: PostService = new PostService()
+    logger = getLogger()
 
     async createPost(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received create post request', {requestBody: request.body})
+        this.logger.info('Received create post request', {requestBody: request.body})
         let title: string = request.body.title
         let body: string = request.body.body
         let userId: string = request.body.userId
         try {
             const post: Post = await this.postService.createPost(userId, title, body)
-            getLogger().info('Sending create post response', {status: StatusCodes.CREATED})
+            this.logger.info('Sending create post response', {status: StatusCodes.CREATED})
             return response.status(StatusCodes.CREATED).send({
                 message: post
             })
@@ -26,14 +27,14 @@ export default class PostController {
     }
 
     async deletePost(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received delete post request', {requestParam: request.params})
+        this.logger.info('Received delete post request', {requestParam: request.params})
         let id: string = request.params.id
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
         try {
             await this.postService.deletePost(id)
-            getLogger().info('Sending delete post response', {status: StatusCodes.NO_CONTENT})
+            this.logger.info('Sending delete post response', {status: StatusCodes.NO_CONTENT})
             return response.sendStatus(StatusCodes.NO_CONTENT)
         } catch (error) {
             next(error)
@@ -41,7 +42,7 @@ export default class PostController {
     }
 
     async getPost(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received get post request', {requestParam: request.params})
+        this.logger.info('Received get post request', {requestParam: request.params})
         let id: string = request.params.id
         let post: Post
         if (!id.match(UUID_REG_EXP)) {
@@ -49,7 +50,7 @@ export default class PostController {
         }
         try {
             post = await this.postService.getPost(id)
-            getLogger().info('Sending get post response', {status: StatusCodes.OK})
+            this.logger.info('Sending get post response', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
                 message: post
             })
@@ -59,10 +60,10 @@ export default class PostController {
     }
 
     async getPosts(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received get all posts request')
+        this.logger.info('Received get all posts request')
         try {
             const posts: Post[] = await this.postService.getAllPosts()
-            getLogger().info('Sending get all posts request', {status: StatusCodes.OK})
+            this.logger.info('Sending get all posts request', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
                 message: posts
             })
@@ -72,7 +73,7 @@ export default class PostController {
     }
 
     async updatePost(request: Request, res: Response, next: NextFunction) {
-        getLogger().info('Received update post request', {requestParam: request.params, requestBody: request.body})
+        this.logger.info('Received update post request', {requestParam: request.params, requestBody: request.body})
         const id: string = request.params.id
         const userId: string = request.body.userId
         const title: string = request.body.title
@@ -82,7 +83,7 @@ export default class PostController {
         }
         try {
             let post: Post = await this.postService.updatePost(id, userId, title, body)
-            getLogger().info('Sending update post request', {status: StatusCodes.OK})
+            this.logger.info('Sending update post request', {status: StatusCodes.OK})
             return res.status(StatusCodes.OK).send({
                 message: post
             })
