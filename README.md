@@ -174,10 +174,12 @@ Only manual triggers will run this job. This will deploy main code to staging.
 
 ### 1. Replace typescript-template with new repository name
 
-### 2. Setup new secrets
+### 2. Set DataSource properties
+
+### 3. Setup new secrets
 
 ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```
 
-### 3. Add application as source for log service
+### 4. Add application as source for log service
 
-### 4. Set GitHub Action's FLY_SECRET and AUTH0_SECRET
+### 5. Set GitHub Action's FLY_SECRET and AUTH0_SECRET
