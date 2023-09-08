@@ -11,8 +11,13 @@ jest.mock('typeorm', () => ({
         destroy: jest.fn()
     })),
 }))
-
-jest.mock('console')
+jest.mock('../../../src/backend/Logger', () => ({
+    getLogger: jest.fn(() => {
+        return {
+            error: jest.fn()
+        }
+    })
+}))
 
 const repository = new PostRepository()
 beforeEach(() => {

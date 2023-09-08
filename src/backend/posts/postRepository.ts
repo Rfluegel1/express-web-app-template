@@ -3,6 +3,7 @@ import {NotFoundException} from '../exceptions/notFoundException'
 import {dataSource} from '../postDataSource'
 import {DataSource} from 'typeorm'
 import {DatabaseException} from '../exceptions/DatabaseException'
+import {getLogger} from '../Logger'
 
 interface QueryResult {
     id: string;
@@ -81,6 +82,7 @@ export default class PostRepository {
         try {
             return await action()
         } catch (error) {
+            getLogger().error(error)
             throw new DatabaseException()
         }
     }

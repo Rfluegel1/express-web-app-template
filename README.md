@@ -166,24 +166,12 @@ run k6 tests against the staging environment.
 
 Only manual triggers will run this job. This will deploy main code to staging.
 
-## Local Application Logs
+## Setting up new repository
 
-### Install loki
+### 1. Replace typescript-template with new repository name
 
-```brew install loki```
+### 2. Setup new secrets
 
-### Install promtail
+```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```
 
-1. ```brew install promtail```
-2. Change config file to point at logs (hint: run ```brew info promtail`` to find config location)
-
-### Install grafana
-
-1. ```brew install grafana```
-2. Change ini file to listen on port 4000 (hint: run ```brew info grafana``` to find ini location)
-
-### Run services
-
-1. ```brew services run loki```
-2. ```brew services run promtail```
-3. ```brew services run grafana```
+### 3. Add application as source for log service
