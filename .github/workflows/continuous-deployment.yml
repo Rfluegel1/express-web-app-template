@@ -75,6 +75,7 @@ jobs:
         with:
           install: false
           start: |
+            AUTH0_SECRET=$AUTH0_SECRET
             npm run backend
             npm run frontend
 
