@@ -179,3 +179,5 @@ Only manual triggers will run this job. This will deploy main code to staging.
 ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```
 
 ### 3. Add application as source for log service
+
+### 4. Set GitHub Action's FLY_SECRET and AUTH0_SECRET
