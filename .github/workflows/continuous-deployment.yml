@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_NAME: 'typescript-template'
+      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
     timeout-minutes: 10
 
     services:
@@ -75,7 +76,6 @@ jobs:
         with:
           install: false
           start: |
-            AUTH0_SECRET=$AUTH0_SECRET
             npm run backend
             npm run frontend
 

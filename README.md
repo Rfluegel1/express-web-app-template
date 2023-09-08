@@ -18,6 +18,10 @@ updates.
 
 ### Run backend
 
+1. Auth0 secret must be set to run the application
+2. Value should be set in zshrc since it's a live service
+3. Ask teammate for value
+
 ```npm run backend```
 
 ### Run backend and frontend
