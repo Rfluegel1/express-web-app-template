@@ -10,6 +10,7 @@ import path from 'path'
 import {DatabaseException} from './exceptions/DatabaseException'
 import {getLogger, logger} from './Logger'
 import {v4} from 'uuid'
+import {auth, requiresAuth} from 'express-openid-connect'
 
 const cls = require('cls-hooked')
 const namespace = cls.createNamespace('global')
@@ -19,6 +20,19 @@ const app: Express = express()
 
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
+
+app.use(auth({
+    authRequired: false,
+    auth0Logout: true,
+    baseURL: process.env.BASE_URL,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+    secret: process.env.AUTH0_SECRET
+}))
+
+app.get('/profile', requiresAuth(), (req, res) => {
+    res.send(JSON.stringify(req.oidc.user, null, 2))
+})
 
 app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*')
