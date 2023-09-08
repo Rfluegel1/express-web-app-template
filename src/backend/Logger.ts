@@ -14,8 +14,7 @@ const createLogger = () => {
 export const logger = createLogger()
 
 export function getLogger() {
-    if (!namespace) {
-        namespace = cls.getNamespace('global')
-    }
-    return namespace.get('logger')
+    const namespace = cls.getNamespace('global')
+    const namespaceLogger = namespace?.get('logger')
+    return namespaceLogger || logger
 }

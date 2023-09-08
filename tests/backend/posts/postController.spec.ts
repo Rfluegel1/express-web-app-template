@@ -199,11 +199,7 @@ describe('Post controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(NotFoundException))
     })
-    it.each`
-    fnx
-    ${postController.getPost}
-    ${postController.deletePost}
-    `(`$fnx should next error when id is not UUID`, async (fnx) => {
+    it('getPost should next error when id is not UUID', async () => {
         // given
         const request = {
             params: {id: 'undefined'},
@@ -213,7 +209,22 @@ describe('Post controller', () => {
         const next: NextFunction = jest.fn()
 
         // when
-        await fnx.fnx(request as any, response as any, next)
+        await postController.getPost(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
+    it('deletePost should next error when id is not UUID', async () => {
+        // given
+        const request = {
+            params: {id: 'undefined'},
+        }
+        const response = {}
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await postController.deletePost(request as any, response as any, next)
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
