@@ -8,6 +8,8 @@ on:
 jobs:
   update-and-test:
     runs-on: ubuntu-latest
+    env:
+      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
     timeout-minutes: 10
 
     services:
