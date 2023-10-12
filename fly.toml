@@ -1,17 +1,17 @@
-# fly.toml app configuration file generated for typescript-template on 2023-08-25T16:42:44-04:00
+# fly.toml app configuration file generated for typescript-template on 2023-10-12T16:27:32-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = "typescript-template"
-primary_region = "ord"
+primary_region = "den"
 
 [build]
 
 [http_service]
-internal_port = 8080
-force_https = true
-auto_stop_machines = true
-auto_start_machines = true
-min_machines_running = 0
-processes = ["app"]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
