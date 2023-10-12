@@ -1,7 +1,7 @@
 const {spawn} = require('child_process')
 
 let backendServer
-let frontendServer
+let frontendBuild
 
 const startServer = (command: string, args: string[], successMessage: any) => new Promise((resolve, reject) => {
     const server = spawn(command, args)
@@ -39,13 +39,13 @@ const killProcess = (process: any) => {
 
 (async () => {
     try {
+        console.log('Building frontend...')
+        frontendBuild = await startServer('npm', ['run', 'build'], 'compiled')
+        console.log('Build complete\n')
+
         console.log('Starting backend...')
         backendServer = await startServer('npm', ['run', 'backend'], 'The server is running on port 8080')
         console.log('Backend started\n')
-
-        console.log('Starting frontend...')
-        frontendServer = await startServer('npm', ['run', 'frontend'], 'compiled successfully')
-        console.log('Frontend started\n')
 
         console.log('Starting cypress')
         await runCypress()
@@ -54,7 +54,7 @@ const killProcess = (process: any) => {
         console.error(`An error occurred: ${error.message}`)
     } finally {
         killProcess(backendServer)
-        killProcess(frontendServer)
+        killProcess(frontendBuild)
         console.log('Servers stopped')
     }
 })()
