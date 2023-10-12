@@ -1,8 +1,8 @@
 name: Staging Behavioral Test
 
 on:
-  schedule:
-    - cron: '0 1 * * *' # Run daily at 3 AM
+  #  schedule:
+  #    - cron: '0 1 * * *' # Run daily at 3 AM
   workflow_dispatch: # Manual trigger
 
 jobs:
