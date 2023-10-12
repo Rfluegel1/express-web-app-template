@@ -12,6 +12,7 @@ jobs:
     env:
       APP_NAME: 'typescript-template'
       AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
+      AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
     timeout-minutes: 10
 
     services:
@@ -52,12 +53,14 @@ jobs:
       - name: Run Frontend Tests (Development)
         run: npm run test:github frontend
 
+      - name: Build Frontend
+        run: npm run build
+
       - name: Run e2e Tests (Development)
         uses: cypress-io/github-action@v5
         with:
           install: false
           start: |
-            npm run build
             npm run backend
 
       - name: Install Flyctl
