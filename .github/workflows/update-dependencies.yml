@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
+      AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
     timeout-minutes: 10
 
     services:
