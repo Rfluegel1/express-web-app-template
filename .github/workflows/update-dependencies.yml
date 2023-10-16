@@ -52,13 +52,15 @@ jobs:
       - name: Run Frontend Tests
         run: npm run test:github frontend
 
+      - name: Build Frontend (Development)
+        run: npm run build
+
       - name: Run e2e Test
         uses: cypress-io/github-action@v5
         with:
           install: false
           start: |
             npm run backend
-            npm run frontend
 
       - name: Create PR if Tests Pass
         run: |
