@@ -41,14 +41,16 @@ jobs:
         with:
           node-version: 18.16.0
 
-      - name: Install dependencies
-        # runs "npm i" as well
-        uses: cypress-io/github-action@v5
-        with:
-          runTests: false
+      - name: Install backend dependencies
+        working-directory: './backend'
+        run: npm install
 
       - name: Run Backend Tests (Development)
         run: npm run test:github backend
+
+      - name: Install frontend dependencies
+        working-directory: './frontend'
+        run: npm install
 
       - name: Run Frontend Tests (Development)
         run: npm run test:github frontend
