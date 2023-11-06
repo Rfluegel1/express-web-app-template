@@ -1,10 +1,10 @@
-const {spawn} = require('child_process')
+import {spawn} from 'child_process'
 
 let backendServer
 let frontendBuild
 
-const startServer = (command: string, args: string[], successMessage: any) => new Promise((resolve, reject) => {
-    const server = spawn(command, args)
+const startServer = (command: string, args: string[], successMessage: any, workingDirectory: string) => new Promise((resolve, reject) => {
+    const server = spawn(command, args, {cwd: workingDirectory})
     server.stdout.on('data', (data: any) => {
         const output = data.toString()
         console.log(`${args[1]} stdout: ${data}`)
@@ -40,11 +40,21 @@ const killProcess = (process: any) => {
 (async () => {
     try {
         console.log('Building frontend...')
-        frontendBuild = await startServer('npm', ['run', 'build'], 'compiled')
+        frontendBuild = await startServer(
+            'npm',
+            ['run', 'build'],
+            'compiled',
+            '../frontend'
+        )
         console.log('Build complete\n')
 
         console.log('Starting backend...')
-        backendServer = await startServer('npm', ['run', 'backend'], 'The server is running on port 8080')
+        backendServer = await startServer(
+            'npm',
+            ['run', 'backend'],
+            'The server is running on port 8080',
+            '../backend'
+        )
         console.log('Backend started\n')
 
         console.log('Starting cypress')

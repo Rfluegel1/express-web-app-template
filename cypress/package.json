@@ -1,0 +1,29 @@
+{
+  "name": "express-web-app-template",
+  "version": "1.0.0",
+  "description": "This project is designed to be a starting point for a typescript web application",
+  "main": "",
+  "scripts": {
+    "clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force",
+    "cypress": "npx cypress open",
+    "e2e": "ts-node runCypressHeadless.ts",
+    "e2e:staging": "NODE_ENV=staging cypress run --headless --browser chrome"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/uuid": "^9.0.2",
+    "dotenv": "^16.3.1",
+    "http-status-codes": "^2.2.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "cypress": "^12.17.4",
+    "cypress-real-events": "^1.10.3",
+    "cypress-xpath": "^2.0.1",
+    "html-webpack-plugin": "^5.5.3",
+    "typescript": "^5.1.3"
+  }
+}
