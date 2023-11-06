@@ -1,5 +1,6 @@
 *.idea
-/node_modules
-/coverage
-/dist
+*/node_modules
+*/coverage
+*/dist
 *.log
+*/build

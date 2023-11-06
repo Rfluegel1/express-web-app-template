@@ -12,7 +12,7 @@ import {getLogger, logger} from './Logger'
 import {v4} from 'uuid'
 import {auth, requiresAuth} from 'express-openid-connect'
 
-const cls = require('cls-hooked')
+import cls from 'cls-hooked'
 const namespace = cls.createNamespace('global')
 
 
@@ -49,7 +49,8 @@ app.use((request, response, next) => {
 })
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '/../../dist')))
+console.log('static path:', path.join(__dirname, '../build'))
+app.use(express.static(path.join(__dirname, '../build')))
 
 app.use('/api', postRoutes)
 app.use('/', healthCheckRoutes)
@@ -57,7 +58,7 @@ app.use('/', heartbeatRoutes)
 
 // The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname + '/../../dist/index.html'))
+    res.sendFile(path.join(__dirname, '../build/index.html'))
 })
 
 app.use((request, response, next) => {
