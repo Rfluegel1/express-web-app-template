@@ -1,8 +1,7 @@
 import winston from 'winston'
 
-const cls = require('cls-hooked')
-let namespace = cls.getNamespace('global')
-
+import cls from 'cls-hooked'
+cls.getNamespace('global')
 const createLogger = () => {
     return winston.createLogger({
         level: 'info',
