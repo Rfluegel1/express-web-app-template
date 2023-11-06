@@ -1,5 +1,5 @@
 {
-  "name": "typescript-template",
+  "name": "express-web-app-template",
   "version": "1.0.0",
   "description": "This project is designed to be a starting point for a typescript web application",
   "main": "src/backend/server.ts",

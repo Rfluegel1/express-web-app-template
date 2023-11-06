@@ -1,4 +1,4 @@
-# typescript-template
+# express-web-app-template
 
 This project is designed to be a starting point for a typescript web application with unit, integration, blackbox, e2e,
 and performance testing. There is also GitHub action files for continuous integration and deployment, and dependency
@@ -134,8 +134,8 @@ Assign Ctrl+S to "Format and Save"
 1. Run | Edit Configurations...
 2. Create a new Node.js configuration
 3. Rename to 'Debug Server'
-4. Change the interpreter to ts-node (~/workspaces/typescript-template/node_modules/.bin/ts-node)
-5. Set working directory to ~/workspaces/typescript-template
+4. Change the interpreter to ts-node (~/workspaces/express-web-app-template/node_modules/.bin/ts-node)
+5. Set working directory to ~/workspaces/express-web-app-template
 6. Set Javascript file to src/backend/server.ts
 
 ## GitHub actions
@@ -172,7 +172,7 @@ Only manual triggers will run this job. This will deploy main code to staging.
 
 ## Setting up new repository
 
-### 1. Replace typescript-template with new repository name
+### 1. Replace express-web-app-template with new repository name
 
 ### 2. Set DataSource properties
 

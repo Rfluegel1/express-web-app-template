@@ -443,7 +443,7 @@
           "baseUrl": "localhost:8080"
         },
         "staging": {
-          "baseUrl": "typescript-template.fly.dev"
+          "baseUrl": "express-web-app-template.fly.dev"
         }
       },
       "dataPropertyOrder": {

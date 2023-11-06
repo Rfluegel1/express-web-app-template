@@ -17,4 +17,4 @@ jobs:
         uses: grafana/k6-action@v0.3.0
         with:
           filename: tests/backend/postPerformance.ts
-          flags: --env BASE_URL=https://typescript-template.fly.dev
+          flags: --env BASE_URL=https://express-web-app-template.fly.dev

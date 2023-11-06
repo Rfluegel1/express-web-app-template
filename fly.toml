@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for typescript-template on 2023-10-12T16:27:32-05:00
+# fly.toml app configuration file generated for express-web-app-template on 2023-10-12T16:27:32-05:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "typescript-template"
+app = "express-web-app-template"
 primary_region = "den"
 
 [build]
