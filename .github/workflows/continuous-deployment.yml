@@ -59,7 +59,7 @@ jobs:
       - name: Run e2e Tests (Development)
         uses: cypress-io/github-action@v5
         with:
-          install: false
+          working-directory: './backend'
           start: |
             npm run backend
 
