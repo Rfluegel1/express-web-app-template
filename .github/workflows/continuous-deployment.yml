@@ -58,6 +58,7 @@ jobs:
         run: npm run test frontend
 
       - name: Build Frontend (Development)
+        working-directory: './frontend'
         run: npm run build
 
       - name: Run e2e Tests (Development)
