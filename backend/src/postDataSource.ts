@@ -12,7 +12,7 @@ export const dataSource: DataSource = new DataSource({
         'src/entity/**/*.ts'
     ],
     migrations: [
-        'src/backend/migrations/*.ts'
+        'backend/src/migrations/*.ts'
     ],
     migrationsRun: true
 })
