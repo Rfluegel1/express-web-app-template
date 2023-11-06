@@ -4,7 +4,6 @@
   "description": "This project is designed to be a starting point for a express web application",
   "main": "src/server.ts",
   "scripts": {
-    "test:github": "NODE_ENV=development jest --runInBand",
     "test:staging": "NODE_ENV=staging jest blackbox --detectOpenHandles",
     "test": "NODE_ENV=development jest --runInBand",
     "backend": "nodemon src/server.ts",

@@ -47,7 +47,7 @@ jobs:
 
       - name: Run Backend Tests (Development)
         working-directory: './backend'
-        run: npm run test:github backend
+        run: npm run test backend
 
       - name: Install frontend dependencies
         working-directory: './frontend'
@@ -55,7 +55,7 @@ jobs:
 
       - name: Run Frontend Tests (Development)
         working-directory: './frontend'
-        run: npm run test:github frontend
+        run: npm run test frontend
 
       - name: Build Frontend (Development)
         run: npm run build
