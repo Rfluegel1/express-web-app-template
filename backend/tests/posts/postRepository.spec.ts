@@ -1,7 +1,7 @@
-import PostRepository from '../../../src/backend/posts/postRepository'
+import PostRepository from '../../src/posts/postRepository'
 import {v4 as uuidv4} from 'uuid'
-import Post from '../../../src/backend/posts/post'
-import {NotFoundException} from '../../../src/backend/exceptions/notFoundException'
+import Post from '../../src/posts/post'
+import {NotFoundException} from '../../src/exceptions/notFoundException'
 
 // setup
 jest.mock('typeorm', () => ({
@@ -11,7 +11,7 @@ jest.mock('typeorm', () => ({
         destroy: jest.fn()
     })),
 }))
-jest.mock('../../../src/backend/Logger', () => ({
+jest.mock('../../src/Logger', () => ({
     getLogger: jest.fn(() => {
         return {
             error: jest.fn()

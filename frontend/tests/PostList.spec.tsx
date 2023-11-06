@@ -1,6 +1,6 @@
 import React from 'react'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import PostList from '../../src/frontend/PostList'
+import PostList from '../../frontend/src/PostList'
 import axios from 'axios'
 
 const mockNavigate = jest.fn()

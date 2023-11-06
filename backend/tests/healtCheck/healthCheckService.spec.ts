@@ -1,12 +1,12 @@
-import HealthCheckService from '../../../src/backend/healthCheck/healthCheckService'
+import HealthCheckService from '../../src/healthCheck/healthCheckService'
 import axios from 'axios'
-import {dataSource} from '../../../src/backend/postDataSource'
+import {dataSource} from '../../src/postDataSource'
 import {StatusCodes} from 'http-status-codes'
 
 // setup
 jest.mock('axios')
 
-jest.mock('../../../src/backend/Logger', () => ({
+jest.mock('../../src/Logger', () => ({
     getLogger: jest.fn(() => {
         return {
             error: jest.fn()

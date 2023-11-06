@@ -1,6 +1,6 @@
 import React from 'react'
 import {fireEvent, render, screen, waitFor} from '@testing-library/react'
-import PostDetail from '../../src/frontend/PostDetail'
+import PostDetail from '../../frontend/src/PostDetail'
 import axios from 'axios'
 import {v4 as uuidv4} from 'uuid'
 import {useParams} from 'react-router-dom'

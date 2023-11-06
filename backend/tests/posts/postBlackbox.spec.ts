@@ -1,6 +1,6 @@
-import Post from '../../../src/backend/posts/post'
+import Post from '../../src/posts/post'
 import {StatusCodes} from 'http-status-codes'
-import {UUID_REG_EXP} from '../../../src/backend/contants'
+import {UUID_REG_EXP} from '../../src/contants'
 import axios, {AxiosError} from 'axios'
 
 jest.setTimeout(30000)

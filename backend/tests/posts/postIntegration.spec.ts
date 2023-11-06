@@ -1,7 +1,7 @@
 import axios, {AxiosError} from 'axios'
 import {v4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
-import {dataSource} from '../../../src/backend/postDataSource'
+import {dataSource} from '../../src/postDataSource'
 
 
 beforeAll(() => {

@@ -2,12 +2,12 @@
   "name": "express-web-app-template",
   "version": "1.0.0",
   "description": "This project is designed to be a starting point for a typescript web application",
-  "main": "src/backend/server.ts",
+  "main": "backend/src/server.ts",
   "scripts": {
     "test:github": "NODE_ENV=development jest --runInBand",
     "test:staging": "NODE_ENV=staging jest blackbox --detectOpenHandles",
     "test": "NODE_ENV=development jest --detectOpenHandles --coverage",
-    "backend": "nodemon src/backend/server.ts",
+    "backend": "nodemon backend/src/server.ts",
     "frontend": "webpack-dev-server --mode development --hot",
     "clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force",
     "fullstack": "npm run backend & npm run frontend",
@@ -16,8 +16,8 @@
     "e2e:staging": "NODE_ENV=staging cypress run --headless --browser chrome",
     "build": "NODE_ENV=development webpack --mode production",
     "build:staging": "NODE_ENV=staging webpack --mode production",
-    "migrations:revert": "npx typeorm-ts-node-esm migration:revert -d ./src/backend/postDataSource.ts",
-    "migrations:create": "if [ -z \"$npm_config_name\" ]; then echo 'Missing --name'; exit 1; else typeorm migration:create ./src/backend/migrations/$npm_config_name; fi"
+    "migrations:revert": "npx typeorm-ts-node-esm migration:revert -d backend/src/postDataSource.ts",
+    "migrations:create": "if [ -z \\\\\\\"$npm_config_name\\\\\\\" ]; then echo 'Missing --name'; exit 1; else typeorm migration:create backend/src/migrations/$npm_config_name; fi"
   },
   "author": "",
   "license": "ISC",

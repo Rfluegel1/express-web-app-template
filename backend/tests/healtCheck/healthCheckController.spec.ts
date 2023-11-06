@@ -1,8 +1,8 @@
-import HealthCheckController from '../../../src/backend/healthCheck/healthCheckController'
+import HealthCheckController from '../../src/healthCheck/healthCheckController'
 import {StatusCodes} from 'http-status-codes'
 
 // setup
-jest.mock('../../../src/backend/healthCheck/healthCheckService', () => {
+jest.mock('../../src/healthCheck/healthCheckService', () => {
     return jest.fn().mockImplementation(() => {
         return {
             healthcheck: jest.fn(),
@@ -10,7 +10,7 @@ jest.mock('../../../src/backend/healthCheck/healthCheckService', () => {
     })
 })
 
-jest.mock('../../../src/backend/Logger', () => ({
+jest.mock('../../src/Logger', () => ({
     getLogger: jest.fn(() => {
         return {
             info: jest.fn()

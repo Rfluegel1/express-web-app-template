@@ -1,4 +1,4 @@
-import {UUID_REG_EXP} from '../../src/backend/contants'
+import {UUID_REG_EXP} from '../../backend/src/contants'
 
 describe('Post lifecycle', () => {
     let uuid

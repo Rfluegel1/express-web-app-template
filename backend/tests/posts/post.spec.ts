@@ -1,5 +1,5 @@
-import Post from '../../../src/backend/posts/post'
-import {UUID_REG_EXP} from '../../../src/backend/contants'
+import Post from '../../../backend/src/posts/post'
+import {UUID_REG_EXP} from '../../src/contants'
 
 describe('Post object', () => {
     it('default constructor sets default values', () => {
