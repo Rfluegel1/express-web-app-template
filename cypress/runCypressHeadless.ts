@@ -38,6 +38,7 @@ const killProcess = (process: any) => {
 };
 
 (async () => {
+    let exitCode
     try {
         console.log('Building frontend...')
         frontendBuild = await startServer(
@@ -60,11 +61,14 @@ const killProcess = (process: any) => {
         console.log('Starting cypress')
         await runCypress()
         console.log('Cypress tests completed successfully')
+        exitCode = 0
     } catch (error: any) {
+        exitCode = 1
         console.error(`An error occurred: ${error.message}`)
     } finally {
         killProcess(backendServer)
         killProcess(frontendBuild)
         console.log('Servers stopped')
+        process.exit(exitCode)
     }
 })()
