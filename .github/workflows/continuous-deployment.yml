@@ -61,12 +61,13 @@ jobs:
         working-directory: './frontend'
         run: npm run build
 
-      - name: Run Backend
-        working-directory: './backend'
-        run: npm run backend
+      - name: install cypress dependencies
+        working-directory: './cypress'
+        run: npm install
 
       - name: Run e2e Tests (Development)
-        uses: cypress-io/github-action@v5
+        working-directory: './cypress'
+        run: npm run e2e
 
 #      - name: Install Flyctl
 #        uses: superfly/flyctl-actions/setup-flyctl@master
