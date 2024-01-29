@@ -13,6 +13,7 @@ import {v4} from 'uuid'
 import {auth, requiresAuth} from 'express-openid-connect'
 
 import cls from 'cls-hooked'
+import todoRoutes from './todos/todoRoutes'
 const namespace = cls.createNamespace('global')
 
 
@@ -53,6 +54,7 @@ console.log('static path:', path.join(__dirname, '../build'))
 app.use(express.static(path.join(__dirname, '../build')))
 
 app.use('/api', postRoutes)
+app.use('/api', todoRoutes)
 app.use('/', healthCheckRoutes)
 app.use('/', heartbeatRoutes)
 

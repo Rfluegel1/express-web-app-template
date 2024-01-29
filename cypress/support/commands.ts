@@ -14,7 +14,7 @@ import 'cypress-xpath'
 //
 // -- This is a parent command --
 Cypress.Commands.add('loginDefaultUser', () => {
-    let continueButton = '/html/body/div/main/section/div/div[2]/div/form/div[3]/button'
+    let continueButton = '/html/body/div/main/section/div/div[2]/div/form/div[2]/button'
 
     cy.visit(`${Cypress.env('BASE_URL')}/login`)
 

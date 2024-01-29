@@ -41,7 +41,7 @@ updates.
 ```npm run migrations:revert```
 
 ##### Install postgresql@14
-
+n 
 1. ```brew install postgresql@14```
 2. ```createdb post```
 
