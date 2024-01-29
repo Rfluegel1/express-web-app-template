@@ -56,18 +56,18 @@ export default class TodoController {
         }
     }
 
-    async getTodos(request: Request, response: Response, next: NextFunction) {
-        // getLogger().info('Received get all todos request')
-        // try {
-        //     const todos: Todo[] = await this.todoService.getAllTodos()
-        //     getLogger().info('Sending get all todos request', {status: StatusCodes.OK})
-        //     return response.status(StatusCodes.OK).send({
-        //         message: todos
-        //     })
-        // } catch (error) {
-        //     next(error)
-        // }
-        return response.status(StatusCodes.OK).send()
+    async getTodosByCreatedBy(request: Request, response: Response, next: NextFunction) {
+        getLogger().info('Received get all todos request')
+        let createdBy: any = request.query.createdBy
+        try {
+            const todos: Todo[] = await this.todoService.getTodosByCreatedBy(createdBy)
+            getLogger().info('Sending get all todos request', {status: StatusCodes.OK})
+            return response.status(StatusCodes.OK).send({
+                message: todos
+            })
+        } catch (error) {
+            next(error)
+        }
     }
 
     async updateTodo(request: Request, res: Response, next: NextFunction) {

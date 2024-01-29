@@ -12,7 +12,7 @@ jest.mock('../../src/todos/todoService', () => {
         return {
             createTodo: jest.fn(),
             deleteTodo: jest.fn(),
-            getAllTodos: jest.fn(),
+            getTodosByCreatedBy: jest.fn(),
             getTodo: jest.fn(),
             updateTodo: jest.fn()
         }
@@ -192,47 +192,60 @@ describe('Todo controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
-    // it.skip('getAllTodos responds with data that is returned from the TodoService', async () => {
-    //     // given
-    //     let id: string = uuidv4()
-    //     let id2: string = uuidv4()
-    //     const mockTodo = {id: id, userId: 'the user', title: 'the title', body: 'the body'}
-    //     const mockTodo2 = {id: id2, userId: 'the user', title: 'the title', body: 'the body'}
-    //     const request = {}
-    //     const response = {
-    //         status: jest.fn(function () {
-    //             return this
-    //         }),
-    //         send: jest.fn(),
-    //     };
-    //
-    //     (todoController.todoService.getAllTodos as jest.Mock).mockImplementation(() => {
-    //         return [mockTodo, mockTodo2]
-    //     })
-    //
-    //     // when
-    //     await todoController.getTodos(request as any, response as any, jest.fn())
-    //
-    //     // then
-    //     expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-    //     expect(response.send).toHaveBeenCalledWith({message: [mockTodo, mockTodo2]})
-    // })
-    // it.skip('getAllTodos should next error that is returned from the TodoService', async () => {
-    //     // given
-    //     const request = {}
-    //     const response = {};
-    //
-    //     (todoController.todoService.getAllTodos as jest.Mock).mockImplementation(() => {
-    //         throw new DatabaseException()
-    //     })
-    //     const next: NextFunction = jest.fn()
-    //
-    //     // when
-    //     await todoController.getTodos(request as any, response as any, next)
-    //
-    //     // then
-    //     expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
-    // })
+
+    it('getTodosByCreatedBy responds with data that is returned from the TodoService', async () => {
+        // given
+        let id: string = uuidv4()
+        let id2: string = uuidv4()
+        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
+        const mockTodo2 = {id: id2, task: 'the task', createdBy: 'the createdBy'}
+        const request = {
+            query: {
+                createdBy: 'the createdBy'
+            }
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            send: jest.fn(),
+        };
+
+        (todoController.todoService.getTodosByCreatedBy as jest.Mock).mockImplementation((createdBy: string) => {
+            if (createdBy === 'the createdBy') {
+                return [mockTodo, mockTodo2]
+            } else {
+                return null
+            }
+        })
+
+        // when
+        await todoController.getTodosByCreatedBy(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.send).toHaveBeenCalledWith({message: [mockTodo, mockTodo2]})
+    })
+    it('getAllTodos should next error that is returned from the TodoService', async () => {
+        // given
+        const request = {
+            query: {
+                createdBy: 'the createdBy'
+            }
+        }
+        const response = {};
+
+        (todoController.todoService.getTodosByCreatedBy as jest.Mock).mockImplementation(() => {
+            throw new DatabaseException()
+        })
+        const next: NextFunction = jest.fn()
+
+        // when
+        await todoController.getTodosByCreatedBy(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
+    })
 
     it('deleteTodo should call service and respond with NO_CONTENT', async () => {
         // given

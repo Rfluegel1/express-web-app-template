@@ -5,6 +5,11 @@ import {DataSource} from 'typeorm'
 import {DatabaseException} from '../exceptions/DatabaseException'
 import {getLogger} from '../Logger'
 
+interface QueryResult {
+    id: string;
+    task: string;
+    createdby: string;
+}
 export default class TodoRepository {
     todoDataSource: DataSource = dataSource
 
@@ -53,14 +58,16 @@ export default class TodoRepository {
         return result
     }
 
-    async getAllTodos(): Promise<Todo[]> {
-        // return this.executeWithCatch(async () => {
-        //     const queryResults = await this.todoDataSource.query('SELECT * FROM todos')
-        //     return queryResults.map((queryResult: QueryResult) => {
-        //         return new Todo().todoMapper(queryResult)
-        //     })
-        // })
-        return [new Todo()]
+    async getTodosByCreatedBy(createdBy: string): Promise<Todo[]> {
+        return this.executeWithCatch(async () => {
+            const queryResults = await this.todoDataSource.query(
+                'SELECT * FROM todos WHERE createdBy=$1',
+                [createdBy]
+            )
+            return queryResults.map((queryResult: QueryResult) => {
+                return new Todo().todoMapper(queryResult)
+            })
+        })
     }
 
     async updateTodo(todo: Todo): Promise<void> {

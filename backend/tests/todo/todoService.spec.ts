@@ -10,7 +10,7 @@ jest.mock('../../src/todos/todoRepository', () => {
             createTodo: jest.fn(),
             deleteTodo: jest.fn(),
             getTodo: jest.fn(),
-            getAllTodos: jest.fn(),
+            getTodosByCreatedBy: jest.fn(),
             updateTodo: jest.fn()
         }
     })
@@ -84,35 +84,35 @@ describe('Todo service', () => {
         expect(result.createdBy).toEqual('the createdBy')
         expect(result.id).toEqual(id)
     })
-    // it('getAllTodos returns todos from repository', async () => {
-    //     //given
-    //     const id1: string = uuidv4()
-    //     const id2: string = uuidv4()
-    //     const mockTodo1: Todo = new Todo('the user', 'the title', 'the body')
-    //     const mockTodo2: Todo = new Todo('the user', 'the title', 'the body')
-    //     mockTodo1.id = id1
-    //     mockTodo2.id = id2;
-    //
-    //     (service.todoRepository.getAllTodos as jest.Mock).mockImplementation(() => {
-    //         return [mockTodo1, mockTodo2]
-    //     })
-    //     // when
-    //     const result: Todo[] = await service.getAllTodos()
-    //     // then
-    //     expect(result.length).toEqual(2)
-    //
-    //     let firstTodo = result.find((todo: Todo): boolean => todo.id === id1)
-    //     expect(firstTodo).toBeInstanceOf(Todo)
-    //     expect(firstTodo?.userId).toEqual('the user')
-    //     expect(firstTodo?.title).toEqual('the title')
-    //     expect(firstTodo?.body).toEqual('the body')
-    //
-    //     let secondTodo = result.find((todo: Todo): boolean => todo.id === id2)
-    //     expect(secondTodo?.userId).toEqual('the user')
-    //     expect(secondTodo?.title).toEqual('the title')
-    //     expect(secondTodo?.body).toEqual('the body')
-    //     expect(secondTodo?.id).toEqual(id2)
-    // })
+    it('getTodosByCreatedBy returns todos from repository', async () => {
+        //given
+        const id1: string = uuidv4()
+        const id2: string = uuidv4()
+        const mockTodo1: Todo = new Todo('the task', 'the createdBy')
+        const mockTodo2: Todo = new Todo('the task', 'the createdBy')
+        mockTodo1.id = id1
+        mockTodo2.id = id2;
+
+        (service.todoRepository.getTodosByCreatedBy as jest.Mock).mockImplementation((createdBy: string) => {
+            if (createdBy === 'the createdBy') {
+                return [mockTodo1, mockTodo2]
+            }
+        })
+        // when
+        const result: Todo[] = await service.getTodosByCreatedBy('the createdBy')
+        // then
+        expect(result.length).toEqual(2)
+
+        let firstTodo = result.find((todo: Todo): boolean => todo.id === id1)
+        expect(firstTodo).toBeInstanceOf(Todo)
+        expect(firstTodo?.task).toEqual('the task')
+        expect(firstTodo?.createdBy).toEqual('the createdBy')
+
+        let secondTodo = result.find((todo: Todo): boolean => todo.id === id2)
+        expect(secondTodo?.task).toEqual('the task')
+        expect(secondTodo?.createdBy).toEqual('the createdBy')
+        expect(secondTodo?.id).toEqual(id2)
+    })
     it('delete calls to repo', async () => {
         //given
         const id: string = uuidv4()

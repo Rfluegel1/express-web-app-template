@@ -104,39 +104,38 @@ describe('Todo repository', () => {
         // when and then
         await expect(() => repository.getTodo(uuidv4())).rejects.toThrow(NotFoundException)
     })
-    // it('getAllTodos selects from todoDataSource', async () => {
-    //     //given
-    //     const id1 = uuidv4()
-    //     const id2 = uuidv4()
-    //     const mockTodo1 = {id: id1, userid: 'the user1', title: 'the title1', body: 'the message 1!'}
-    //     const mockTodo2 = {id: id2, userid: 'the user2', title: 'the title2', body: 'the message 2!'};
-    //     (repository.todoDataSource.query as jest.Mock).mockImplementation(jest.fn((query) => {
-    //         if (query === 'SELECT * FROM todos') {
-    //             return [mockTodo1, mockTodo2]
-    //         }
-    //     }))
-    //     // when
-    //     const actual = await repository.getAllTodos()
-    //     // then
-    //     expect(actual.length).toEqual(2)
-    //     expect(actual[0]).toBeInstanceOf(Todo)
-    //     expect(actual[0].id).toEqual(id1)
-    //     expect(actual[0].userId).toEqual('the user1')
-    //     expect(actual[0].title).toEqual('the title1')
-    //     expect(actual[0].body).toEqual('the message 1!')
-    //     expect(actual[1]).toBeInstanceOf(Todo)
-    //     expect(actual[1].id).toEqual(id2)
-    //     expect(actual[1].userId).toEqual('the user2')
-    //     expect(actual[1].title).toEqual('the title2')
-    //     expect(actual[1].body).toEqual('the message 2!')
-    // })
-    // it('getAllTodos logs error and throws database exception', async () => {
-    //     // given
-    //     let error = new Error('DB Error');
-    //     (repository.todoDataSource.query as jest.Mock).mockRejectedValue(error)
-    //     //expect
-    //     await expect(repository.getAllTodos()).rejects.toThrow('Error interacting with the database')
-    // })
+    it('getTodosByCreatedBy selects from todoDataSource', async () => {
+        //given
+        const id1 = uuidv4()
+        const id2 = uuidv4()
+        const mockTodo1 = {id: id1, task: 'the task1', createdby: 'the createdBy'}
+        const mockTodo2 = {id: id2, task: 'the task2', createdby: 'the createdBy'};
+        (repository.todoDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
+            if (query === 'SELECT * FROM todos WHERE createdBy=$1' && parameters[0] === 'the createdBy') {
+                return [mockTodo1, mockTodo2]
+            }
+        }))
+
+        // when
+        const actual = await repository.getTodosByCreatedBy('the createdBy')
+        // then
+        expect(actual.length).toEqual(2)
+        expect(actual[0]).toBeInstanceOf(Todo)
+        expect(actual[0].id).toEqual(id1)
+        expect(actual[0].task).toEqual('the task1')
+        expect(actual[0].createdBy).toEqual('the createdBy')
+        expect(actual[1]).toBeInstanceOf(Todo)
+        expect(actual[1].id).toEqual(id2)
+        expect(actual[1].task).toEqual('the task2')
+        expect(actual[1].createdBy).toEqual('the createdBy')
+    })
+    it('getTodosByCreatedBy logs error and throws database exception', async () => {
+        // given
+        let error = new Error('DB Error');
+        (repository.todoDataSource.query as jest.Mock).mockRejectedValue(error)
+        //expect
+        await expect(repository.getTodosByCreatedBy('asd')).rejects.toThrow('Error interacting with the database')
+    })
     it('deleteTodo deletes from todoDataSource', async () => {
         //given
         const id = uuidv4()

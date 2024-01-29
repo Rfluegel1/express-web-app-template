@@ -62,56 +62,55 @@ describe('Todo resource', () => {
         expect(getAfterDeleteResponse?.data.message).toEqual(`Object not found for id=${id}`)
     })
 
-    // it('get all returns all posts createdBy the authenticated user', async () => {
-    //     // given
-    //     const firstTodo: Todo = new Todo('first task', 'authenticated createdBy')
-    //     const secondTodo: Todo = new Todo('second task', 'authenticated createdBy')
-    //     const otherTodo: Todo = new Todo('other task', 'other createdBy')
-    //     const firstPostResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, firstTodo)
-    //     const secondPostResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, secondTodo)
-    //     const otherPostResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, otherTodo)
-    //     expect(firstPostResponse.status).toEqual(StatusCodes.CREATED)
-    //     expect(secondPostResponse.status).toEqual(StatusCodes.CREATED)
-    //     expect(otherPostResponse.status).toEqual(StatusCodes.CREATED)
-    //     try {
-    //         // when
-    //         const getAllResponse = await axios.get(`${process.env.BASE_URL}/api/todos`, {
-    //             headers: {'Authorization': 'Bearer accessToken'}
-    //         })
-    //
-    //         // then
-    //         expect(getAllResponse.status).toEqual(StatusCodes.OK)
-    //         let todos = getAllResponse.data.message
-    //
-    //         let foundFirst = todos.find((todo: Todo): boolean => todo.id === firstPostResponse.data.message.id)
-    //         expect(foundFirst.task).toEqual('first task')
-    //         expect(foundFirst.createdBy).toEqual('authenticated createdBy')
-    //
-    //         let foundSecond = todos.find((todo: Todo): boolean => todo.id === secondPostResponse.data.message.id)
-    //         expect(foundSecond.task).toEqual('second task')
-    //         expect(foundSecond.createdBy).toEqual('authenticated createdBy')
-    //
-    //         expect(todos.find((todo: Todo): boolean => todo.id === otherPostResponse.data.message.id).toBeFalsy())
-    //     } finally {
-    //         // cleanup
-    //         const firstDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/todos/${firstPostResponse.data.message.id}`)
-    //         const secondDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/todos/${secondPostResponse.data.message.id}`)
-    //         const otherDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/todos/${otherPostResponse.data.message.id}`)
-    //         expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
-    //         expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
-    //         expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
-    //     }
-    // })
-    // it('non uuid returns bad request and info', async () => {
-    //     // when
-    //     let getResponse
-    //     try {
-    //         getResponse = await axios.get(`${process.env.BASE_URL}/api/todos/undefined`)
-    //     } catch (error) {
-    //         getResponse = (error as AxiosError).response
-    //     }
-    //     // then
-    //     expect(getResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
-    //     expect(getResponse?.data.message).toEqual('Parameter id not of type UUID for id=undefined')
-    // })
+    it('get all returns all posts createdBy the authenticated user', async () => {
+        // given
+        const firstTodo: Todo = new Todo('first task', 'authenticated createdBy')
+        const secondTodo: Todo = new Todo('second task', 'authenticated createdBy')
+        const otherTodo: Todo = new Todo('other task', 'other createdBy')
+        const firstPostResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, firstTodo)
+        const secondPostResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, secondTodo)
+        const otherPostResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, otherTodo)
+        expect(firstPostResponse.status).toEqual(StatusCodes.CREATED)
+        expect(secondPostResponse.status).toEqual(StatusCodes.CREATED)
+        expect(otherPostResponse.status).toEqual(StatusCodes.CREATED)
+        try {
+            // when
+            const getAllResponse = await axios.get(`${process.env.BASE_URL}/api/todos?createdBy=${encodeURIComponent('authenticated createdBy')}`)
+
+            // then
+            expect(getAllResponse.status).toEqual(StatusCodes.OK)
+            let todos = getAllResponse.data.message
+
+            let foundFirst = todos.find((todo: Todo): boolean => todo.id === firstPostResponse.data.message.id)
+            expect(foundFirst.task).toEqual('first task')
+            expect(foundFirst.createdBy).toEqual('authenticated createdBy')
+
+            let foundSecond = todos.find((todo: Todo): boolean => todo.id === secondPostResponse.data.message.id)
+            expect(foundSecond.task).toEqual('second task')
+            expect(foundSecond.createdBy).toEqual('authenticated createdBy')
+
+            let foundOther = todos.find((todo: Todo): boolean => todo.id === otherPostResponse.data.message.id)
+            expect(foundOther).toEqual(undefined)
+        } finally {
+            // cleanup
+            const firstDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/todos/${firstPostResponse.data.message.id}`)
+            const secondDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/todos/${secondPostResponse.data.message.id}`)
+            const otherDeleteResponse = await axios.delete(`${process.env.BASE_URL}/api/todos/${otherPostResponse.data.message.id}`)
+            expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+            expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+            expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+        }
+    })
+    it('non uuid returns bad request and info', async () => {
+        // when
+        let getResponse
+        try {
+            getResponse = await axios.get(`${process.env.BASE_URL}/api/todos/undefined`)
+        } catch (error) {
+            getResponse = (error as AxiosError).response
+        }
+        // then
+        expect(getResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
+        expect(getResponse?.data.message).toEqual('Parameter id not of type UUID for id=undefined')
+    })
 })

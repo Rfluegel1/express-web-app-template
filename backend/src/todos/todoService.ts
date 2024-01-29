@@ -1,6 +1,5 @@
 import Todo from './Todo'
 import TodoRepository from './todoRepository'
-// import TodoRepository from './todoRepository'
 
 
 export default class TodoService {
@@ -20,9 +19,8 @@ export default class TodoService {
         return await this.todoRepository.getTodo(id)
     }
 
-    async getAllTodos(): Promise<Todo[]> {
-        // return await this.todoRepository.getAllTodos()
-        return [new Todo()]
+    async getTodosByCreatedBy(createdBy: string): Promise<Todo[]> {
+        return await this.todoRepository.getTodosByCreatedBy(createdBy)
     }
 
     async updateTodo(id: string, task: string, createdBy: string): Promise<Todo> {
