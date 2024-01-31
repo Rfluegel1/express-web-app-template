@@ -9,12 +9,12 @@ import Todo from './Todo'
 export default class TodoController {
     todoService = new TodoService()
     async createTodo(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received create todo request', {requestBody: request.body})
+        getLogger().info('Received create todos request', {requestBody: request.body})
         let task: string = request.body.task
         let createdBy: string = request.body.createdBy
         try {
             const todo: Todo = await this.todoService.createTodo(task, createdBy)
-            getLogger().info('Sending create todo response', {status: StatusCodes.CREATED})
+            getLogger().info('Sending create todos response', {status: StatusCodes.CREATED})
             return response.status(StatusCodes.CREATED).send({
                 message: todo
             })
@@ -24,14 +24,14 @@ export default class TodoController {
     }
 
     async deleteTodo(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received delete todo request', {requestParam: request.params})
+        getLogger().info('Received delete todos request', {requestParam: request.params})
         let id: string = request.params.id
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
         try {
             await this.todoService.deleteTodo(id)
-            getLogger().info('Sending delete todo response', {status: StatusCodes.NO_CONTENT})
+            getLogger().info('Sending delete todos response', {status: StatusCodes.NO_CONTENT})
             return response.sendStatus(StatusCodes.NO_CONTENT)
         } catch (error) {
             next(error)
@@ -39,7 +39,7 @@ export default class TodoController {
     }
 
     async getTodo(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received get todo request', {requestParam: request.params})
+        getLogger().info('Received get todos request', {requestParam: request.params})
         let id: string = request.params.id
         let todo: Todo
         if (!id.match(UUID_REG_EXP)) {
@@ -47,7 +47,7 @@ export default class TodoController {
         }
         try {
             todo = await this.todoService.getTodo(id)
-            getLogger().info('Sending get todo response', {status: StatusCodes.OK})
+            getLogger().info('Sending get todos response', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
                 message: todo
             })
@@ -71,7 +71,7 @@ export default class TodoController {
     }
 
     async updateTodo(request: Request, res: Response, next: NextFunction) {
-        getLogger().info('Received update todo request', {requestParam: request.params, requestBody: request.body})
+        getLogger().info('Received update todos request', {requestParam: request.params, requestBody: request.body})
         const id: string = request.params.id
         const task: string = request.body.task
         const createdBy: string = request.body.createdBy
@@ -80,7 +80,7 @@ export default class TodoController {
         }
         try {
             let todo: Todo = await this.todoService.updateTodo(id, task, createdBy)
-            getLogger().info('Sending update todo request', {status: StatusCodes.OK})
+            getLogger().info('Sending update todos request', {status: StatusCodes.OK})
             return res.status(StatusCodes.OK).send({
                 message: todo
             })

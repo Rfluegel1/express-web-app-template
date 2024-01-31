@@ -154,7 +154,7 @@ describe('Todo repository', () => {
         //expect
         await expect(repository.deleteTodo(uuidv4())).rejects.toThrow('Error interacting with the database')
     })
-    it('updateTodo updates todo in todoDataSource', async () => {
+    it('updateTodo updates todos in todoDataSource', async () => {
         //given
         repository.todoDataSource.query = jest.fn()
         const mockTodo = new Todo('the new task', 'the new createdBy')
