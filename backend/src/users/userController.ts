@@ -9,8 +9,8 @@ import User from './User'
 export default class UserController {
     userService = new UserService()
     async createUser(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received create users request', {requestBody: request.body})
         let email: string = request.body.email
+        getLogger().info('Received create users request', {requestBody: {email: email}})
         let password: string = request.body.password
         try {
             const user: User = await this.userService.createUser(email, password)

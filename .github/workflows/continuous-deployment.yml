@@ -13,6 +13,7 @@ jobs:
       APP_NAME: 'express-web-app-template'
       AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
       AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
+      PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
     timeout-minutes: 10
 
     services:

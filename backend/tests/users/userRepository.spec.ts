@@ -58,7 +58,7 @@ describe('User repository', () => {
         const id = uuidv4();
         (repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
             if (query === 'SELECT * FROM users WHERE id=$1' && parameters[0] === id) {
-                return [{id: id, email: 'the email', passwordHash: 'the passwordHash'}]
+                return [{id: id, email: 'the email', passwordhash: 'the passwordHash'}]
             }
         }))
         // when
@@ -89,7 +89,7 @@ describe('User repository', () => {
         const id = uuidv4();
         (repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
             if (query === 'SELECT * FROM users WHERE email=$1' && parameters[0] === 'the email') {
-                return [{id: id, email: 'the email', passwordHash: 'the passwordHash'}]
+                return [{id: id, email: 'the email', passwordhash: 'the passwordHash'}]
             }
         }))
         // when

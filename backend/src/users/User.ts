@@ -16,7 +16,7 @@ export default class User {
         const intermediate = {
             id: queryResult?.id,
             email: queryResult?.email,
-            passwordHash: queryResult?.passwordHash,
+            passwordHash: queryResult?.passwordhash,
         }
         return plainToClass(User, intermediate)
     }

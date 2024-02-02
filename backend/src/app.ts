@@ -15,26 +15,23 @@ import {auth, requiresAuth} from 'express-openid-connect'
 import cls from 'cls-hooked'
 import todoRoutes from './todos/todoRoutes'
 import userRoutes from './users/userRoutes'
+import UserRepository from './users/userRepository'
+import passport from 'passport'
+import User from './users/User'
+import passportRoutes from './passportRoutes'
+import session from 'express-session'
+
 const namespace = cls.createNamespace('global')
+let LocalStrategy = require('passport-local')
 
 
 const app: Express = express()
 
+app.use(session({secret: process.env.PASSPORT_SECRET as string, resave: false, saveUninitialized: false}))
+app.use(passport.authenticate('session'))
+
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
-
-app.use(auth({
-    authRequired: false,
-    auth0Logout: true,
-    baseURL: process.env.BASE_URL,
-    clientID: process.env.AUTH0_CLIENT_ID,
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-    secret: process.env.AUTH0_SECRET
-}))
-
-app.get('/profile', requiresAuth(), (req, res) => {
-    res.send(JSON.stringify(req.oidc.user, null, 2))
-})
 
 app.use((request, response, next) => {
     response.header('Access-Control-Allow-Origin', '*')
@@ -50,10 +47,66 @@ app.use((request, response, next) => {
     })
 })
 
+app.use(auth({
+    authRequired: false,
+    auth0Logout: true,
+    baseURL: process.env.BASE_URL,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
+    secret: process.env.AUTH0_SECRET
+}))
+
+let userRepository: UserRepository = new UserRepository()
+passport.use(new LocalStrategy(
+    async (email: string, password: string, done: any) => {
+        try {
+            const user = await userRepository.getUserByEmail(email)
+            if (!user) {
+                getLogger().info('User not found')
+                console.log('User not found')
+                return done(null, false, {message: 'Incorrect username.'})
+            }
+            if (!await user.isValidPassword(password)) {
+                getLogger().info('Invalid password')
+                console.log('Invalid password')
+                return done(null, false, {message: 'Incorrect password.'})
+            }
+            getLogger().info('User authenticated')
+            console.log('User authenticated')
+            return done(null, user)
+        } catch (err) {
+            return done(err)
+        }
+    }
+))
+
+
+passport.serializeUser((user, done) => {
+    // Storing user id in the session
+    process.nextTick(() => done(null, (user as User).id))
+})
+
+passport.deserializeUser(async (id: string, done) => {
+    process.nextTick(async () => {
+        try {
+            const user = await userRepository.getUser(id) // Fetch user from database
+            done(null, user)
+        } catch (err) {
+            done(err, null)
+        }
+    })
+
+})
+
+app.get('/profile', requiresAuth(), (req, res) => {
+    res.send(JSON.stringify(req.oidc.user, null, 2))
+})
+
 // Serve static files from the React app
 console.log('static path:', path.join(__dirname, '../build'))
 app.use(express.static(path.join(__dirname, '../build')))
 
+app.use('/api', passportRoutes)
 app.use('/api', postRoutes)
 app.use('/api', todoRoutes)
 app.use('/api', userRoutes)
