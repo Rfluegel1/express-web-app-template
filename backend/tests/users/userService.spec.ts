@@ -10,7 +10,7 @@ jest.mock('../../src/users/userRepository', () => {
             createUser: jest.fn(),
             deleteUser: jest.fn(),
             getUser: jest.fn(),
-            getUsersByCreatedBy: jest.fn(),
+            getUserByEmail: jest.fn(),
             updateUser: jest.fn()
         }
     })
@@ -45,6 +45,23 @@ describe('User service', () => {
         })
         // when
         const result: User = await service.getUser(id)
+        // then
+        expect(result.email).toEqual('email')
+        expect(result.passwordHash).toEqual('passwordHash')
+        expect(result.id).toEqual(id)
+    })
+    it('getUserByEmail returns users from repository', async () => {
+        //given
+        const id: string = uuidv4()
+        const mockUser = {id: id, ...user};
+
+        (service.userRepository.getUserByEmail as jest.Mock).mockImplementation((email: string) => {
+            if (email === user.email) {
+                return mockUser
+            }
+        })
+        // when
+        const result: User = await service.getUserByEmail(user.email)
         // then
         expect(result.email).toEqual('email')
         expect(result.passwordHash).toEqual('passwordHash')

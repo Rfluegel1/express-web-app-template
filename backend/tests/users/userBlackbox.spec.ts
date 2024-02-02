@@ -39,6 +39,17 @@ describe('User resource', () => {
         expect(getData.passwordHash).toEqual(undefined)
 
         // when
+        const getByEmailResponse = await axios.get(`${process.env.BASE_URL}/api/users?email=${email}`)
+
+        // then
+        expect(getByEmailResponse.status).toEqual(StatusCodes.OK)
+        let getByEmailData = getByEmailResponse.data
+        expect(getByEmailData.id).toEqual(id)
+        expect(getByEmailData.email).toEqual(email)
+        expect(getByEmailData.password).toEqual(undefined)
+        expect(getByEmailData.passwordHash).toEqual(undefined)
+
+        // when
         const deleteResponse = await axios.delete(`${process.env.BASE_URL}/api/users/${id}`)
 
         // then

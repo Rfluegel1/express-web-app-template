@@ -55,5 +55,20 @@ export default class UserController {
             next(error)
         }
     }
+
+    async getUserByEmail(request: Request, response: Response, next: NextFunction) {
+        getLogger().info('Received get user by email request', {requestQuery: request.query})
+        let email: string = request.query.email as string
+        let user: User
+        try {
+            user = await this.userService.getUserByEmail(email)
+            getLogger().info('Sending get users response', {status: StatusCodes.OK})
+            return response.status(StatusCodes.OK).send({
+                id: user.id, email: user.email
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 

@@ -7,11 +7,18 @@ describe('Passport resource', () => {
         // given
         const email = 'cypressdefault@gmail.com'
         const password = 'pass_good'
+        const getByEmailResponse = await axios.get(`${process.env.BASE_URL}/api/users?email=${email}`)
+        if (getByEmailResponse.status === StatusCodes.NOT_FOUND) {
+            const createResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
+                email: email, password: password
+            })
+            expect(createResponse.status).toEqual(StatusCodes.CREATED)
+        }
 
         // when
-        const data = new URLSearchParams();
-        data.append('username', email);
-        data.append('password', password);
+        const data = new URLSearchParams()
+        data.append('username', email)
+        data.append('password', password)
         const postResponse = await axios.post(`${process.env.BASE_URL}/api/login`, data, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

@@ -20,4 +20,8 @@ export default class UserService {
     async getUser(id: string): Promise<User> {
         return await this.userRepository.getUser(id)
     }
+
+    async getUserByEmail(email: string): Promise<User> {
+        return await this.userRepository.getUserByEmail(email)
+    }
 }

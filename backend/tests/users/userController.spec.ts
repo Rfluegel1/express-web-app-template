@@ -12,7 +12,7 @@ jest.mock('../../src/users/userService', () => {
         return {
             createUser: jest.fn(),
             deleteUser: jest.fn(),
-            getUsersByCreatedBy: jest.fn(),
+            getUserByEmail: jest.fn(),
             getUser: jest.fn(),
             updateUser: jest.fn()
         }
@@ -115,7 +115,7 @@ describe('User controller', () => {
         const response = {};
 
         (userController.userService.getUser as jest.Mock).mockImplementation(() => {
-            throw new NotFoundException('id')
+            throw new NotFoundException(id)
         })
         const next: NextFunction = jest.fn()
 
@@ -139,6 +139,53 @@ describe('User controller', () => {
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
+    it('getUserByEmail responds with data that is returned from the UserService', async () => {
+        // given
+        let id: string = uuidv4()
+        const mockUser = {id: id, ...user}
+        const request = {
+            query: {email: user.email},
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            send: jest.fn(),
+        };
+
+        (userController.userService.getUserByEmail as jest.Mock).mockImplementation((email) => {
+            if (user.email === email) {
+                return mockUser
+            } else {
+                return null
+            }
+        })
+
+        // when
+        await userController.getUserByEmail(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email})
+    })
+    it('getUserByEmail should next error that is returned from the UserService', async () => {
+        // given
+        const request = {
+            query: {email: user.email},
+        }
+        const response = {};
+
+        (userController.userService.getUserByEmail as jest.Mock).mockImplementation(() => {
+            throw new NotFoundException(user.email)
+        })
+        const next: NextFunction = jest.fn()
+
+        // when
+        await userController.getUserByEmail(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(NotFoundException))
     })
     it('deleteUser should call service and respond with NO_CONTENT', async () => {
         // given
