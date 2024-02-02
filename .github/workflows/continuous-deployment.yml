@@ -42,6 +42,10 @@ jobs:
         with:
           node-version: 18.16.0
 
+      - name: Build Frontend (Development)
+        working-directory: './frontend'
+        run: npm run build
+
       - name: Install backend dependencies
         working-directory: './backend'
         run: npm install
@@ -57,10 +61,6 @@ jobs:
       - name: Run Frontend Tests (Development)
         working-directory: './frontend'
         run: npm run test frontend
-
-      - name: Build Frontend (Development)
-        working-directory: './frontend'
-        run: npm run build
 
       - name: install cypress dependencies
         working-directory: './cypress'
