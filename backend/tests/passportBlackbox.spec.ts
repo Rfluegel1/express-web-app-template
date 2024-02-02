@@ -1,5 +1,5 @@
 import {StatusCodes} from 'http-status-codes'
-import axios from 'axios'
+import axios, {AxiosError} from 'axios'
 
 jest.setTimeout(30000)
 describe('Passport resource', () => {
@@ -7,12 +7,17 @@ describe('Passport resource', () => {
         // given
         const email = 'cypressdefault@gmail.com'
         const password = 'pass_good'
-        const getByEmailResponse = await axios.get(`${process.env.BASE_URL}/api/users?email=${email}`)
-        if (getByEmailResponse.status === StatusCodes.NOT_FOUND) {
-            const createResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
-                email: email, password: password
-            })
-            expect(createResponse.status).toEqual(StatusCodes.CREATED)
+        try {
+            await axios.get(`${process.env.BASE_URL}/api/users?email=${email}`)
+        } catch (error) {
+            if ((error as AxiosError)?.response?.status === StatusCodes.NOT_FOUND) {
+                const createResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
+                    email: email, password: password
+                })
+                expect(createResponse.status).toEqual(StatusCodes.CREATED)
+            } else {
+                throw error
+            }
         }
 
         // when
