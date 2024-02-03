@@ -9,7 +9,7 @@ const client = wrapper(axios.create({ jar, withCredentials: true }));
 jest.setTimeout(30000);
 
 describe('Passport resource', () => {
-    it('allows test user to log in', async () => {
+    it('allows test user to log in and out', async () => {
         // given
         const email = 'cypressdefault@gmail.com';
         const password = 'pass_good';
@@ -45,9 +45,27 @@ describe('Passport resource', () => {
         let postData = postResponse.data;
         expect(postData).toContain('href="/"');
 
-        // and
+        // when
         const afterLoginResponse = await client.get(`${process.env.BASE_URL}/api/session-check`);
+
+        // then
         expect(afterLoginResponse.status).toEqual(StatusCodes.OK);
         expect(afterLoginResponse.data.sessionActive).toEqual(true);
+
+        // when
+        const logoutResponse = await client.post(`${process.env.BASE_URL}/api/logout`)
+
+        // then
+        expect(logoutResponse.status).toEqual(StatusCodes.OK)
+        let logoutData = logoutResponse.data;
+        expect(logoutData).toContain('href="/"');
+
+        // when
+        const afterLogoutResponse = await client.get(`${process.env.BASE_URL}/api/session-check`);
+
+        // then
+        expect(afterLogoutResponse.status).toEqual(StatusCodes.OK);
+        expect(afterLogoutResponse.data.sessionActive).toEqual(false);
+
     });
 });

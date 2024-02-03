@@ -31,7 +31,14 @@ router.post('/login', async (req, res, next) => {
     })(req, res, next)
 })
 
-router.get('/session-check', (req, res, next) => {
+router.get('/session-check', (req, res, πnext) => {
     res.status(StatusCodes.OK).send({sessionActive: req.isAuthenticated()})
+})
+
+router.post('/logout',(req, res, next) => {
+    req.logout(function(err) {
+        if (err) { return next(err); }
+        res.redirect('/');
+    });
 })
 export = router;
