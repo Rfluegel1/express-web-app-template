@@ -20,6 +20,7 @@ import passport from 'passport'
 import User from './users/User'
 import passportRoutes from './passportRoutes'
 import session from 'express-session'
+import cors from 'cors';
 
 const namespace = cls.createNamespace('global')
 let LocalStrategy = require('passport-local')
@@ -33,10 +34,13 @@ app.use(passport.authenticate('session'))
 app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
+app.use(cors({
+    origin: process.env.BASE_URL,
+    credentials: true
+}));
 app.use((request, response, next) => {
-    response.header('Access-Control-Allow-Origin', '*')
-    response.header('Access-Control-Allow-Headers', 'origin, X-Requested-With,Content-Type,Accept, Authorization')
-    response.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE')
+        response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+        response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     if (request.method === 'OPTIONS') {
         return response.status(200).send({})
     }
@@ -95,7 +99,6 @@ passport.deserializeUser(async (id: string, done) => {
             done(err, null)
         }
     })
-
 })
 
 app.get('/profile', requiresAuth(), (req, res) => {
