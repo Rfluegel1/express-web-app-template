@@ -14,6 +14,7 @@ jobs:
       AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
       AUTH0_PASSWORD: ${{ secrets.AUTH0_PASSWORD }}
       PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
     timeout-minutes: 10
 
     services:

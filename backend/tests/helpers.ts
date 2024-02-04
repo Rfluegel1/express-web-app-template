@@ -3,7 +3,7 @@ import {StatusCodes} from 'http-status-codes'
 
 export async function logInTestUser(client: AxiosInstance) {
     const email = 'cypressdefault@gmail.com'
-    const password = 'pass_good'
+    const password = process.env.TEST_USER_PASSWORD
 
     try {
         await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)
@@ -20,7 +20,7 @@ export async function logInTestUser(client: AxiosInstance) {
 
     const data = new URLSearchParams()
     data.append('username', email)
-    data.append('password', password)
+    data.append('password', password as string)
     let logInResponse = await client.post(`${process.env.BASE_URL}/api/login`, data, {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
