@@ -26,10 +26,25 @@ import {UnauthorizedException} from './exceptions/UnauthorizedException'
 const namespace = cls.createNamespace('global')
 let LocalStrategy = require('passport-local')
 
-
 const app: Express = express()
 
-app.use(session({secret: process.env.PASSPORT_SECRET as string, resave: false, saveUninitialized: false}))
+import PgSession from 'connect-pg-simple';
+
+const pgSession = PgSession(session)
+
+const sessionStore = new pgSession({
+    conString: `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOSTNAME}/${process.env.DB_DATABASE}`,
+    createTableIfMissing: true,
+    tableName: 'sessions',
+});
+
+app.use(session({
+    store: sessionStore,
+    secret: process.env.PASSPORT_SECRET as string,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }
+}))
 app.use(passport.authenticate('session'))
 
 app.use(express.urlencoded({extended: false}))

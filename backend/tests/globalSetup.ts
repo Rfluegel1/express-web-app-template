@@ -20,12 +20,12 @@ export default async () => {
                 resolve(server)
             }
         })
-        server.stdout.on('data', (data) => {
-            console.log('stdout:', data.toString());
-        });
-        server.stderr.on('data', (data) => {
-            console.error('stderr:', data.toString());
-        });
+        // server.stdout.on('data', (data) => {
+        //     console.log('stdout:', data.toString());
+        // });
+        // server.stderr.on('data', (data) => {
+        //     console.error('stderr:', data.toString());
+        // });
     })
     await startBackend()
 };

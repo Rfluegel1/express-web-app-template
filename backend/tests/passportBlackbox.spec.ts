@@ -1,5 +1,5 @@
 import {StatusCodes} from 'http-status-codes'
-import axios, {AxiosError} from 'axios'
+import axios from 'axios'
 import {wrapper} from 'axios-cookiejar-support'
 import {CookieJar} from 'tough-cookie'
 import {logInTestUser, logOutUser} from './helpers'
@@ -37,6 +37,5 @@ describe('Passport resource', () => {
         // then
         expect(afterLogoutResponse.status).toEqual(StatusCodes.OK)
         expect(afterLogoutResponse.data.sessionActive).toEqual(false)
-
     })
 })
