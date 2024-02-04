@@ -24,4 +24,15 @@ export default class UserService {
     async getUserByEmail(email: string): Promise<User> {
         return await this.userRepository.getUserByEmail(email)
     }
+
+    async updateUser(id: string, email: string, password: string): Promise<User> {
+        let user: User = await this.userRepository.getUser(id)
+        let passwordHash
+        if (password) {
+            passwordHash = await bcrypt.hash(password, 10)
+        }
+        user.updateDefinedFields(email, passwordHash)
+        await this.userRepository.updateUser(user)
+        return user
+    }
 }

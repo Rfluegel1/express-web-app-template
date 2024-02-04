@@ -52,6 +52,16 @@ describe('Todo resource', () => {
         expect(updateMessage.createdBy).toEqual('the updated createdBy')
 
         // when
+        const getAfterUpdateResponse = await client.get(`${process.env.BASE_URL}/api/todos/${id}`)
+
+        // then
+        expect(getAfterUpdateResponse.status).toEqual(StatusCodes.OK)
+        const getAfterUpdateMessage = getAfterUpdateResponse.data.message
+        expect(getAfterUpdateMessage.id).toEqual(id)
+        expect(getAfterUpdateMessage.task).toEqual('the updated task')
+        expect(getAfterUpdateMessage.createdBy).toEqual('the updated createdBy')
+
+        // when
         const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${id}`)
 
         // then

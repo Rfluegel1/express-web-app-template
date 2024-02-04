@@ -1,7 +1,7 @@
 import UserRepository from '../../src/users/userRepository'
 import {v4 as uuidv4} from 'uuid'
-import User from '../../src/users/User'
 import {NotFoundException} from '../../src/exceptions/NotFoundException'
+import User from '../../src/users/User'
 
 // setup
 jest.mock('typeorm', () => ({
@@ -152,5 +152,24 @@ describe('User repository', () => {
         (repository.userDataSource.query as jest.Mock).mockRejectedValue(error)
         //expect
         await expect(repository.deleteUser(uuidv4())).rejects.toThrow('Error interacting with the database')
+    })
+    it('updateUser updates users in userDataSource', async () => {
+        //given
+        repository.userDataSource.query = jest.fn()
+        const mockUser = new User('email', 'passwordHash')
+        // when
+        await repository.updateUser(mockUser)
+        // then
+        expect(repository.userDataSource.query).toHaveBeenCalledWith(
+            'UPDATE users SET email=$1, passwordHash=$2 WHERE id=$3',
+            ['email', 'passwordHash', mockUser.id]
+        )
+    })
+    it('updateUser logs error and throws database exception', async () => {
+        // given
+        let error = new Error('DB Error');
+        (repository.userDataSource.query as jest.Mock).mockRejectedValue(error)
+        //expect
+        await expect(repository.updateUser(new User())).rejects.toThrow('Error interacting with the database')
     })
 })

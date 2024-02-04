@@ -8,6 +8,26 @@ import User from './User'
 
 export default class UserController {
     userService = new UserService()
+
+    async updateUser(request: Request, response: Response, next: NextFunction) {
+        getLogger().info('Received update users request', {requestParam: request.params, requestBody: request.body})
+        const id: string = request.params.id
+        const email: string = request.body.email
+        const password: string = request.body.password
+        if (!id.match(UUID_REG_EXP)) {
+            return next(new BadRequestException(id))
+        }
+        try {
+            let user: User = await this.userService.updateUser(id, email, password)
+            getLogger().info('Sending update user request', {status: StatusCodes.OK})
+            return response.status(StatusCodes.OK).send({
+                id: user.id, email: user.email
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
     async createUser(request: Request, response: Response, next: NextFunction) {
         let email: string = request.body.email
         getLogger().info('Received create users request', {requestBody: {email: email}})

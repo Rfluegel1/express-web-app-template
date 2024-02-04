@@ -75,4 +75,42 @@ describe('User service', () => {
         // then
         expect(service.userRepository.deleteUser).toHaveBeenCalledWith(id)
     })
+    it('updateUser gets from repository, calls repository to update, and returns User', async () => {
+        //given
+        const id: string = uuidv4()
+        const expectedUser = {email: 'email', passwordHash: 'passwordHash'};
+        (service.userRepository.getUser as jest.Mock).mockImplementation(jest.fn(() => {
+            let user = new User()
+            user.id = id
+            return user
+        }))
+        // when
+        let result: User = await service.updateUser(id, 'email', 'password')
+        // then
+        expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expectedUser))
+        expect(result.email).toEqual('email')
+        expect(result.passwordHash).toEqual('passwordHash')
+        expect(result.id).toEqual(id)
+    })
+    it.each`
+    email          | password      | expected
+    ${undefined}   | ${undefined}  | ${{email: 'old email', passwordHash: 'old passwordHash'}}
+    ${'new email'} | ${'password'} | ${{email: 'new email', passwordHash: 'passwordHash'}}
+    `('updateUser only sets defined fields on updated User',
+        async ({email, password, expected}) => {
+            //given
+            const existingUser = new User('old email', 'old passwordHash');
+            (service.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
+                if (sentId === existingUser.id) {
+                    return existingUser
+                }
+            })
+            // when
+            let result: User = await service.updateUser(existingUser.id, email, password)
+            // then
+            expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expected))
+            expect(result.email).toEqual(expected.email)
+            expect(result.passwordHash).toEqual(expected.passwordHash)
+            expect(result.id).toEqual(existingUser.id)
+        })
 })

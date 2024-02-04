@@ -70,6 +70,15 @@ export default class UserRepository {
         })
     }
 
+    async updateUser(user: User): Promise<void> {
+        await this.executeWithCatch(async () => {
+            await this.userDataSource.query(
+                'UPDATE users SET email=$1, passwordHash=$2 WHERE id=$3',
+                [user.email, user.passwordHash, user.id]
+            )
+        })
+    }
+
     async executeWithCatch(action: () => Promise<any>): Promise<any> {
         try {
             return await action()

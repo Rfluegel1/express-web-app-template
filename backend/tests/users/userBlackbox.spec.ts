@@ -5,11 +5,13 @@ import {AxiosError} from 'axios'
 
 jest.setTimeout(30000)
 describe('User resource', () => {
-    it('should create, get, and delete', async () => {
+    it('should create, get, update, and delete', async () => {
         // given
         let id
         const email = `test${Math.floor(Math.random() * 10000)}@example.com`
+        const updatedEmail = `test${Math.floor(Math.random() * 10000)}@updated.com`
         const password = 'password'
+        const updatedPassword = 'newPassword'
 
         // when
         const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
@@ -48,6 +50,30 @@ describe('User resource', () => {
         expect(getByEmailData.email).toEqual(email)
         expect(getByEmailData.password).toEqual(undefined)
         expect(getByEmailData.passwordHash).toEqual(undefined)
+
+        // when
+        const updateResponse = await axios.put(`${process.env.BASE_URL}/api/users/${id}`, {
+          email: updatedEmail, password: updatedPassword
+        })
+
+        // then
+        expect(updateResponse.status).toEqual(StatusCodes.OK)
+        const updateData = updateResponse.data
+        expect(updateData.id).toEqual(id)
+        expect(updateData.email).toEqual(updatedEmail)
+        expect(updateData.password).toEqual(undefined)
+        expect(updateData.passwordHash).toEqual(undefined)
+
+        // when
+        const getAfterUpdateResponse = await axios.get(`${process.env.BASE_URL}/api/users/${id}`)
+
+        // then
+        expect(getAfterUpdateResponse.status).toEqual(StatusCodes.OK)
+        const getAfterUpdateData = getAfterUpdateResponse.data
+        expect(getAfterUpdateData.id).toEqual(id)
+        expect(getAfterUpdateData.email).toEqual(updatedEmail)
+        expect(getAfterUpdateData.password).toEqual(undefined)
+        expect(getAfterUpdateData.passwordHash).toEqual(undefined)
 
         // when
         const deleteResponse = await axios.delete(`${process.env.BASE_URL}/api/users/${id}`)

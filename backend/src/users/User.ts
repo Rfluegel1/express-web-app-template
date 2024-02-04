@@ -25,4 +25,13 @@ export default class User {
         return await bcrypt.compare(password, this.passwordHash)
     }
 
+    updateDefinedFields(email: string | undefined, passwordHash: string | undefined) {
+        if (email !== undefined) {
+            this.email = email
+        }
+        if (passwordHash !== undefined) {
+            this.passwordHash = passwordHash
+        }
+    }
+
 }

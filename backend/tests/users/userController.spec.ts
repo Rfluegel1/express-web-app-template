@@ -221,5 +221,59 @@ describe('User controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
+    it('updateUser responds with data that is returned from the UserService', async () => {
+        // given
+        let id = uuidv4()
+        const mockUser = {id: id, email: 'email', passwordHash: 'passwordHash'}
+        const request = {
+            params: {
+                id: id
+            },
+            body: {
+                email: 'email',
+                password: undefined
+            },
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            send: jest.fn(),
+        };
+
+        (userController.userService.updateUser as jest.Mock).mockImplementation((sentId, email, passwordHash) => {
+            if (sentId === id && email === 'email' && passwordHash === undefined) {
+                return mockUser
+            } else {
+                return null
+            }
+        })
+
+        // when
+        await userController.updateUser(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.send).toHaveBeenCalledWith({id: id, email: 'email'})
+    })
+    it('updateUser should next error when id is not UUID', async () => {
+        // given
+        const request = {
+            params: {id: 'undefined'},
+            body: {
+                task: 'the user',
+                createdBy: undefined
+            },
+        }
+        const response = {}
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await userController.updateUser(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
 })
 
