@@ -2,9 +2,10 @@ import TodoController from '../../../backend/src/todos/todoController'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'
-import {NotFoundException} from '../../src/exceptions/notFoundException'
-import {BadRequestException} from '../../src/exceptions/badRequestException'
+import {NotFoundException} from '../../src/exceptions/NotFoundException'
+import {BadRequestException} from '../../src/exceptions/BadRequestException'
 import {DatabaseException} from '../../src/exceptions/DatabaseException'
+import {UnauthorizedException} from '../../src/exceptions/UnauthorizedException'
 
 // setup
 jest.mock('../../src/todos/todoService', () => {
@@ -66,13 +67,13 @@ describe('Todo controller', () => {
                 return this
             }), send: jest.fn(),
         };
+        const next: NextFunction = jest.fn()
 
         // when
-        await todoController.createTodo(request as any, response as any, jest.fn())
+        await todoController.createTodo(request as any, response as any, next)
 
         // then
-        expect(response.send).toHaveBeenCalledWith({message: {message: 'Unauthorized: You must be logged in to create a Todo.'}})
-        expect(response.status).toHaveBeenCalledWith(StatusCodes.UNAUTHORIZED)
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
     })
     it('createTodo should next error that is returned from the TodoService', async () => {
         // given

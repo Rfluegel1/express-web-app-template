@@ -1,7 +1,7 @@
 import UserRepository from '../../src/users/userRepository'
 import {v4 as uuidv4} from 'uuid'
 import User from '../../src/users/User'
-import {NotFoundException} from '../../src/exceptions/notFoundException'
+import {NotFoundException} from '../../src/exceptions/NotFoundException'
 
 // setup
 jest.mock('typeorm', () => ({

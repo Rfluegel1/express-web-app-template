@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../contants'
-import {BadRequestException} from '../exceptions/badRequestException'
+import {BadRequestException} from '../exceptions/BadRequestException'
 import {getLogger} from '../Logger'
 import UserService from './userService'
 import User from './User'

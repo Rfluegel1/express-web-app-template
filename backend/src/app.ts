@@ -3,8 +3,8 @@ import postRoutes from './posts/postRoutes'
 import healthCheckRoutes from './healthCheck/healthCheckRoutes'
 import heartbeatRoutes from './heartbeat/heartbeatRoutes'
 import {StatusCodes} from 'http-status-codes'
-import {NotFoundException} from './exceptions/notFoundException'
-import {BadRequestException} from './exceptions/badRequestException'
+import {NotFoundException} from './exceptions/NotFoundException'
+import {BadRequestException} from './exceptions/BadRequestException'
 import PostController from './posts/postController'
 import path from 'path'
 import {DatabaseException} from './exceptions/DatabaseException'
@@ -21,6 +21,7 @@ import User from './users/User'
 import passportRoutes from './passportRoutes'
 import session from 'express-session'
 import cors from 'cors';
+import {UnauthorizedException} from './exceptions/UnauthorizedException'
 
 const namespace = cls.createNamespace('global')
 let LocalStrategy = require('passport-local')
@@ -152,6 +153,10 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
     if (error instanceof DatabaseException) {
         getLogger().error(errorWithStatus)
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
+    }
+    if (error instanceof UnauthorizedException) {
+        getLogger().error(errorWithStatus)
+        return response.status(StatusCodes.UNAUTHORIZED).send({message: error.message})
     }
     getLogger().error(errorWithStatus)
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})

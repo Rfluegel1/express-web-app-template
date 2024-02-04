@@ -1,5 +1,5 @@
 import Post from './post'
-import {NotFoundException} from '../exceptions/notFoundException'
+import {NotFoundException} from '../exceptions/NotFoundException'
 import {dataSource} from '../postDataSource'
 import {DataSource} from 'typeorm'
 import {DatabaseException} from '../exceptions/DatabaseException'

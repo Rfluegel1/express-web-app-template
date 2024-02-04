@@ -1,19 +1,19 @@
 import {NextFunction, Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../contants'
-import {BadRequestException} from '../exceptions/badRequestException'
+import {BadRequestException} from '../exceptions/BadRequestException'
 import {getLogger} from '../Logger'
 import TodoService from './todoService'
 import Todo from './Todo'
+import {UnauthorizedException} from '../exceptions/UnauthorizedException'
 
 export default class TodoController {
     todoService = new TodoService()
 
     async createTodo(request: Request, response: Response, next: NextFunction) {
         if (!request.isAuthenticated()) {
-            return response.status(StatusCodes.UNAUTHORIZED).send({
-                message: {message: 'Unauthorized: You must be logged in to create a Todo.'}
-            })
+            next(new UnauthorizedException('create todo'))
+            return
         }
         getLogger().info('Received create todos request', {requestBody: request.body})
         let task: string = request.body.task

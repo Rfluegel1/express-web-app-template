@@ -1,7 +1,7 @@
 import TodoRepository from '../../src/todos/todoRepository'
 import {v4 as uuidv4} from 'uuid'
 import Todo from '../../src/todos/Todo'
-import {NotFoundException} from '../../src/exceptions/notFoundException'
+import {NotFoundException} from '../../src/exceptions/NotFoundException'
 
 // setup
 jest.mock('typeorm', () => ({

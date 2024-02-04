@@ -173,7 +173,6 @@ describe('Todo resource', () => {
 
         // then
         expect(postResponse?.status).toEqual(StatusCodes.UNAUTHORIZED)
-        const postMessage = postResponse?.data.message
-        expect(postMessage.message).toEqual('Unauthorized: You must be logged in to create a Todo.')
+        expect( postResponse?.data.message).toEqual('Unauthorized: You must be logged in to perform action=create todo.')
     })
 })

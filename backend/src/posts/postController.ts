@@ -2,7 +2,7 @@ import {NextFunction, Request, Response} from 'express'
 import PostService from './postService'
 import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../contants'
-import {BadRequestException} from '../exceptions/badRequestException'
+import {BadRequestException} from '../exceptions/BadRequestException'
 import Post from './post'
 import {getLogger} from '../Logger'
 

@@ -2,8 +2,8 @@ import PostController from '../../../backend/src/posts/postController'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'
-import {NotFoundException} from '../../src/exceptions/notFoundException'
-import {BadRequestException} from '../../src/exceptions/badRequestException'
+import {NotFoundException} from '../../src/exceptions/NotFoundException'
+import {BadRequestException} from '../../src/exceptions/BadRequestException'
 import {DatabaseException} from '../../src/exceptions/DatabaseException'
 
 // setup
