@@ -29,13 +29,7 @@ let LocalStrategy = require('passport-local')
 
 const app: Express = express()
 
-
-app.use(session({
-    secret: process.env.PASSPORT_SECRET as string,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {secure: process.env.NODE_ENV !== 'development'}
-}))
+app.use(session({secret: process.env.PASSPORT_SECRET as string, resave: false, saveUninitialized: false}))
 app.use(passport.authenticate('session'))
 
 app.use(express.urlencoded({extended: false}))
