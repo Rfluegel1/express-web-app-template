@@ -4,6 +4,7 @@ import {UUID_REG_EXP} from '../../src/contants'
 import axios, {AxiosError} from 'axios'
 import {wrapper} from 'axios-cookiejar-support'
 import {CookieJar} from 'tough-cookie'
+import {logInTestUser, logOutUser} from '../helpers'
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar, withCredentials: true }));
@@ -11,37 +12,9 @@ const client = wrapper(axios.create({ jar, withCredentials: true }));
 jest.setTimeout(30000)
 
 describe('Todo resource', () => {
-    async function loginTestUser() {
-        const email = 'cypressdefault@gmail.com'
-        const password = 'pass_good'
-
-        try {
-            await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)
-        } catch (error) {
-            if ((error as AxiosError)?.response?.status === StatusCodes.NOT_FOUND) {
-                const createResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
-                    email: email, password: password
-                })
-                expect(createResponse.status).toEqual(StatusCodes.CREATED)
-            } else {
-                throw error
-            }
-        }
-
-        const data = new URLSearchParams()
-        data.append('username', email)
-        data.append('password', password)
-        return await client.post(`${process.env.BASE_URL}/api/login`, data, {
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        })
-    }
-
     it('is created, fetched, updated, and deleted', async () => {
         // given
-        const loginResponse = await loginTestUser()
-        expect(loginResponse.status).toEqual(StatusCodes.OK);
-        let postData = loginResponse.data;
-        expect(postData).toContain('href="/"');
+        await logInTestUser(client)
 
         // given
         const todo: Todo = new Todo('the task', 'the createdBy')
@@ -98,15 +71,12 @@ describe('Todo resource', () => {
         expect(getAfterDeleteResponse?.data.message).toEqual(`Object not found for id=${id}`)
 
         // cleanup
-        await client.post(`${process.env.BASE_URL}/api/logout`)
+        await logOutUser(client)
     })
 
     it('get all returns all posts createdBy the authenticated user', async () => {
         // given
-        const loginResponse = await loginTestUser()
-        expect(loginResponse.status).toEqual(StatusCodes.OK);
-        let postData = loginResponse.data;
-        expect(postData).toContain('href="/"');
+        await logInTestUser(client)
 
         // given
         const firstTodo: Todo = new Todo('first task', 'authenticated createdBy')
@@ -144,7 +114,7 @@ describe('Todo resource', () => {
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
-            await client.post(`${process.env.BASE_URL}/api/logout`)
+            await logOutUser(client)
         }
     })
     it('non uuid returns bad request and info', async () => {
