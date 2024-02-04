@@ -1,10 +1,7 @@
 import {AxiosError, AxiosInstance} from 'axios'
 import {StatusCodes} from 'http-status-codes'
 
-export async function logInTestUser(client: AxiosInstance) {
-    const email = 'cypressdefault@gmail.com'
-    const password = process.env.TEST_USER_PASSWORD
-
+async function ensureTestUser(client: AxiosInstance, email: string, password: string) {
     try {
         await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)
     } catch (error) {
@@ -17,16 +14,22 @@ export async function logInTestUser(client: AxiosInstance) {
             throw error
         }
     }
+}
+
+export async function logInTestUser(client: AxiosInstance) {
+    const email = 'cypressdefault@gmail.com'
+    const password = process.env.TEST_USER_PASSWORD as string
+
+    await ensureTestUser(client, email, password)
 
     const data = new URLSearchParams()
     data.append('username', email)
-    data.append('password', password as string)
+    data.append('password', password)
     let logInResponse = await client.post(`${process.env.BASE_URL}/api/login`, data, {
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
     expect(logInResponse.status).toEqual(StatusCodes.OK);
-    let postData = logInResponse.data;
-    expect(postData).toContain('href="/"');
+    expect(logInResponse.data).toContain('href="/"');
     return logInResponse
 }
 
@@ -34,7 +37,6 @@ export async function logOutUser(client: AxiosInstance){
     const logOutResponse = await client.post(`${process.env.BASE_URL}/api/logout`)
 
     expect(logOutResponse.status).toEqual(StatusCodes.OK)
-    let logoutData = logOutResponse.data
-    expect(logoutData).toContain('href="/"')
+    expect(logOutResponse.data).toContain('href="/"')
     return logOutResponse
 }
