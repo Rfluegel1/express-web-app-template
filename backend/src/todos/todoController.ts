@@ -8,7 +8,13 @@ import Todo from './Todo'
 
 export default class TodoController {
     todoService = new TodoService()
+
     async createTodo(request: Request, response: Response, next: NextFunction) {
+        if (!request.isAuthenticated()) {
+            return response.status(StatusCodes.UNAUTHORIZED).send({
+                message: {message: 'Unauthorized: You must be logged in to create a Todo.'}
+            })
+        }
         getLogger().info('Received create todos request', {requestBody: request.body})
         let task: string = request.body.task
         let createdBy: string = request.body.createdBy

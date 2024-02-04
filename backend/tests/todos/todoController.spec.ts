@@ -33,6 +33,7 @@ describe('Todo controller', () => {
         // given
         const mockTodo = {id: uuidv4(), task: 'the task', createdBy: 'the createdBy'}
         const request = {
+            isAuthenticated: () => true,
             body: {task: 'the task', createdBy: 'the createdBy'}
         }
         const response = {
@@ -56,11 +57,29 @@ describe('Todo controller', () => {
         expect(response.send).toHaveBeenCalledWith({message: mockTodo})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
     })
+    it('createTodo returns unauthorized when the request session is not authenticated', async () => {
+        const request = {
+            isAuthenticated: () => false
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        };
+
+        // when
+        await todoController.createTodo(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.send).toHaveBeenCalledWith({message: {message: 'Unauthorized: You must be logged in to create a Todo.'}})
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.UNAUTHORIZED)
+    })
     it('createTodo should next error that is returned from the TodoService', async () => {
         // given
         const request = {
             body: {task: 'the task'},
-            oidc: {user: {sid: 'the createdBy'}}
+            oidc: {user: {sid: 'the createdBy'}},
+            isAuthenticated: () => true,
         }
         const response = {};
 
