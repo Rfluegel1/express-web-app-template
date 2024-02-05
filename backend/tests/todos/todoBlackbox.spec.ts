@@ -100,6 +100,7 @@ describe('Todo resource', () => {
             email: email, password: password
         })
         expect(createUserResponse.status).toEqual(StatusCodes.CREATED)
+        const otherUserId = createUserResponse.data.id
         const otherJar = new CookieJar();
         const otherClient = wrapper(axios.create({ jar: otherJar, withCredentials: true }));
         await logInTestUser(otherClient, email, password)
@@ -142,6 +143,8 @@ describe('Todo resource', () => {
             expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             await logOutUser(client)
             await logOutUser(otherClient)
+            const otherUserDeleteResponse = await otherClient.delete(`${process.env.BASE_URL}/api/users/${otherUserId}`)
+            expect(otherUserDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
     })
     it('non uuid returns bad request and info', async () => {
