@@ -11,11 +11,11 @@ export default class TodoController {
     todoService = new TodoService()
 
     async createTodo(request: Request, response: Response, next: NextFunction) {
+        getLogger().info('Received create todos request', {requestBody: request.body})
         if (!request.isAuthenticated()) {
             next(new UnauthorizedException('create todo'))
             return
         }
-        getLogger().info('Received create todos request', {requestBody: request.body})
         let task: string = request.body.task
         let createdBy: string = request.body.createdBy
         try {
@@ -31,6 +31,10 @@ export default class TodoController {
 
     async deleteTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received delete todos request', {requestParam: request.params})
+        if (!request.isAuthenticated()) {
+            next(new UnauthorizedException('create todo'))
+            return
+        }
         let id: string = request.params.id
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
@@ -46,6 +50,10 @@ export default class TodoController {
 
     async getTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get todos request', {requestParam: request.params})
+        if (!request.isAuthenticated()) {
+            next(new UnauthorizedException('create todo'))
+            return
+        }
         let id: string = request.params.id
         let todo: Todo
         if (!id.match(UUID_REG_EXP)) {
@@ -64,6 +72,10 @@ export default class TodoController {
 
     async getTodosByCreatedBy(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get all todos request')
+        if (!request.isAuthenticated()) {
+            next(new UnauthorizedException('create todo'))
+            return
+        }
         let createdBy: any = request.query.createdBy
         try {
             const todos: Todo[] = await this.todoService.getTodosByCreatedBy(createdBy)
@@ -78,6 +90,10 @@ export default class TodoController {
 
     async updateTodo(request: Request, res: Response, next: NextFunction) {
         getLogger().info('Received update todos request', {requestParam: request.params, requestBody: request.body})
+        if (!request.isAuthenticated()) {
+            next(new UnauthorizedException('create todo'))
+            return
+        }
         const id: string = request.params.id
         const task: string = request.body.task
         const createdBy: string = request.body.createdBy

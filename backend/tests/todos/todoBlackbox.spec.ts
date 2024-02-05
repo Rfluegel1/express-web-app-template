@@ -128,16 +128,22 @@ describe('Todo resource', () => {
         }
     })
     it('non uuid returns bad request and info', async () => {
+        // given
+        await logInTestUser(client)
+
         // when
         let getResponse
         try {
-            getResponse = await axios.get(`${process.env.BASE_URL}/api/todos/undefined`)
+            getResponse = await client.get(`${process.env.BASE_URL}/api/todos/undefined`)
         } catch (error) {
             getResponse = (error as AxiosError).response
         }
         // then
         expect(getResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
         expect(getResponse?.data.message).toEqual('Parameter id not of type UUID for id=undefined')
+
+        // cleanup
+        await logOutUser(client)
     })
     it('create should be disabled when auth session not found', async () => {
         // given

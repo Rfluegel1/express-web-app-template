@@ -58,7 +58,17 @@ describe('Todo controller', () => {
         expect(response.send).toHaveBeenCalledWith({message: mockTodo})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
     })
-    it('createTodo returns unauthorized when the request session is not authenticated', async () => {
+    it.each`
+    apiEndpoint              | controllerFunction
+    ${'createTodo'}          | ${todoController.createTodo}
+    ${'getTodo'}             | ${todoController.getTodo}
+    ${'deleteTodo'}          | ${todoController.deleteTodo}
+    ${'updateTodo'}          | ${todoController.updateTodo}
+    ${'getTodosByCreatedBy'} | ${todoController.getTodosByCreatedBy}
+    `('$apiEndpoint returns unauthorized when the request session is not authenticated', async ({
+                                                                                                                                                                                                                                                                                                                                                                                                                             apiEndpoint,
+                                                                                                                                                                                                                                                                                                                                                                                                                             controllerFunction
+                                                                                                                                                                                                                                                                                                                                                                                                                         }) => {
         const request = {
             isAuthenticated: () => false
         }
@@ -66,11 +76,11 @@ describe('Todo controller', () => {
             status: jest.fn(function () {
                 return this
             }), send: jest.fn(),
-        };
-        const next: NextFunction = jest.fn()
+        }
+        const next = jest.fn()
 
         // when
-        await todoController.createTodo(request as any, response as any, next)
+        await controllerFunction(request as any, response as any, next)
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
@@ -107,6 +117,7 @@ describe('Todo controller', () => {
                 task: 'the task',
                 createdBy: undefined
             },
+            isAuthenticated: () => true,
         }
         const response = {
             status: jest.fn(function () {
@@ -138,6 +149,7 @@ describe('Todo controller', () => {
                 task: 'the user',
                 createdBy: undefined
             },
+            isAuthenticated: () => true
         }
         const response = {}
 
@@ -155,6 +167,7 @@ describe('Todo controller', () => {
         const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
         const request = {
             params: {id: id},
+            isAuthenticated: () => true,
         }
         const response = {
             status: jest.fn(function () {
@@ -182,6 +195,7 @@ describe('Todo controller', () => {
         // given
         let id: string = uuidv4()
         const request = {
+            isAuthenticated: () => true,
             params: {id: id},
         }
         const response = {};
@@ -200,6 +214,7 @@ describe('Todo controller', () => {
     it('getTodo should next error when id is not UUID', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
             params: {id: 'undefined'},
         }
         const response = {}
@@ -220,6 +235,7 @@ describe('Todo controller', () => {
         const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
         const mockTodo2 = {id: id2, task: 'the task', createdBy: 'the createdBy'}
         const request = {
+            isAuthenticated: () => true,
             query: {
                 createdBy: 'the createdBy'
             }
@@ -246,9 +262,10 @@ describe('Todo controller', () => {
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
         expect(response.send).toHaveBeenCalledWith({message: [mockTodo, mockTodo2]})
     })
-    it('getAllTodos should next error that is returned from the TodoService', async () => {
+    it('getTodosByCreatedBy should next error that is returned from the TodoService', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
             query: {
                 createdBy: 'the createdBy'
             }
@@ -271,6 +288,7 @@ describe('Todo controller', () => {
         // given
         let id: string = uuidv4()
         const request = {
+            isAuthenticated: () => true,
             params: {id: id},
         }
         const response = {
@@ -289,6 +307,7 @@ describe('Todo controller', () => {
     it('deleteTodo should next error when id is not UUID', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
             params: {id: 'undefined'},
         }
         const response = {}
