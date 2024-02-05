@@ -2,8 +2,15 @@ import {StatusCodes} from 'http-status-codes'
 import axios from 'axios'
 import {UUID_REG_EXP} from '../../src/contants'
 import {AxiosError} from 'axios'
+import {logInTestUser} from '../helpers'
+import {CookieJar} from 'tough-cookie'
+import {wrapper} from 'axios-cookiejar-support'
 
 jest.setTimeout(30000 * 2)
+
+const jar = new CookieJar()
+const client = wrapper(axios.create({jar, withCredentials: true}))
+
 describe('User resource', () => {
     it('should create, get, update, and delete', async () => {
         // given
@@ -30,7 +37,8 @@ describe('User resource', () => {
         id = postData.id
 
         // when
-        const getResponse = await axios.get(`${process.env.BASE_URL}/api/users/${id}`)
+        await logInTestUser(client, email, password)
+        const getResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`)
 
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)
@@ -41,7 +49,9 @@ describe('User resource', () => {
         expect(getData.passwordHash).toEqual(undefined)
 
         // when
-        const getByEmailResponse = await axios.get(`${process.env.BASE_URL}/api/users?email=${email}`)
+        const getByEmailResponse = await client.get(
+            `${process.env.BASE_URL}/api/users?email=${email}`
+        )
 
         // then
         expect(getByEmailResponse.status).toEqual(StatusCodes.OK)
@@ -52,9 +62,12 @@ describe('User resource', () => {
         expect(getByEmailData.passwordHash).toEqual(undefined)
 
         // when
-        const updateResponse = await axios.put(`${process.env.BASE_URL}/api/users/${id}`, {
-          email: updatedEmail, password: updatedPassword
-        })
+        const updateResponse = await client.put(
+            `${process.env.BASE_URL}/api/users/${id}`,
+            {
+                email: updatedEmail, password: updatedPassword
+            }
+        )
 
         // then
         expect(updateResponse.status).toEqual(StatusCodes.OK)
@@ -65,7 +78,9 @@ describe('User resource', () => {
         expect(updateData.passwordHash).toEqual(undefined)
 
         // when
-        const getAfterUpdateResponse = await axios.get(`${process.env.BASE_URL}/api/users/${id}`)
+        const getAfterUpdateResponse = await client.get(
+            `${process.env.BASE_URL}/api/users/${id}`
+        )
 
         // then
         expect(getAfterUpdateResponse.status).toEqual(StatusCodes.OK)
@@ -76,7 +91,7 @@ describe('User resource', () => {
         expect(getAfterUpdateData.passwordHash).toEqual(undefined)
 
         // when
-        const deleteResponse = await axios.delete(`${process.env.BASE_URL}/api/users/${id}`)
+        const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`)
 
         // then
         expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
@@ -85,7 +100,7 @@ describe('User resource', () => {
         let getAfterDeleteResponse
 
         try {
-            getAfterDeleteResponse = await axios.get(`${process.env.BASE_URL}/api/users/${id}`)
+            getAfterDeleteResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`)
         } catch (error) {
             getAfterDeleteResponse = (error as AxiosError).response
         }

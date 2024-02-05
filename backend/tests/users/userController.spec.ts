@@ -5,6 +5,7 @@ import {NextFunction} from 'express'
 import {NotFoundException} from '../../src/exceptions/NotFoundException'
 import {BadRequestException} from '../../src/exceptions/BadRequestException'
 import {DatabaseException} from '../../src/exceptions/DatabaseException'
+import {UnauthorizedException} from '../../src/exceptions/UnauthorizedException'
 
 // setup
 jest.mock('../../src/users/userService', () => {
@@ -83,6 +84,7 @@ describe('User controller', () => {
         const mockUser = {id: id, ...user}
         const request = {
             params: {id: id},
+            isAuthenticated: () => true
         }
         const response = {
             status: jest.fn(function () {
@@ -111,6 +113,7 @@ describe('User controller', () => {
         let id: string = uuidv4()
         const request = {
             params: {id: id},
+            isAuthenticated: () => true
         }
         const response = {};
 
@@ -128,6 +131,7 @@ describe('User controller', () => {
     it('getUser should next error when id is not UUID', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
             params: {id: 'undefined'},
         }
         const response = {}
@@ -145,6 +149,7 @@ describe('User controller', () => {
         let id: string = uuidv4()
         const mockUser = {id: id, ...user}
         const request = {
+            isAuthenticated: () => true,
             query: {email: user.email},
         }
         const response = {
@@ -191,6 +196,7 @@ describe('User controller', () => {
         // given
         let id: string = uuidv4()
         const request = {
+            isAuthenticated: () => true,
             params: {id: id},
         }
         const response = {
@@ -209,6 +215,7 @@ describe('User controller', () => {
     it('deleteUser should next error when id is not UUID', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
             params: {id: 'undefined'},
         }
         const response = {}
@@ -226,6 +233,7 @@ describe('User controller', () => {
         let id = uuidv4()
         const mockUser = {id: id, email: 'email', passwordHash: 'passwordHash'}
         const request = {
+            isAuthenticated: () => true,
             params: {
                 id: id
             },
@@ -241,13 +249,15 @@ describe('User controller', () => {
             send: jest.fn(),
         };
 
-        (userController.userService.updateUser as jest.Mock).mockImplementation((sentId, email, passwordHash) => {
-            if (sentId === id && email === 'email' && passwordHash === undefined) {
-                return mockUser
-            } else {
-                return null
+        (userController.userService.updateUser as jest.Mock).mockImplementation(
+            (sentId, email, passwordHash) => {
+                if (sentId === id && email === 'email' && passwordHash === undefined) {
+                    return mockUser
+                } else {
+                    return null
+                }
             }
-        })
+        )
 
         // when
         await userController.updateUser(request as any, response as any, jest.fn())
@@ -259,6 +269,7 @@ describe('User controller', () => {
     it('updateUser should next error when id is not UUID', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
             params: {id: 'undefined'},
             body: {
                 task: 'the user',
@@ -274,6 +285,30 @@ describe('User controller', () => {
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
+    it.each`
+    apiEndpoint              | controllerFunction
+    ${'getUser'}             | ${userController.getUser}
+    ${'deleteUser'}          | ${userController.deleteUser}
+    ${'updateUser'}          | ${userController.updateUser}
+    `('$apiEndpoint returns unauthorized when the request session is not authenticated', async (
+        {apiEndpoint, controllerFunction}
+    ) => {
+        const request = {
+            isAuthenticated: () => false
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        }
+        const next = jest.fn()
+
+        // when
+        await controllerFunction(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
     })
 })
 

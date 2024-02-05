@@ -6,8 +6,8 @@ import {wrapper} from 'axios-cookiejar-support'
 import {CookieJar} from 'tough-cookie'
 import {logInTestUser, logOutUser} from '../helpers'
 
-const jar = new CookieJar();
-const client = wrapper(axios.create({ jar, withCredentials: true }));
+const jar = new CookieJar()
+const client = wrapper(axios.create({jar, withCredentials: true}))
 
 jest.setTimeout(30000 * 2)
 
@@ -45,7 +45,10 @@ describe('Todo resource', () => {
         expect(getMessage.createdBy).toEqual(userId)
 
         // when
-        const updateResponse = await client.put(`${process.env.BASE_URL}/api/todos/${id}`, updateTodo)
+        const updateResponse = await client.put(
+            `${process.env.BASE_URL}/api/todos/${id}`,
+            updateTodo
+        )
 
         // then
         expect(updateResponse.status).toEqual(StatusCodes.OK)
@@ -55,7 +58,9 @@ describe('Todo resource', () => {
         expect(updateMessage.createdBy).toEqual('the updated createdBy')
 
         // when
-        const getAfterUpdateResponse = await client.get(`${process.env.BASE_URL}/api/todos/${id}`)
+        const getAfterUpdateResponse = await client.get(
+            `${process.env.BASE_URL}/api/todos/${id}`
+        )
 
         // then
         expect(getAfterUpdateResponse.status).toEqual(StatusCodes.OK)
@@ -65,7 +70,9 @@ describe('Todo resource', () => {
         expect(getAfterUpdateMessage.createdBy).toEqual('the updated createdBy')
 
         // when
-        const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${id}`)
+        const deleteResponse = await client.delete(
+            `${process.env.BASE_URL}/api/todos/${id}`
+        )
 
         // then
         expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
@@ -96,28 +103,41 @@ describe('Todo resource', () => {
 
         const email = `test${Math.floor(Math.random() * 10000)}@example.com`
         const password = 'password'
-        const createUserResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
-            email: email, password: password
-        })
+        const createUserResponse = await axios.post(
+            `${process.env.BASE_URL}/api/users`, {
+                email: email, password: password
+            }
+        )
         expect(createUserResponse.status).toEqual(StatusCodes.CREATED)
         const otherUserId = createUserResponse.data.id
-        const otherJar = new CookieJar();
-        const otherClient = wrapper(axios.create({ jar: otherJar, withCredentials: true }));
+        const otherJar = new CookieJar()
+        const otherClient = wrapper(axios.create({jar: otherJar, withCredentials: true}))
         await logInTestUser(otherClient, email, password)
 
         // given
         const firstTodo: Todo = new Todo('first task')
         const secondTodo: Todo = new Todo('second task')
         const otherTodo: Todo = new Todo('other task')
-        const firstPostResponse = await client.post(`${process.env.BASE_URL}/api/todos`, firstTodo)
-        const secondPostResponse = await client.post(`${process.env.BASE_URL}/api/todos`, secondTodo)
-        const otherPostResponse = await otherClient.post(`${process.env.BASE_URL}/api/todos`, otherTodo)
+        const firstPostResponse = await client.post(
+            `${process.env.BASE_URL}/api/todos`,
+            firstTodo
+        )
+        const secondPostResponse = await client.post(
+            `${process.env.BASE_URL}/api/todos`,
+            secondTodo
+        )
+        const otherPostResponse = await otherClient.post(
+            `${process.env.BASE_URL}/api/todos`,
+            otherTodo
+        )
         expect(firstPostResponse.status).toEqual(StatusCodes.CREATED)
         expect(secondPostResponse.status).toEqual(StatusCodes.CREATED)
         expect(otherPostResponse.status).toEqual(StatusCodes.CREATED)
         try {
             // when
-            const getAllResponse = await client.get(`${process.env.BASE_URL}/api/todos?createdBy=${encodeURIComponent(userId)}`)
+            const getAllResponse = await client.get(
+                `${process.env.BASE_URL}/api/todos?createdBy=${encodeURIComponent(userId)}`
+            )
 
             // then
             expect(getAllResponse.status).toEqual(StatusCodes.OK)
@@ -135,15 +155,22 @@ describe('Todo resource', () => {
             expect(foundOther).toEqual(undefined)
         } finally {
             // cleanup
-            const firstDeleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${firstPostResponse.data.message.id}`)
-            const secondDeleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${secondPostResponse.data.message.id}`)
-            const otherDeleteResponse = await otherClient.delete(`${process.env.BASE_URL}/api/todos/${otherPostResponse.data.message.id}`)
+            const firstDeleteResponse = await client.delete(
+                `${process.env.BASE_URL}/api/todos/${firstPostResponse.data.message.id}`
+            )
+            const secondDeleteResponse = await client.delete(
+                `${process.env.BASE_URL}/api/todos/${secondPostResponse.data.message.id}`
+            )
+            const otherDeleteResponse = await otherClient.delete(
+                `${process.env.BASE_URL}/api/todos/${otherPostResponse.data.message.id}`
+            )
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             await logOutUser(client)
-            await logOutUser(otherClient)
-            const otherUserDeleteResponse = await otherClient.delete(`${process.env.BASE_URL}/api/users/${otherUserId}`)
+            const otherUserDeleteResponse = await otherClient.delete(
+                `${process.env.BASE_URL}/api/users/${otherUserId}`
+            )
             expect(otherUserDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
     })
@@ -179,6 +206,8 @@ describe('Todo resource', () => {
 
         // then
         expect(postResponse?.status).toEqual(StatusCodes.UNAUTHORIZED)
-        expect( postResponse?.data.message).toEqual('Unauthorized: You must be logged in to perform action=create todo.')
+        expect(postResponse?.data.message).toEqual(
+            'Unauthorized: You must be logged in to perform action=create todo.'
+        )
     })
 })
