@@ -33,7 +33,7 @@ export default class TodoController {
     async deleteTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received delete todos request', {requestParam: request.params})
         if (!request.isAuthenticated()) {
-            next(new UnauthorizedException('create todo'))
+            next(new UnauthorizedException('delete todo'))
             return
         }
         let id: string = request.params.id
@@ -41,6 +41,10 @@ export default class TodoController {
             return next(new BadRequestException(id))
         }
         try {
+            const todo = await this.todoService.getTodo(id)
+            if (todo.createdBy !== (request.user as User).id) {
+                throw new UnauthorizedException('delete todo')
+            }
             await this.todoService.deleteTodo(id)
             getLogger().info('Sending delete todos response', {status: StatusCodes.NO_CONTENT})
             return response.sendStatus(StatusCodes.NO_CONTENT)
@@ -52,9 +56,10 @@ export default class TodoController {
     async getTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get todos request', {requestParam: request.params})
         if (!request.isAuthenticated()) {
-            next(new UnauthorizedException('create todo'))
+            next(new UnauthorizedException('get todo'))
             return
         }
+
         let id: string = request.params.id
         let todo: Todo
         if (!id.match(UUID_REG_EXP)) {
@@ -62,6 +67,9 @@ export default class TodoController {
         }
         try {
             todo = await this.todoService.getTodo(id)
+            if (todo.createdBy !== (request.user as User).id) {
+                throw new UnauthorizedException('get todo')
+            }
             getLogger().info('Sending get todos response', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
                 message: todo
@@ -73,11 +81,11 @@ export default class TodoController {
 
     async getTodosByCreatedBy(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get all todos request')
-        if (!request.isAuthenticated()) {
-            next(new UnauthorizedException('create todo'))
+        let createdBy: any = request.query.createdBy
+        if (!request.isAuthenticated() || createdBy !== (request.user as User).id) {
+            next(new UnauthorizedException('get todos by created by'))
             return
         }
-        let createdBy: any = request.query.createdBy
         try {
             const todos: Todo[] = await this.todoService.getTodosByCreatedBy(createdBy)
             getLogger().info('Sending get all todos request', {status: StatusCodes.OK})
@@ -92,7 +100,7 @@ export default class TodoController {
     async updateTodo(request: Request, res: Response, next: NextFunction) {
         getLogger().info('Received update todos request', {requestParam: request.params, requestBody: request.body})
         if (!request.isAuthenticated()) {
-            next(new UnauthorizedException('create todo'))
+            next(new UnauthorizedException('update todo'))
             return
         }
         const id: string = request.params.id
@@ -102,7 +110,11 @@ export default class TodoController {
             return next(new BadRequestException(id))
         }
         try {
-            let todo: Todo = await this.todoService.updateTodo(id, task, createdBy)
+            let todo = await this.todoService.getTodo(id)
+            if (todo.createdBy !== (request.user as User).id) {
+                throw new UnauthorizedException('update todo')
+            }
+            todo = await this.todoService.updateTodo(id, task, createdBy)
             getLogger().info('Sending update todos request', {status: StatusCodes.OK})
             return res.status(StatusCodes.OK).send({
                 message: todo

@@ -21,7 +21,7 @@ describe('Todo resource', () => {
 
         // given
         const todo: Todo = new Todo('the task', userId)
-        const updateTodo: Todo = new Todo('the updated task', 'the updated createdBy')
+        const updateTodo: Todo = new Todo('the updated task', userId)
 
         // when
         const postResponse = await client.post(`${process.env.BASE_URL}/api/todos`, todo)
@@ -55,7 +55,7 @@ describe('Todo resource', () => {
         let updateMessage = updateResponse.data.message
         expect(updateMessage.id).toEqual(id)
         expect(updateMessage.task).toEqual('the updated task')
-        expect(updateMessage.createdBy).toEqual('the updated createdBy')
+        expect(updateMessage.createdBy).toEqual(userId)
 
         // when
         const getAfterUpdateResponse = await client.get(
@@ -67,7 +67,7 @@ describe('Todo resource', () => {
         const getAfterUpdateMessage = getAfterUpdateResponse.data.message
         expect(getAfterUpdateMessage.id).toEqual(id)
         expect(getAfterUpdateMessage.task).toEqual('the updated task')
-        expect(getAfterUpdateMessage.createdBy).toEqual('the updated createdBy')
+        expect(getAfterUpdateMessage.createdBy).toEqual(userId)
 
         // when
         const deleteResponse = await client.delete(

@@ -70,7 +70,8 @@ describe('Todo controller', () => {
         {apiEndpoint, controllerFunction}
     ) => {
         const request = {
-            isAuthenticated: () => false
+            isAuthenticated: () => false,
+            query: {createdBy: 'asd'}
         }
         const response = {
             status: jest.fn(function () {
@@ -84,6 +85,115 @@ describe('Todo controller', () => {
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
+    })
+    it('getTodo returns unauthorized when user id does not match todo createdBy', async () => {
+        const id = uuidv4();
+        const mockTodo = {id: id, task: 'the task', createdBy: 'other'};
+        const request = {
+            isAuthenticated: () => true,
+            user: {id: 'createdBy'},
+            params: {id: id}
+        };
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        };
+        const next = jest.fn();
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
+
+        // when
+        await todoController.getTodo(request as any, response as any, next);
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
+    })
+    it('updateTodo returns unauthorized when user id does not match todo createdBy', async () => {
+        const id = uuidv4();
+        const mockTodo = {id: id, task: 'the task', createdBy: 'other'};
+        const request = {
+            isAuthenticated: () => true,
+            user: {id: 'createdBy'},
+            params: {id: id},
+            body: {task: 'the task'}
+        };
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        };
+        const next = jest.fn();
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
+
+        // when
+        await todoController.updateTodo(request as any, response as any, next);
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
+    })
+
+    it('deleteTodo returns unauthorized when user id does not match todo createdBy', async () => {
+        const id = uuidv4();
+        const mockTodo = {id: id, task: 'the task', createdBy: 'other'};
+        const request = {
+            isAuthenticated: () => true,
+            user: {id: 'createdBy'},
+            params: {id: id},
+        };
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        };
+        const next = jest.fn();
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
+
+        // when
+        await todoController.deleteTodo(request as any, response as any, next);
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
+    })
+
+    it('getTodosByCreatedBy returns unauthorized when user id does not match todo createdBy', async () => {
+        const request = {
+            isAuthenticated: () => true,
+            user: {id: 'createdBy'},
+            query: {id: 'other'},
+        };
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        };
+        const next = jest.fn();
+
+        // when
+        await todoController.getTodosByCreatedBy(request as any, response as any, next);
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
     })
     it('createTodo should next error that is returned from the TodoService', async () => {
         // given
@@ -118,6 +228,7 @@ describe('Todo controller', () => {
                 createdBy: undefined
             },
             isAuthenticated: () => true,
+            user: {id: 'the createdBy'}
         }
         const response = {
             status: jest.fn(function () {
@@ -132,7 +243,15 @@ describe('Todo controller', () => {
             } else {
                 return null
             }
-        })
+        });
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
 
         // when
         await todoController.updateTodo(request as any, response as any, jest.fn())
@@ -168,6 +287,7 @@ describe('Todo controller', () => {
         const request = {
             params: {id: id},
             isAuthenticated: () => true,
+            user: {id: 'the createdBy'}
         }
         const response = {
             status: jest.fn(function () {
@@ -238,7 +358,8 @@ describe('Todo controller', () => {
             isAuthenticated: () => true,
             query: {
                 createdBy: 'the createdBy'
-            }
+            },
+            user: {id: 'the createdBy'}
         }
         const response = {
             status: jest.fn(function () {
@@ -268,7 +389,8 @@ describe('Todo controller', () => {
             isAuthenticated: () => true,
             query: {
                 createdBy: 'the createdBy'
-            }
+            },
+            user: {id: 'the createdBy'}
         }
         const response = {};
 
@@ -287,15 +409,25 @@ describe('Todo controller', () => {
     it('deleteTodo should call service and respond with NO_CONTENT', async () => {
         // given
         let id: string = uuidv4()
+        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
         const request = {
             isAuthenticated: () => true,
             params: {id: id},
+            user: {id: 'the createdBy'}
         }
         const response = {
             sendStatus: jest.fn(function () {
                 return this
             })
-        }
+        };
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
 
         // when
         await todoController.deleteTodo(request as any, response as any, jest.fn())
