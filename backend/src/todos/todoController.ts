@@ -6,6 +6,7 @@ import {getLogger} from '../Logger'
 import TodoService from './todoService'
 import Todo from './Todo'
 import {UnauthorizedException} from '../exceptions/UnauthorizedException'
+import User from '../users/User'
 
 export default class TodoController {
     todoService = new TodoService()
@@ -17,7 +18,7 @@ export default class TodoController {
             return
         }
         let task: string = request.body.task
-        let createdBy: string = request.body.createdBy
+        let createdBy: string = (request.user as User).id
         try {
             const todo: Todo = await this.todoService.createTodo(task, createdBy)
             getLogger().info('Sending create todos response', {status: StatusCodes.CREATED})

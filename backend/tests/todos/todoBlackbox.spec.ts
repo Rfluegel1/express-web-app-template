@@ -15,9 +15,12 @@ describe('Todo resource', () => {
     it('is created, fetched, updated, and deleted', async () => {
         // given
         await logInTestUser(client)
+        const userId: string = (
+            await client.get(`${process.env.BASE_URL}/api/users?email=cypressdefault@gmail.com`)
+        ).data.id
 
         // given
-        const todo: Todo = new Todo('the task', 'the createdBy')
+        const todo: Todo = new Todo('the task', userId)
         const updateTodo: Todo = new Todo('the updated task', 'the updated createdBy')
 
         // when
@@ -28,7 +31,7 @@ describe('Todo resource', () => {
         const postMessage = postResponse.data.message
         expect(postMessage.id).toMatch(UUID_REG_EXP)
         expect(postMessage.task).toEqual('the task')
-        expect(postMessage.createdBy).toEqual('the createdBy')
+        expect(postMessage.createdBy).toEqual(userId)
 
         // when
         const id = postMessage.id
@@ -39,7 +42,7 @@ describe('Todo resource', () => {
         const getMessage = getResponse.data.message
         expect(getMessage.id).toEqual(id)
         expect(getMessage.task).toEqual('the task')
-        expect(getMessage.createdBy).toEqual('the createdBy')
+        expect(getMessage.createdBy).toEqual(userId)
 
         // when
         const updateResponse = await client.put(`${process.env.BASE_URL}/api/todos/${id}`, updateTodo)
@@ -87,20 +90,33 @@ describe('Todo resource', () => {
     it('get all returns all posts createdBy the authenticated user', async () => {
         // given
         await logInTestUser(client)
+        const userId: string = (
+            await client.get(`${process.env.BASE_URL}/api/users?email=cypressdefault@gmail.com`)
+        ).data.id
+
+        const email = `test${Math.floor(Math.random() * 10000)}@example.com`
+        const password = 'password'
+        const createUserResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
+            email: email, password: password
+        })
+        expect(createUserResponse.status).toEqual(StatusCodes.CREATED)
+        const otherJar = new CookieJar();
+        const otherClient = wrapper(axios.create({ jar: otherJar, withCredentials: true }));
+        await logInTestUser(otherClient, email, password)
 
         // given
-        const firstTodo: Todo = new Todo('first task', 'authenticated createdBy')
-        const secondTodo: Todo = new Todo('second task', 'authenticated createdBy')
-        const otherTodo: Todo = new Todo('other task', 'other createdBy')
+        const firstTodo: Todo = new Todo('first task')
+        const secondTodo: Todo = new Todo('second task')
+        const otherTodo: Todo = new Todo('other task')
         const firstPostResponse = await client.post(`${process.env.BASE_URL}/api/todos`, firstTodo)
         const secondPostResponse = await client.post(`${process.env.BASE_URL}/api/todos`, secondTodo)
-        const otherPostResponse = await client.post(`${process.env.BASE_URL}/api/todos`, otherTodo)
+        const otherPostResponse = await otherClient.post(`${process.env.BASE_URL}/api/todos`, otherTodo)
         expect(firstPostResponse.status).toEqual(StatusCodes.CREATED)
         expect(secondPostResponse.status).toEqual(StatusCodes.CREATED)
         expect(otherPostResponse.status).toEqual(StatusCodes.CREATED)
         try {
             // when
-            const getAllResponse = await client.get(`${process.env.BASE_URL}/api/todos?createdBy=${encodeURIComponent('authenticated createdBy')}`)
+            const getAllResponse = await client.get(`${process.env.BASE_URL}/api/todos?createdBy=${encodeURIComponent(userId)}`)
 
             // then
             expect(getAllResponse.status).toEqual(StatusCodes.OK)
@@ -108,11 +124,11 @@ describe('Todo resource', () => {
 
             let foundFirst = todos.find((todo: Todo): boolean => todo.id === firstPostResponse.data.message.id)
             expect(foundFirst.task).toEqual('first task')
-            expect(foundFirst.createdBy).toEqual('authenticated createdBy')
+            expect(foundFirst.createdBy).toEqual(userId)
 
             let foundSecond = todos.find((todo: Todo): boolean => todo.id === secondPostResponse.data.message.id)
             expect(foundSecond.task).toEqual('second task')
-            expect(foundSecond.createdBy).toEqual('authenticated createdBy')
+            expect(foundSecond.createdBy).toEqual(userId)
 
             let foundOther = todos.find((todo: Todo): boolean => todo.id === otherPostResponse.data.message.id)
             expect(foundOther).toEqual(undefined)
@@ -120,11 +136,12 @@ describe('Todo resource', () => {
             // cleanup
             const firstDeleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${firstPostResponse.data.message.id}`)
             const secondDeleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${secondPostResponse.data.message.id}`)
-            const otherDeleteResponse = await client.delete(`${process.env.BASE_URL}/api/todos/${otherPostResponse.data.message.id}`)
+            const otherDeleteResponse = await otherClient.delete(`${process.env.BASE_URL}/api/todos/${otherPostResponse.data.message.id}`)
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             await logOutUser(client)
+            await logOutUser(otherClient)
         }
     })
     it('non uuid returns bad request and info', async () => {

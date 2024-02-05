@@ -35,7 +35,8 @@ describe('Todo controller', () => {
         const mockTodo = {id: uuidv4(), task: 'the task', createdBy: 'the createdBy'}
         const request = {
             isAuthenticated: () => true,
-            body: {task: 'the task', createdBy: 'the createdBy'}
+            body: {task: 'the task'},
+            user: {id: 'the createdBy'}
         }
         const response = {
             status: jest.fn(function () {
@@ -65,10 +66,9 @@ describe('Todo controller', () => {
     ${'deleteTodo'}          | ${todoController.deleteTodo}
     ${'updateTodo'}          | ${todoController.updateTodo}
     ${'getTodosByCreatedBy'} | ${todoController.getTodosByCreatedBy}
-    `('$apiEndpoint returns unauthorized when the request session is not authenticated', async ({
-                                                                                                                                                                                                                                                                                                                                                                                                                             apiEndpoint,
-                                                                                                                                                                                                                                                                                                                                                                                                                             controllerFunction
-                                                                                                                                                                                                                                                                                                                                                                                                                         }) => {
+    `('$apiEndpoint returns unauthorized when the request session is not authenticated', async (
+        {apiEndpoint, controllerFunction}
+    ) => {
         const request = {
             isAuthenticated: () => false
         }
@@ -89,7 +89,7 @@ describe('Todo controller', () => {
         // given
         const request = {
             body: {task: 'the task'},
-            oidc: {user: {sid: 'the createdBy'}},
+            user: {id: 'the createdBy'},
             isAuthenticated: () => true,
         }
         const response = {};
