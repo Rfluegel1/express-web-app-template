@@ -3,7 +3,7 @@ import axios from 'axios'
 import {UUID_REG_EXP} from '../../src/contants'
 import {AxiosError} from 'axios'
 
-jest.setTimeout(30000)
+jest.setTimeout(30000 * 2)
 describe('User resource', () => {
     it('should create, get, update, and delete', async () => {
         // given

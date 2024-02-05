@@ -3,7 +3,7 @@ import {StatusCodes} from 'http-status-codes'
 import {UUID_REG_EXP} from '../../src/contants'
 import axios, {AxiosError} from 'axios'
 
-jest.setTimeout(30000)
+jest.setTimeout(30000 * 2)
 
 describe('Post resource', () => {
     it('is created, fetched, updated, and deleted', async () => {

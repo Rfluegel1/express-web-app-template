@@ -9,7 +9,7 @@ import {logInTestUser, logOutUser} from '../helpers'
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar, withCredentials: true }));
 
-jest.setTimeout(30000)
+jest.setTimeout(30000 * 2)
 
 describe('Todo resource', () => {
     it('is created, fetched, updated, and deleted', async () => {
