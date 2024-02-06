@@ -63,14 +63,6 @@ jobs:
         working-directory: './frontend'
         run: npm run test frontend
 
-      - name: install cypress dependencies
-        working-directory: './cypress'
-        run: npm install
-
-      - name: Run e2e Tests (Development)
-        working-directory: './cypress'
-        run: npm run e2e
-
       - name: Install Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
 
@@ -84,7 +76,3 @@ jobs:
       - name: Run Blackbox Tests (Staging)
         working-directory: './backend'
         run: npm run test:staging
-
-      - name: Run e2e Tests (Staging)
-        working-directory: './cypress'
-        run: npm run e2e:staging

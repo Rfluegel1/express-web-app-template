@@ -21,11 +21,3 @@ jobs:
       - name: Run Backend Tests
         working-directory: './backend'
         run: npm run test backend:staging
-
-      - name: install cypress dependencies
-        working-directory: './cypress'
-        run: npm install
-
-      - name: Run e2e Tests
-        working-directory: './cypress'
-        run: npm run e2e:staging

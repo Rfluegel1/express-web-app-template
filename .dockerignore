@@ -1,7 +1,6 @@
 *.idea
 /.github
 /coverage
-/cypress
 /node_modules
 /tests
 .gitignore

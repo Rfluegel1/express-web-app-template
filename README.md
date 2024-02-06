@@ -64,18 +64,6 @@ These are the steps I had to complete on macOS to make brew play nicely
 
 note*: make sure port 8080 is available
 
-### Run end-to-end tests
-
-#### Open cypress application
-
-```npm run cypress```
-
-#### Start fullstack and run headless
-
-```npm run e2e```
-
-note*: make sure port 8080 and 3000 are available
-
 ### Run performance tests
 
 1. ```brew install k6```
