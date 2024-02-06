@@ -18,10 +18,6 @@ updates.
 
 ### Run backend
 
-1. Auth0 secret must be set to run the application
-2. Value should be set in zshrc since it's a live service
-3. Ask teammate for value
-
 ```npm run backend```
 
 ### Run backend and frontend
@@ -170,4 +166,4 @@ Only manual triggers will run this job. This will deploy main code to staging.
 
 ### 4. Add application as source for log service
 
-### 5. Set GitHub Action's FLY_SECRET and AUTH0_SECRET
+### 5. Set GitHub Action's secrets (see .yml files)

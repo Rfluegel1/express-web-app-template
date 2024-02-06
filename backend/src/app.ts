@@ -10,7 +10,6 @@ import path from 'path'
 import {DatabaseException} from './exceptions/DatabaseException'
 import {getLogger, logger} from './Logger'
 import {v4} from 'uuid'
-import {auth, requiresAuth} from 'express-openid-connect'
 
 import cls from 'cls-hooked'
 import todoRoutes from './todos/todoRoutes'
@@ -67,15 +66,6 @@ app.use((request, response, next) => {
     })
 })
 
-app.use(auth({
-    authRequired: false,
-    auth0Logout: true,
-    baseURL: process.env.BASE_URL,
-    clientID: process.env.AUTH0_CLIENT_ID,
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-    secret: process.env.AUTH0_SECRET
-}))
-
 let userRepository: UserRepository = new UserRepository()
 passport.use(new LocalStrategy(
     async (email: string, password: string, done: any) => {
@@ -115,10 +105,6 @@ passport.deserializeUser(async (id: string, done) => {
             done(err, null)
         }
     })
-})
-
-app.get('/profile', requiresAuth(), (req, res) => {
-    res.send(JSON.stringify(req.oidc.user, null, 2))
 })
 
 // Serve static files from the React app
