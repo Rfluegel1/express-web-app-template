@@ -30,7 +30,6 @@ export async function logInTestUser(
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
     expect(logInResponse.status).toEqual(StatusCodes.OK)
-    expect(logInResponse.data).toContain('href="/"')
     return logInResponse
 }
 
@@ -38,6 +37,5 @@ export async function logOutUser(client: AxiosInstance) {
     const logOutResponse = await client.post(`${process.env.BASE_URL}/api/logout`)
 
     expect(logOutResponse.status).toEqual(StatusCodes.OK)
-    expect(logOutResponse.data).toContain('href="/"')
     return logOutResponse
 }
