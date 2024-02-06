@@ -55,11 +55,11 @@ jobs:
 
       - name: Run Backend Tests (Development)
         working-directory: './backend'
-        run: npm run test backend
+        run: npm run test
 
-      - name: Run Frontend Tests (Development)
+      - name: Run Playwright Tests (Development)
         working-directory: './frontend'
-        run: npm run test frontend
+        run: npm run test
 
       - name: Install Flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
@@ -73,4 +73,8 @@ jobs:
 
       - name: Run Blackbox Tests (Staging)
         working-directory: './backend'
+        run: npm run test:staging
+
+      - name: Run Playwright Tests (Staging)
+        working-directory: './frontend'
         run: npm run test:staging
