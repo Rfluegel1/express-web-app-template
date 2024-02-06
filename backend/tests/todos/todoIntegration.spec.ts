@@ -26,7 +26,7 @@ describe('Todo resource with some mocked aspects', () => {
 
             // when
             try {
-                getResponse = await client.get(`http://127.0.0.1:8080/api/todos/${v4()}`)
+                getResponse = await client.get(`http://127.0.0.1:8090/api/todos/${v4()}`)
             } catch (error) {
                 getResponse = (error as AxiosError).response
             }

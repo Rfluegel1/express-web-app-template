@@ -58,7 +58,7 @@ These are the steps I had to complete on macOS to make brew play nicely
 
 ```npm run test:github```
 
-note*: make sure port 8080 is available
+note*: make sure port 8090 is available
 
 ### Run performance tests
 

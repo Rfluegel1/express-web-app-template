@@ -27,7 +27,7 @@ export default class HealthCheckService {
             response.integrations.database.details = error.message
         }
         try {
-            const getResponse = await axios.get('http://127.0.0.1:8080/api/posts')
+            const getResponse = await axios.get('http://127.0.0.1:8090/api/posts')
             if (getResponse.status !== StatusCodes.OK) {
                 response.result = 'failure'
                 response.integrations.post_resource.result = 'failure'

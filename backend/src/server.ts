@@ -7,7 +7,7 @@ import app from './app'
 import UserRepository from './users/userRepository'
 
 const httpServer = http.createServer(app)
-const PORT: any = process.env.PORT ?? 8080
+const PORT: any = process.env.PORT ?? 8090
 
 let userRepository: UserRepository = new UserRepository()
 const logger = getLogger()

@@ -16,7 +16,7 @@ export default async () => {
         fs.writeFileSync(path.join(__dirname, 'server.pid'), pid)
         server.stdout.on('data', (data) => {
             const output = data.toString()
-            if (output.includes('The server is running on port 8080')) {
+            if (output.includes('The server is running on port 8090')) {
                 resolve(server)
             }
         })

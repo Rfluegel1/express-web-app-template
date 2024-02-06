@@ -21,7 +21,7 @@ WORKDIR /app/backend
 RUN npm install --only=production
 
 # Expose the port the backend app runs on
-EXPOSE 8080
+EXPOSE 8090
 
 # Specify the command to run the backend server when the container starts
 CMD [ "npx", "ts-node", "src/server.ts" ]

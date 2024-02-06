@@ -26,7 +26,7 @@ describe('Health check service', () => {
             // when
             const actual: any = await healthCheckService.healthcheck()
             // then
-            expect(mockedAxios.get).toHaveBeenCalledWith('http://127.0.0.1:8080/api/posts')
+            expect(mockedAxios.get).toHaveBeenCalledWith('http://127.0.0.1:8090/api/posts')
             expect(dataSource.query).toBeCalledWith('SELECT 1')
             expect(actual.result).toEqual('success')
             expect(actual.integrations.database.result).toEqual('success')

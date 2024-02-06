@@ -13,7 +13,7 @@ export const options = {
 }
 
 export default function () {
-    const BASE_URL = __ENV.BASE_URL ? __ENV.BASE_URL : 'http://127.0.0.1:8080'
+    const BASE_URL = __ENV.BASE_URL ? __ENV.BASE_URL : 'http://127.0.0.1:8090'
     const postBody = {userId: 'the user', title: 'the title', body: 'the body'}
     const putBody = {userId: 'the new user', title: 'the new title', body: 'the new body'}
     const postResponse = http.post(`${BASE_URL}/api/posts`, postBody)
