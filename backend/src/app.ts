@@ -1,15 +1,14 @@
 import express, {Express, Request, Response} from 'express'
-import postRoutes from './posts/postRoutes'
 import healthCheckRoutes from './healthCheck/healthCheckRoutes'
 import heartbeatRoutes from './heartbeat/heartbeatRoutes'
 import {StatusCodes} from 'http-status-codes'
 import {NotFoundException} from './exceptions/NotFoundException'
 import {BadRequestException} from './exceptions/BadRequestException'
-import PostController from './posts/postController'
 import path from 'path'
 import {DatabaseException} from './exceptions/DatabaseException'
 import {getLogger, logger} from './Logger'
 import {v4} from 'uuid'
+import UserController from './users/userController'
 
 import cls from 'cls-hooked'
 import todoRoutes from './todos/todoRoutes'
@@ -112,7 +111,6 @@ console.log('static path:', path.join(__dirname, '../build'))
 app.use(express.static(path.join(__dirname, '../build')))
 
 app.use('/api', passportRoutes)
-app.use('/api', postRoutes)
 app.use('/api', todoRoutes)
 app.use('/api', userRoutes)
 app.use('/', healthCheckRoutes)
@@ -161,6 +159,6 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
     }
     getLogger().error(errorWithStatus)
     return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})
-}).bind(PostController))
+}).bind(UserController))
 
 export default app

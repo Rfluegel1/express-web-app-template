@@ -4,15 +4,15 @@ require('dotenv').config({path: `.env.${env}`})
 import {getLogger} from './Logger'
 import http from 'http'
 import app from './app'
-import PostRepository from './posts/postRepository'
+import UserRepository from './users/userRepository'
 
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8080
 
-let postRepository: PostRepository = new PostRepository()
+let userRepository: UserRepository = new UserRepository()
 const logger = getLogger()
 
-postRepository.initialize()
+userRepository.initialize()
     .then(() => {
         httpServer.listen(PORT, () => {
             logger.info(`The server is running on port ${PORT}`)
@@ -26,7 +26,7 @@ postRepository.initialize()
 const gracefulShutdown = () => {
     logger.info('Shutting down gracefully...')
     httpServer.close(async () => {
-        await postRepository.destroy()
+        await userRepository.destroy()
         logger.info('Closed all connections')
         process.exit(0)
     })
