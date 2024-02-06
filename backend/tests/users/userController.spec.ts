@@ -84,7 +84,8 @@ describe('User controller', () => {
         const mockUser = {id: id, ...user}
         const request = {
             params: {id: id},
-            isAuthenticated: () => true
+            isAuthenticated: () => true,
+            user: {id: id}
         }
         const response = {
             status: jest.fn(function () {
@@ -113,7 +114,8 @@ describe('User controller', () => {
         let id: string = uuidv4()
         const request = {
             params: {id: id},
-            isAuthenticated: () => true
+            isAuthenticated: () => true,
+            user: {id: id}
         }
         const response = {};
 
@@ -133,6 +135,7 @@ describe('User controller', () => {
         const request = {
             isAuthenticated: () => true,
             params: {id: 'undefined'},
+            user: {id: 'undefined'}
         }
         const response = {}
 
@@ -197,6 +200,7 @@ describe('User controller', () => {
         let id: string = uuidv4()
         const request = {
             isAuthenticated: () => true,
+            user: {id: id},
             params: {id: id},
         }
         const response = {
@@ -216,6 +220,7 @@ describe('User controller', () => {
         // given
         const request = {
             isAuthenticated: () => true,
+            user: {id: 'undefined'},
             params: {id: 'undefined'},
         }
         const response = {}
@@ -234,13 +239,9 @@ describe('User controller', () => {
         const mockUser = {id: id, email: 'email', passwordHash: 'passwordHash'}
         const request = {
             isAuthenticated: () => true,
-            params: {
-                id: id
-            },
-            body: {
-                email: 'email',
-                password: undefined
-            },
+            user: {id: id},
+            params: {id: id},
+            body: {email: 'email', password: undefined},
         }
         const response = {
             status: jest.fn(function () {
@@ -270,6 +271,7 @@ describe('User controller', () => {
         // given
         const request = {
             isAuthenticated: () => true,
+            user: {id: 'undefined'},
             params: {id: 'undefined'},
             body: {
                 task: 'the user',
@@ -295,7 +297,36 @@ describe('User controller', () => {
         {apiEndpoint, controllerFunction}
     ) => {
         const request = {
+            user: {id: 'who cares'},
+            params: {id: 'who cares'},
             isAuthenticated: () => false
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        }
+        const next = jest.fn()
+
+        // when
+        await controllerFunction(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
+    })
+
+    it.each`
+    apiEndpoint              | controllerFunction
+    ${'getUser'}             | ${userController.getUser}
+    ${'deleteUser'}          | ${userController.deleteUser}
+    ${'updateUser'}          | ${userController.updateUser}
+    `('$apiEndpoint returns unauthorized when auth user id does not match param id', async (
+        {apiEndpoint, controllerFunction}
+    ) => {
+        const request = {
+            isAuthenticated: () => true,
+            user: {id: 'user'},
+            params: {id: 'other'},
         }
         const response = {
             status: jest.fn(function () {

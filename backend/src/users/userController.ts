@@ -15,11 +15,11 @@ export default class UserController {
             'Received update users request',
             {requestParam: request.params, requestBody: request.body}
         )
-        if (!request.isAuthenticated()) {
+        const id: string = request.params.id
+        if (!request.isAuthenticated() || (request.user as User).id !== id) {
             next(new UnauthorizedException('update user'))
             return
         }
-        const id: string = request.params.id
         const email: string = request.body.email
         const password: string = request.body.password
         if (!id.match(UUID_REG_EXP)) {
@@ -53,11 +53,11 @@ export default class UserController {
 
     async deleteUser(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received delete users request', {requestParam: request.params})
-        if (!request.isAuthenticated()) {
+        let id: string = request.params.id
+        if (!request.isAuthenticated() || (request.user as User).id !== id) {
             next(new UnauthorizedException('delete user'))
             return
         }
-        let id: string = request.params.id
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
@@ -72,11 +72,11 @@ export default class UserController {
 
     async getUser(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get users request', {requestParam: request.params})
-        if (!request.isAuthenticated()) {
+        let id: string = request.params.id
+        if (!request.isAuthenticated() || (request.user as User).id !== id) {
             next(new UnauthorizedException('get user'))
             return
         }
-        let id: string = request.params.id
         let user: User
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
@@ -107,4 +107,3 @@ export default class UserController {
         }
     }
 }
-
