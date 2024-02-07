@@ -122,7 +122,7 @@ app.get('*', (req, res) => {
 })
 
 app.use((request, response, next) => {
-    const error: Error = new Error('Path not found')
+    const error: Error = new Error(`Path not found for url=${request.url}`)
     next(error)
 })
 
