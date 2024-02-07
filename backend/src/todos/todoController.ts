@@ -81,11 +81,11 @@ export default class TodoController {
 
     async getTodosByCreatedBy(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get all todos request')
-        let createdBy: any = request.query.createdBy
-        if (!request.isAuthenticated() || createdBy !== (request.user as User).id) {
+        if (!request.isAuthenticated()) {
             next(new UnauthorizedException('get todos by created by'))
             return
         }
+        let createdBy: any = (request.user as User).id
         try {
             const todos: Todo[] = await this.todoService.getTodosByCreatedBy(createdBy)
             getLogger().info('Sending get all todos request', {status: StatusCodes.OK})

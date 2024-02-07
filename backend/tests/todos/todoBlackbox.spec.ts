@@ -136,7 +136,7 @@ describe('Todo resource', () => {
         try {
             // when
             const getAllResponse = await client.get(
-                `${process.env.BASE_URL}/api/todos?createdBy=${encodeURIComponent(userId)}`
+                `${process.env.BASE_URL}/api/todos`
             )
 
             // then

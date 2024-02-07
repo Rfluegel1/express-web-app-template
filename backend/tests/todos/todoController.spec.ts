@@ -176,25 +176,6 @@ describe('Todo controller', () => {
         expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
     })
 
-    it('getTodosByCreatedBy returns unauthorized when user id does not match todo createdBy', async () => {
-        const request = {
-            isAuthenticated: () => true,
-            user: {id: 'createdBy'},
-            query: {id: 'other'},
-        };
-        const response = {
-            status: jest.fn(function () {
-                return this
-            }), send: jest.fn(),
-        };
-        const next = jest.fn();
-
-        // when
-        await todoController.getTodosByCreatedBy(request as any, response as any, next);
-
-        // then
-        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
-    })
     it('createTodo should next error that is returned from the TodoService', async () => {
         // given
         const request = {
@@ -453,4 +434,3 @@ describe('Todo controller', () => {
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
 })
-
