@@ -15,6 +15,7 @@ const config = {
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,
+	timeout: 15000,
 };
 
 export default config;

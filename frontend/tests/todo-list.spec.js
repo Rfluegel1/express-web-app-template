@@ -112,3 +112,14 @@ test('empty task cannot be created', async ({ page }) => {
 	// then
 	await expect(page.locator('div[role="alert"]')).toHaveText('Task is required');
 });
+
+test('should have link that logs user out', async ({ page }) => {
+	// given
+	await logInTestUser(page);
+
+	// when
+	await page.click('a[href="/logout"]');
+
+	// then
+	await expect(page.locator('h1')).toHaveText('Login');
+});

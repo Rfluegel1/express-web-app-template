@@ -53,9 +53,9 @@
                 <div class="error" role="alert">{error}</div>
             {/if}
         </form>
-<!--        <div>-->
-<!--            <a href="/logout">Logout</a>-->
-<!--        </div>-->
+        <div>
+            <a href="/logout">Logout</a>
+        </div>
 <!--        <div>-->
 <!--            <a href="/email-change">Change Email</a>-->
 <!--        </div>-->
