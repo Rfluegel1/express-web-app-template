@@ -45,3 +45,14 @@ test('should display only todo records made by user', async ({page}) => {
         await otherClient.delete(`${process.env.BASE_URL}/api/users/${userId}`)
     }
 })
+
+test('should redirect when user is not logged in', async ({ page }) => {
+    // given
+    await page.goto('/logout');
+
+    // when
+    await page.goto('/');
+
+    // then
+    await expect(page.locator('h1')).toHaveText('Login');
+});
