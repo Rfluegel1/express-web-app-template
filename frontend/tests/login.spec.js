@@ -20,3 +20,19 @@ test('invalid login displays error message', async ({ page }) => {
         )
     ).toBeVisible();
 });
+
+test('logged in user should be redirected to todoList when visiting login page', async ({
+                                                                                            page
+                                                                                        }) => {
+    // given
+    await logInTestUser(page);
+
+    // expect
+    await expect(page.locator('h1')).toHaveText('Todo List');
+
+    // when
+    await page.goto('/login');
+
+    // then
+    await expect(page.locator('h1')).toHaveText('Todo List');
+});

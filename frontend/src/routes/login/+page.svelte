@@ -7,11 +7,11 @@
 	let password = '';
 	let error = '';
 
-	// onMount(() => {
-	// 	if (pb.authStore.isValid) {
-	// 		goto('/');
-	// 	}
-	// });
+	onMount(async () => {
+		if ((await axios.get('/api/session-check')).data.sessionActive) {
+			await goto('/');
+		}
+	});
 
 	async function handleSubmit() {
 		try {
