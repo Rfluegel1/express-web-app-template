@@ -101,3 +101,14 @@ test('should allow tasks to be created and deleted', async ({ page }) => {
 		}
 	}
 });
+
+test('empty task cannot be created', async ({ page }) => {
+	// given
+	await logInTestUser(page);
+
+	// when
+	await page.click('button[id="create"]');
+
+	// then
+	await expect(page.locator('div[role="alert"]')).toHaveText('Task is required');
+});

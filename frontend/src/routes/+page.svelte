@@ -15,11 +15,11 @@
     });
 
     async function createTask() {
-    //     if (!task) {
-    //         error = 'Task is required';
-    //         return;
-    //     }
-    //     error = '';
+        if (!task) {
+            error = 'Task is required';
+            return;
+        }
+        error = '';
         await axios.post('/api/todos', {task: task})
         const response  = await axios.get('/api/todos')
         todos = response.data.message;
@@ -62,8 +62,8 @@
 <!--        <div>-->
 <!--            <a href="/password-reset">Change Password</a>-->
 <!--        </div>-->
-    {:else}
-        <div class="error" role="alert">Please verify your email address</div>
+<!--    {:else}-->
+<!--        <div class="error" role="alert">Please verify your email address</div>-->
     {/if}
 </main>
 
