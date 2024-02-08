@@ -36,7 +36,7 @@ describe('User controller', () => {
         const id = uuidv4()
         const mockUser = {id: id, email: 'email', password: 'password'}
         const request = {
-            body: {email: 'email', password: 'password'}
+            body: {email: 'email', password: 'password', confirmPassword: 'password'}
         }
         const response = {
             status: jest.fn(function () {
@@ -77,6 +77,42 @@ describe('User controller', () => {
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
+    })
+
+    it('createUser should next Bad Request when password and confirmPassword do no match', async () => {
+        // given
+        const request = {
+            body: {password: 'password', confirmPassword: 'other'}
+        };
+        const response = {};
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await userController.createUser(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
+    })
+
+    it('updateUser should next Bad Request when password and confirmPassword do no match', async () => {
+        // given
+        let id = uuidv4();
+        const request = {
+            body: {password: 'password', confirmPassword: 'other'},
+            isAuthenticated: () => true,
+            params: {id: id},
+            user: {id: id}
+        };
+        const response = {};
+
+        const next: NextFunction = jest.fn()
+
+        // when
+        await userController.updateUser(request as any, response as any, next)
+
+        // then
+        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
     it('getUser responds with data that is returned from the UserService', async () => {
         // given

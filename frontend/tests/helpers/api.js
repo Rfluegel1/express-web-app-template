@@ -10,7 +10,7 @@ async function ensureTestUser(client, email, password) {
     } catch (error) {
         if ((error)?.response?.status === StatusCodes.NOT_FOUND) {
             const createResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
-                email: email, password: password
+                email: email, password: password, confirmPassword: password
             })
             expect(createResponse.status).toEqual(StatusCodes.CREATED)
             return createResponse.data.id

@@ -10,4 +10,13 @@ describe('custom bad request exception', () => {
         // then
         expect(dummyFunction).toThrow('Parameter id not of type UUID for id=1234')
     })
+
+    it('constructor sets message and name', async () => {
+        // when
+        const dummyFunction = () => {
+            throw new BadRequestException()
+        }
+        // then
+        expect(dummyFunction).toThrow('Password and passwordConfirm do not match')
+    })
 })

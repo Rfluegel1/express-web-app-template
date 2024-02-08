@@ -105,7 +105,7 @@ describe('Todo resource', () => {
         const password = 'password'
         const createUserResponse = await axios.post(
             `${process.env.BASE_URL}/api/users`, {
-                email: email, password: password
+                email: email, password: password, confirmPassword: password
             }
         )
         expect(createUserResponse.status).toEqual(StatusCodes.CREATED)

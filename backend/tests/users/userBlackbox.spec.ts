@@ -8,8 +8,11 @@ import {wrapper} from 'axios-cookiejar-support'
 
 jest.setTimeout(30000 * 2)
 
-const jar = new CookieJar()
-const client = wrapper(axios.create({jar, withCredentials: true}))
+let client: any
+beforeEach(() => {
+	const jar = new CookieJar()
+	client = wrapper(axios.create({jar, withCredentials: true}))
+})
 
 describe('User resource', () => {
     it('should create, get, update, and delete', async () => {
@@ -22,7 +25,7 @@ describe('User resource', () => {
 
         // when
         const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
-            email: email, password: password
+            email: email, password: password, confirmPassword: password
         })
 
         // then
@@ -65,7 +68,7 @@ describe('User resource', () => {
         const updateResponse = await client.put(
             `${process.env.BASE_URL}/api/users/${id}`,
             {
-                email: updatedEmail, password: updatedPassword
+                email: updatedEmail, password: updatedPassword, confirmPassword: updatedPassword
             }
         )
 
@@ -108,5 +111,23 @@ describe('User resource', () => {
         // then
         expect(getAfterDeleteResponse?.status).toEqual(StatusCodes.NOT_FOUND)
         expect(getAfterDeleteResponse?.data.message).toEqual(`Object not found for id=${id}`)
+    })
+
+    it('should throw error when password and confirmPassword do not match', async () => {
+        //given
+        const email = `test${Math.floor(Math.random() * 10000)}@example.com`
+        let postResponse
+
+        // when
+        try {
+        		 postResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
+         	  		 email: email, password: 'password', confirmPassword: 'other'
+        		})
+        } catch (e) {
+						postResponse = (e as AxiosError).response
+				}
+        // then
+        expect(postResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
+        expect(postResponse?.data.message).toEqual('Password and passwordConfirm do not match')
     })
 })

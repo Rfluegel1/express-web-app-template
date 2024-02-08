@@ -22,6 +22,11 @@ export default class UserController {
         }
         const email: string = request.body.email
         const password: string = request.body.password
+        let confirmPassword: string = request.body.confirmPassword
+        if (password !== confirmPassword) {
+            next(new BadRequestException())
+            return
+        }
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
         }
@@ -40,6 +45,11 @@ export default class UserController {
         let email: string = request.body.email
         getLogger().info('Received create users request', {requestBody: {email: email}})
         let password: string = request.body.password
+        let confirmPassword: string = request.body.confirmPassword
+        if (password !== confirmPassword) {
+            next(new BadRequestException())
+            return
+        }
         try {
             const user: User = await this.userService.createUser(email, password)
             getLogger().info('Sending create users response', {status: StatusCodes.CREATED})
