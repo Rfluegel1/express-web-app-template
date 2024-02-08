@@ -14,27 +14,23 @@
             todos = response.data.message;
     });
 
-    // async function createTask() {
+    async function createTask() {
     //     if (!task) {
     //         error = 'Task is required';
     //         return;
     //     }
     //     error = '';
-    //     await pb.collection('todos').create({ task: task, createdBy: loggedInUserRecord.id });
-    //     const response = await pb
-    //         .collection('todos')
-    //         .getList(1, 50, { filter: `createdBy="${loggedInUserRecord.id}"` });
-    //     todos = response.items;
-    //     task = '';
-    // }
+        await axios.post('/api/todos', {task: task})
+        const response  = await axios.get('/api/todos')
+        todos = response.data.message;
+        task = '';
+    }
 
-    // async function deleteTask(id) {
-    //     await pb.collection('todos').delete(id);
-    //     const response = await pb
-    //         .collection('todos')
-    //         .getList(1, 50, { filter: `createdBy="${loggedInUserRecord.id}"` });
-    //     todos = response.items;
-    // }
+    async function deleteTask(id) {
+        await axios.delete(`/api/todos/${id}`)
+        const response  = await axios.get('/api/todos')
+        todos = response.data.message;
+    }
 </script>
 
 <main>
@@ -45,14 +41,14 @@
                 {#each todos as todo (todo.id)}
                     <div class="todo-item">
                         <li data-testid={todo.task}>{todo.task}</li>
-<!--                        <button data-testid="delete {todo.task}" on:click={() => deleteTask(todo.id)}>X</button>-->
+                        <button data-testid="delete {todo.task}" on:click={() => deleteTask(todo.id)}>X</button>
                     </div>
                 {/each}
             </ol>
         </div>
         <form>
             <input id="task" bind:value={task} />
-<!--            <button id="create" on:click={createTask}>Create Task</button>-->
+            <button id="create" on:click={createTask}>Create Task</button>
             {#if error}
                 <div class="error" role="alert">{error}</div>
             {/if}
