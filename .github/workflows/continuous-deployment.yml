@@ -58,7 +58,7 @@ jobs:
         run: npm run test
 
       - name: Install playwright
-        working-directory: ./frontend
+        working-directory: './frontend'
         run: npx playwright install
 
       - name: Run Playwright Tests (Development)

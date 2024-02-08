@@ -8,6 +8,9 @@ on:
 jobs:
   update-and-test:
     runs-on: ubuntu-latest
+    env:
+      PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
     timeout-minutes: 10
 
     services:
@@ -38,7 +41,7 @@ jobs:
         working-directory: './frontend'
         run: npm update
 
-      - name: Build Frontend (Development)
+      - name: Build Frontend
         working-directory: './frontend'
         run: npm run build
 
@@ -49,6 +52,10 @@ jobs:
       - name: Run Backend Tests
         working-directory: './backend'
         run: npm run test
+
+      - name: Install playwright
+        working-directory: './frontend'
+        run: npx playwright install
 
       - name: Run Frontend Tests
         working-directory: './frontend'
