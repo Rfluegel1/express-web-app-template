@@ -71,19 +71,19 @@ passport.use(new LocalStrategy(
         try {
             const user = await userRepository.getUserByEmail(email)
             if (!user) {
-                getLogger().info('User not found')
-                console.log('User not found')
-                return done(null, false, {message: 'Incorrect username.'})
+                getLogger().info(`User not found for email=${email}`)
+                return done(new UnauthorizedException('log in'))
             }
             if (!await user.isValidPassword(password)) {
-                getLogger().info('Invalid password')
-                console.log('Invalid password')
-                return done(null, false, {message: 'Incorrect password.'})
+                getLogger().info(`Invalid password for email=${email}`)
+                return done(new UnauthorizedException('log in'))
             }
-            getLogger().info('User authenticated')
-            console.log('User authenticated')
+            getLogger().info(`User authenticated for email=${email}`)
             return done(null, user)
         } catch (err) {
+            if (err instanceof NotFoundException) {
+                return done(new UnauthorizedException('log in'))
+            }
             return done(err)
         }
     }

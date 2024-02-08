@@ -1,5 +1,5 @@
 import {StatusCodes} from 'http-status-codes'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios';
 import {wrapper} from 'axios-cookiejar-support'
 import {CookieJar} from 'tough-cookie'
 import {logInTestUser, logOutUser} from './helpers'
@@ -34,8 +34,26 @@ describe('Passport resource', () => {
         // when
         const afterLogoutResponse = await client.get(`${process.env.BASE_URL}/api/session-check`)
 
-        // then
-        expect(afterLogoutResponse.status).toEqual(StatusCodes.OK)
-        expect(afterLogoutResponse.data.sessionActive).toEqual(false)
-    })
-})
+				// then
+				expect(afterLogoutResponse.status).toEqual(StatusCodes.OK);
+				expect(afterLogoutResponse.data.sessionActive).toEqual(false);
+		});
+
+		it('throws unauthorized exception when credentials are invalid', async () => {
+			let logInResponse;
+			const email: string = 'cypressdefault@gmail.com';
+			const password: string = 'wrongPassword';
+
+			const data = new URLSearchParams();
+			data.append('username', email);
+			data.append('password', password);
+			try {
+				logInResponse = await client.post(`${process.env.BASE_URL}/api/login`, data, {
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+				});
+			} catch (error) {
+				logInResponse = (error as AxiosError).response
+			}
+			expect(logInResponse?.status).toEqual(StatusCodes.UNAUTHORIZED)
+		});
+});
