@@ -36,3 +36,18 @@ test('logged in user should be redirected to todoList when visiting login page',
     // then
     await expect(page.locator('h1')).toHaveText('Todo List');
 });
+
+test('should display other error message', async ({ page, context }) => {
+    // given
+    await context.route('**/api/login', (route) => {
+        route.fulfill({
+            status: 500
+        });
+    });
+
+    // when
+    await logInTestUser(page);
+
+    // then
+    await expect(page.locator('text="Something went wrong. Please try again."')).toBeVisible();
+});

@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
+	import { StatusCodes } from 'http-status-codes';
 
 	let email = '';
 	let password = '';
@@ -24,8 +25,11 @@
 			);
 			await goto('/');
 		} catch (e) {
-			error = 'Invalid email or password.';
-			throw e;
+			if (e.response.status === StatusCodes.UNAUTHORIZED) {
+				error = 'Invalid email or password.';
+			} else {
+				error = 'Something went wrong. Please try again.'
+			}
 		}
 	}
 </script>
