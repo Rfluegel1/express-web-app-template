@@ -13,8 +13,8 @@
 <!--	}-->
 <!--</script>-->
 
-<!--<main>-->
-<!--	<h1>Change Email</h1>-->
+<main>
+	<h1>Work in progress, not  yet implemented</h1>
 <!--	<form on:submit|preventDefault={handleChangeEmail}>-->
 <!--		<label for="email">New Email:</label>-->
 <!--		<input type="email" id="email" bind:value={email} required />-->
@@ -24,4 +24,4 @@
 <!--		<p>{message}</p>-->
 <!--	{/if}-->
 <!--	<a href="/">Back to Todo List</a>-->
-<!--</main>-->
+</main>
