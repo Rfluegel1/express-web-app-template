@@ -34,17 +34,25 @@ jobs:
         with:
           node-version: 18.16.0
 
-      - name: Update NPM packages
+      - name: Update frontend NPM packages
+        working-directory: './frontend'
+        run: npm update
+
+      - name: Build Frontend (Development)
+        working-directory: './frontend'
+        run: npm run build
+
+      - name: Update backend NPM packages
+        working-directory: './backend'
         run: npm update
 
       - name: Run Backend Tests
-        run: npm run test:github backend
+        working-directory: './backend'
+        run: npm run test
 
       - name: Run Frontend Tests
-        run: npm run test:github frontend
-
-      - name: Build Frontend (Development)
-        run: npm run build
+        working-directory: './frontend'
+        run: npm run test
 
       - name: Create PR if Tests Pass
         run: |
@@ -52,15 +60,15 @@ jobs:
           git config --local user.name "GitHub Action"
           branch_name="automated/update-dependencies-$(date +%s)"
           git checkout -b $branch_name
-          git add package-lock.json package.json
-          # Check if there are any changes to commit in package.json
+          git add frontend/package-lock.json backend/package-lock.json
+          # Check if there are any changes to commit in either package-lock.json files
           if git diff --exit-code --cached --name-only | grep -q 'package-lock.json'; then
-            echo "Changes found in package.json, creating PR."
+            echo "Changes found in package-lock.json, creating PR."
             git commit -m "Update NPM dependencies"
             git push origin $branch_name
             gh pr create --title "Update NPM Dependencies" --body "Automatic PR to update dependencies."
           else
-            echo "No changes to package.json, skipping PR creation."
+            echo "No changes to package-lock.json, skipping PR creation."
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
