@@ -1,6 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { registerTemporaryUser } from './helpers/registerTemporaryUser.js';
+import { logInTestUser } from './helpers/logInTestUser.js';
+import { logInTestUserWithClient } from './helpers/api.js';
+import { CookieJar } from 'tough-cookie';
+import { wrapper } from 'axios-cookiejar-support';
+import axios from 'axios';
 
+const jar = new CookieJar();
+const client = wrapper(axios.create({ jar, withCredentials: true }));
 
 test('should have link to login page', async ({ page }) => {
 	// given
@@ -21,20 +28,17 @@ test('should display mismatched password and passwordConfirm error', async ({ pa
 	await expect(page.locator('text="Password and Confirm Password do not match"')).toBeVisible();
 });
 
-test.skip('should register a new user and notify user to verify their email', async ({ page }) => {
+test('should register a new user', async ({ page }) => {
 	// given
 	let email;
-	const requestPromise = page.waitForRequest('**/request-verification');
 
 	try {
 		// when
 		email = await registerTemporaryUser(page);
-		const request = await requestPromise;
 
 		// then
-		await expect(request.url()).toMatch(/\/request-verification$/);
 		await expect(
-			page.locator('text="Please verify your email address, and then login "')
+			page.locator('text="Login "')
 		).toBeVisible();
 
 		// when
@@ -44,14 +48,20 @@ test.skip('should register a new user and notify user to verify their email', as
 		await expect(page.locator('h1')).toHaveText('Login');
 
 		// when
-		await loginTestUser(page, email, 'password12');
+		await logInTestUser(page, email, 'password12');
 
 		// then
 		await expect(page.locator('h1')).toHaveText('Todo List');
 	} finally {
 		// cleanup
-		await authenticateAsAdmin(pb);
-		const user = await pb.collection('users').getFirstListItem(`email="${email}"`);
-		await pb.collection('users').delete(user.id);
+		try {
+			await logInTestUserWithClient(client, email, 'password12');
+			const userId = (await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)).data.id;
+			await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
+		} catch (e) {
+			if (e.message !== 'Cannot read properties of undefined (reading \'id\')') {
+				throw e;
+			}
+		}
 	}
 });
