@@ -51,7 +51,7 @@ test('should display other error message', async ({ page, context }) => {
     // then
     await expect(page.locator('text="Something went wrong. Please try again."')).toBeVisible();
 });
-π
+
 test('link to create user routes to register page', async ({ page }) => {
     // given
     await page.goto('/login');
