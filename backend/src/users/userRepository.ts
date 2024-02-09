@@ -50,6 +50,23 @@ export default class UserRepository {
         return result
     }
 
+    async getUserByToken(token: string): Promise<User> {
+        const result = await this.executeWithCatch(async () => {
+            const queryResult = await this.userDataSource.query(
+                'SELECT * FROM users WHERE emailVerificationToken=$1', [token]
+            )
+            if (queryResult.length === 0) {
+                return null
+            }
+            return new User().userMapper(queryResult[0])
+        })
+
+        if (result === null) {
+            throw new NotFoundException(token)
+        }
+        return result
+    }
+
     async createUser(user: User): Promise<void> {
         await this.executeWithCatch(async () => {
             await this.userDataSource.query(

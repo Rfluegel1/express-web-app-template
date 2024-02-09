@@ -27,6 +27,7 @@ let LocalStrategy = require('passport-local')
 const app: Express = express()
 
 import PgSession from 'connect-pg-simple';
+import verificationRoutes from './verification/verificationRoutes'
 
 const pgSession = PgSession(session)
 
@@ -113,6 +114,7 @@ app.use(express.static(path.join(__dirname, '../build')))
 app.use('/api', passportRoutes)
 app.use('/api', todoRoutes)
 app.use('/api', userRoutes)
+app.use('/api', verificationRoutes)
 app.use('/', healthCheckRoutes)
 app.use('/', heartbeatRoutes)
 
