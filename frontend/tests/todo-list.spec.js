@@ -102,6 +102,30 @@ test('should allow tasks to be created and deleted', async ({ page }) => {
 	}
 });
 
+test.skip('user without email verification cannot create tasks, and is asked to verify', async ({
+																																														 page
+																																													 }) => {
+	// given
+	let email;
+	try {
+		email = await registerTemporaryUser(page);
+		await page.waitForSelector('text="Please verify your email address, and then login "');
+
+		// when
+		await loginTestUser(page, email, 'password12');
+
+		// then
+		await expect(page.locator('h1')).toHaveText('Todo List');
+		await expect(page.locator('div[role="alert"]')).toHaveText(
+			'Please verify your email address'
+		);
+	} finally {
+		// cleanup
+		await authenticateAsAdmin(pb);
+		const user = await pb.collection('users').getFirstListItem(`email="${email}"`);
+		await pb.collection('users').delete(user.id);
+	}
+});
 test('empty task cannot be created', async ({ page }) => {
 	// given
 	await logInTestUser(page);
@@ -122,4 +146,26 @@ test('should have link that logs user out', async ({ page }) => {
 
 	// then
 	await expect(page.locator('h1')).toHaveText('Login');
+});
+
+test('should have link to email change', async ({ page }) => {
+	// given
+	await logInTestUser(page);
+
+	// when
+	await page.click('a[href="/email-change"]');
+
+	// then
+	await expect(page.locator('h1')).toHaveText('Change Email');
+});
+
+test('should have link to password reset', async ({ page }) => {
+	// given
+	await logInTestUser(page);
+
+	// when
+	await page.click('a[href="/password-reset"]');
+
+	// then
+	await expect(page.locator('h1')).toHaveText('Password Reset');
 });

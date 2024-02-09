@@ -14,7 +14,8 @@
 <!--</script>-->
 
 <main>
-	<h1>Work in progress, not  yet implemented</h1>
+	<h1>Change Email</h1>
+	<h2>Work in progress, not  yet implemented</h2>
 <!--	<form on:submit|preventDefault={handleChangeEmail}>-->
 <!--		<label for="email">New Email:</label>-->
 <!--		<input type="email" id="email" bind:value={email} required />-->
