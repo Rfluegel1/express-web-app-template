@@ -6,9 +6,6 @@ import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import axios from 'axios';
 
-const jar = new CookieJar();
-const client = wrapper(axios.create({ jar, withCredentials: true }));
-
 test('should have link to login page', async ({ page }) => {
 	// given
 	await page.goto('/register');
@@ -31,6 +28,8 @@ test('should display mismatched password and passwordConfirm error', async ({ pa
 test('should register a new user', async ({ page }) => {
 	// given
 	let email;
+	const jar = new CookieJar();
+	const client = wrapper(axios.create({ jar, withCredentials: true }));
 
 	try {
 		// when
@@ -54,6 +53,36 @@ test('should register a new user', async ({ page }) => {
 		await expect(page.locator('h1')).toHaveText('Todo List');
 	} finally {
 		// cleanup
+		try {
+			await logInTestUserWithClient(client, email, 'password12');
+			const userId = (await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)).data.id;
+			await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
+		} catch (e) {
+			if (e.message !== 'Cannot read properties of undefined (reading \'id\')') {
+				throw e;
+			}
+		}
+	}
+});
+
+test('user creation error displays message to client', async ({ page }) => {
+	// given
+	let email;
+	const jar = new CookieJar();
+	const client = wrapper(axios.create({ jar, withCredentials: true }));
+
+	try {
+		email = await registerTemporaryUser(page);
+		await page.goto('/register');
+
+		// when
+		await registerTemporaryUser(page, email);
+
+		// then
+		await expect(
+			page.locator('text="There was an error registering your account"')
+		).toBeVisible();
+	} finally {
 		try {
 			await logInTestUserWithClient(client, email, 'password12');
 			const userId = (await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)).data.id;
