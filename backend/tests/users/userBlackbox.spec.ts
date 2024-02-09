@@ -35,6 +35,8 @@ describe('User resource', () => {
         expect(postData.email).toEqual(email)
         expect(postData.password).toEqual(undefined)
         expect(postData.passwordHash).toEqual(undefined)
+        expect(postData.isVerified).toEqual(false)
+        expect(postData.emailVerificationToken).toEqual(undefined)
 
         // and
         id = postData.id
@@ -50,6 +52,8 @@ describe('User resource', () => {
         expect(getData.email).toEqual(email)
         expect(getData.password).toEqual(undefined)
         expect(getData.passwordHash).toEqual(undefined)
+        expect(getData.isVerified).toEqual(false)
+        expect(getData.emailVerificationToken).toEqual(undefined)
 
         // when
         const getByEmailResponse = await client.get(
@@ -79,6 +83,8 @@ describe('User resource', () => {
         expect(updateData.email).toEqual(updatedEmail)
         expect(updateData.password).toEqual(undefined)
         expect(updateData.passwordHash).toEqual(undefined)
+        expect(updateData.isVerified).toEqual(false)
+        expect(updateData.emailVerificationToken).toEqual(undefined)
 
         // when
         const getAfterUpdateResponse = await client.get(
@@ -92,6 +98,8 @@ describe('User resource', () => {
         expect(getAfterUpdateData.email).toEqual(updatedEmail)
         expect(getAfterUpdateData.password).toEqual(undefined)
         expect(getAfterUpdateData.passwordHash).toEqual(undefined)
+        expect(getAfterUpdateData.isVerified).toEqual(false)
+        expect(getAfterUpdateData.emailVerificationToken).toEqual(undefined)
 
         // when
         const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`)

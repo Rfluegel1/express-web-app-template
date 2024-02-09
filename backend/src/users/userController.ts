@@ -34,7 +34,7 @@ export default class UserController {
             let user: User = await this.userService.updateUser(id, email, password)
             getLogger().info('Sending update user request', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
-                id: user.id, email: user.email
+                id: user.id, email: user.email, isVerified: user.isVerified
             })
         } catch (error) {
             next(error)
@@ -54,7 +54,7 @@ export default class UserController {
             const user: User = await this.userService.createUser(email, password)
             getLogger().info('Sending create users response', {status: StatusCodes.CREATED})
             return response.status(StatusCodes.CREATED).send({
-                id: user.id, email: user.email
+                id: user.id, email: user.email, isVerified: user.isVerified
             })
         } catch (error) {
             next(error)
@@ -95,7 +95,7 @@ export default class UserController {
             user = await this.userService.getUser(id)
             getLogger().info('Sending get users response', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
-                id: user.id, email: user.email
+                id: user.id, email: user.email, isVerified: user.isVerified
             })
         } catch (error) {
             next(error)
@@ -110,7 +110,7 @@ export default class UserController {
             user = await this.userService.getUserByEmail(email)
             getLogger().info('Sending get users response', {status: StatusCodes.OK})
             return response.status(StatusCodes.OK).send({
-                id: user.id, email: user.email
+                id: user.id, email: user.email, isVerified: user.isVerified
             })
         } catch (error) {
             next(error)

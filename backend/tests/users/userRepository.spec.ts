@@ -58,7 +58,13 @@ describe('User repository', () => {
         const id = uuidv4();
         (repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
             if (query === 'SELECT * FROM users WHERE id=$1' && parameters[0] === id) {
-                return [{id: id, email: 'the email', passwordhash: 'the passwordHash'}]
+                return [{
+                    id: id,
+                    email: 'the email',
+                    passwordhash: 'the passwordHash',
+                    isverified: false,
+                    emailverificationtoken: 'token'
+                }]
             }
         }))
         // when
@@ -68,6 +74,8 @@ describe('User repository', () => {
         expect(actual.id).toEqual(id)
         expect(actual.email).toEqual('the email')
         expect(actual.passwordHash).toEqual('the passwordHash')
+        expect(actual.isVerified).toEqual(false)
+        expect(actual.emailVerificationToken).toEqual('token')
     })
     it('getUser logs error and throws database exception', async () => {
         // given
@@ -89,7 +97,13 @@ describe('User repository', () => {
         const id = uuidv4();
         (repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
             if (query === 'SELECT * FROM users WHERE email=$1' && parameters[0] === 'the email') {
-                return [{id: id, email: 'the email', passwordhash: 'the passwordHash'}]
+                return [{
+                    id: id,
+                    email: 'the email',
+                    passwordhash: 'the passwordHash',
+                    isverified: false,
+                    emailverificationtoken: 'token'
+                }]
             }
         }))
         // when
@@ -99,6 +113,8 @@ describe('User repository', () => {
         expect(actual.id).toEqual(id)
         expect(actual.email).toEqual('the email')
         expect(actual.passwordHash).toEqual('the passwordHash')
+        expect(actual.isVerified).toEqual(false)
+        expect(actual.emailVerificationToken).toEqual('token')
     })
     it('getUserByEmail logs error and throws database exception', async () => {
         // given
@@ -117,15 +133,15 @@ describe('User repository', () => {
     })
     it('createUser inserts into userDataSource', async () => {
         //given
-        const user = new User('the email', 'the passwordHash')
+        const user = new User('the email', 'the passwordHash', false, 'token')
         // when
         await repository.createUser(user)
         // then
         expect(repository.userDataSource.query).toHaveBeenCalledWith(
             'INSERT INTO' +
-            ' users (id, email, passwordHash) ' +
-            'VALUES ($1, $2, $3)',
-            [user.id, 'the email', 'the passwordHash']
+            ' users (id, email, passwordHash, isVerified, emailVerificationToken) ' +
+            'VALUES ($1, $2, $3, $4, $5)',
+            [user.id, 'the email', 'the passwordHash', false, 'token']
         )
     })
     it('createUser logs error and throws database exception', async () => {
@@ -156,13 +172,13 @@ describe('User repository', () => {
     it('updateUser updates users in userDataSource', async () => {
         //given
         repository.userDataSource.query = jest.fn()
-        const mockUser = new User('email', 'passwordHash')
+        const mockUser = new User('email', 'passwordHash', false, 'token')
         // when
         await repository.updateUser(mockUser)
         // then
         expect(repository.userDataSource.query).toHaveBeenCalledWith(
-            'UPDATE users SET email=$1, passwordHash=$2 WHERE id=$3',
-            ['email', 'passwordHash', mockUser.id]
+            'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerificationToken=$4 WHERE id=$5',
+            ['email', 'passwordHash', false, 'token', mockUser.id]
         )
     })
     it('updateUser logs error and throws database exception', async () => {

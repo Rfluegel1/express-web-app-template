@@ -29,12 +29,12 @@ jest.mock('../../src/Logger', () => ({
 }))
 
 describe('User controller', () => {
-    const user = {email: 'email', passwordHash: 'passwordHash'}
+    const user = {email: 'email', passwordHash: 'passwordHash', isVerified: false}
     const userController = new UserController()
     it('createUser responds with data that is returned from the UserService', async () => {
         // given
         const id = uuidv4()
-        const mockUser = {id: id, email: 'email', password: 'password'}
+        const mockUser = {id: id, email: 'email', password: 'password', isVerified: false}
         const request = {
             body: {email: 'email', password: 'password', confirmPassword: 'password'}
         }
@@ -56,7 +56,7 @@ describe('User controller', () => {
         await userController.createUser(request as any, response as any, jest.fn())
 
         // then
-        expect(response.send).toHaveBeenCalledWith({id: id, email: 'email'})
+        expect(response.send).toHaveBeenCalledWith({id: id, email: 'email', isVerified: false})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
     })
     it('createUser should next error that is returned from the UserService', async () => {
@@ -143,7 +143,7 @@ describe('User controller', () => {
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email})
+        expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified})
     })
     it('getUser should next error that is returned from the UserService', async () => {
         // given
@@ -211,7 +211,7 @@ describe('User controller', () => {
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email})
+        expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified})
     })
     it('getUserByEmail should next error that is returned from the UserService', async () => {
         // given
@@ -272,7 +272,7 @@ describe('User controller', () => {
     it('updateUser responds with data that is returned from the UserService', async () => {
         // given
         let id = uuidv4()
-        const mockUser = {id: id, email: 'email', passwordHash: 'passwordHash'}
+        const mockUser = {id: id, ...user}
         const request = {
             isAuthenticated: () => true,
             user: {id: id},
@@ -301,7 +301,7 @@ describe('User controller', () => {
 
         // then
         expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.send).toHaveBeenCalledWith({id: id, email: 'email'})
+        expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified})
     })
     it('updateUser should next error when id is not UUID', async () => {
         // given
