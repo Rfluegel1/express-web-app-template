@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { registerTemporaryUser } from './helpers/registerTemporaryUser.js';
 
 
 test('should have link to login page', async ({ page }) => {
@@ -12,7 +13,7 @@ test('should have link to login page', async ({ page }) => {
 	await expect(page.locator('h1')).toHaveText('Login');
 });
 
-test.skip('should display mismatched password and passwordConfirm error', async ({ page }) => {
+test('should display mismatched password and passwordConfirm error', async ({ page }) => {
 	// when
 	await registerTemporaryUser(page, undefined, 'password12', 'password123');
 
