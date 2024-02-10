@@ -167,3 +167,8 @@ Only manual triggers will run this job. This will deploy main code to staging.
 ### 4. Add application as source for log service
 
 ### 5. Set GitHub Action's secrets (see .yml files)
+
+## Accessing Stating DB
+### 1. SSH into staging enviornment ```flyctl ssh console -a your-app-name```
+### 2. Install psql ```apt-get update && apt-get install postgresql-client```
+### 3. Connect to db ```psql -h your-db-host.fly.dev -p your-db-port -U your-db-user -d your-db-name```
