@@ -377,5 +377,33 @@ describe('User controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
     })
+
+    it('isVerified should getUser from service and return OK and isVerified', async () => {
+        // given
+        let id: string = uuidv4()
+        const mockUser = {id: id, ...user}
+        let request = {
+            user: {id: id}
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }), send: jest.fn(),
+        };
+        (userController.userService.getUser as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockUser
+            } else {
+                return null
+            }
+        })
+
+        // when
+        await userController.isVerified(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.send).toHaveBeenCalledWith({isVerified: user.isVerified})
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+    })
 })
 

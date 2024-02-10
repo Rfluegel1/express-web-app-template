@@ -1,4 +1,4 @@
-import {AxiosError, AxiosInstance} from 'axios'
+import { AxiosError, AxiosInstance } from 'axios';
 import {StatusCodes} from 'http-status-codes'
 
 async function ensureTestUser(client: AxiosInstance, email: string, password: string) {
@@ -10,6 +10,7 @@ async function ensureTestUser(client: AxiosInstance, email: string, password: st
                 email: email, password: password, confirmPassword: password
             })
             expect(createResponse.status).toEqual(StatusCodes.CREATED)
+            return createResponse.data.id
         } else {
             throw error
         }
@@ -21,7 +22,7 @@ export async function logInTestUser(
     email: string = 'cypressdefault@gmail.com',
     password: string = process.env.TEST_USER_PASSWORD as string
 ) {
-    await ensureTestUser(client, email, password)
+    const userId = await ensureTestUser(client, email, password)
 
     const data = new URLSearchParams()
     data.append('username', email)
@@ -30,7 +31,7 @@ export async function logInTestUser(
         headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
     expect(logInResponse.status).toEqual(StatusCodes.OK)
-    return logInResponse
+    return userId
 }
 
 export async function logOutUser(client: AxiosInstance) {
