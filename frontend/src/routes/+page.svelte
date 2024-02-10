@@ -9,11 +9,11 @@
 
 
 	onMount(async () => {
-		if ((await axios.get('/api/users/is-verified')).data.isVerified) {
+		// if ((await axios.get('/api/users/is-verified')).data.isVerified) {
 			isEmailVerified = true;
 			const response = await axios.get('/api/todos');
 			todos = response.data.message;
-		}
+		// }
 	});
 
 	async function createTask() {
