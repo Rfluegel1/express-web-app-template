@@ -18,6 +18,13 @@ jest.mock('../../src/users/userRepository', () => {
 jest.mock('bcrypt', () => ({
     hash: jest.fn().mockResolvedValue('passwordHash')
 }));
+jest.mock('../../src/verification/verificationService', () => {
+    return jest.fn().mockImplementation(() => {
+        return {
+            sendVerificationEmail: jest.fn(),
+        }
+    })
+})
 
 
 describe('User service', () => {
@@ -29,6 +36,7 @@ describe('User service', () => {
         let result: User = await service.createUser('email', 'password')
         // then
         expect(service.userRepository.createUser).toHaveBeenCalledWith(expect.objectContaining(expectedUser))
+        expect(service.verificationService.sendVerificationEmail).toHaveBeenCalledWith(result.id)
         expect(result.email).toEqual('email')
         expect(result.passwordHash).toEqual('passwordHash')
         expect(result.id).toMatch(UUID_REG_EXP)

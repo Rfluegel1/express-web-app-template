@@ -1,15 +1,18 @@
 import User from './User'
 import UserRepository from './userRepository'
 import bcrypt from 'bcrypt'
+import VerificationService from '../verification/verificationService';
 
 
 export default class UserService {
     userRepository = new UserRepository()
+    verificationService = new VerificationService()
 
     async createUser(email: string, password: string): Promise<User> {
         const passwordHash = await bcrypt.hash(password, 10)
         const user: User = new User(email, passwordHash)
         await this.userRepository.createUser(user)
+        await this.verificationService.sendVerificationEmail(user.id)
         return user
     }
 
