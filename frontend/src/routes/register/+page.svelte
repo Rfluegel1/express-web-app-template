@@ -30,7 +30,7 @@
 <main>
 	<h1>Register</h1>
 	{#if registered}
-		<p>Login <a href="/login">here</a></p>
+		<p>Email verification sent. Login <a href="/login">here</a></p>
 	{:else}
 		<form on:submit|preventDefault={handleSubmit}>
 			<div>

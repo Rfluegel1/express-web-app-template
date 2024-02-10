@@ -37,7 +37,7 @@ test('should register a new user', async ({ page }) => {
 
 		// then
 		await expect(
-			page.locator('text="Login "')
+			page.locator('text="Email verification sent. Login "')
 		).toBeVisible();
 
 		// when

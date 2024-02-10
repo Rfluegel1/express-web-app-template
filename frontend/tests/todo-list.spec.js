@@ -4,6 +4,7 @@ import axios from 'axios';
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 import { logInTestUserWithClient, logOutUserWithClient } from './helpers/api.js';
+import { registerTemporaryUser } from './helpers/registerTemporaryUser.js';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar, withCredentials: true }));
@@ -102,17 +103,17 @@ test('should allow tasks to be created and deleted', async ({ page }) => {
 	}
 });
 
-test.skip('user without email verification cannot create tasks, and is asked to verify', async ({
+test('user without email verification cannot create tasks, and is asked to verify', async ({
 																																														 page
 																																													 }) => {
 	// given
 	let email;
 	try {
 		email = await registerTemporaryUser(page);
-		await page.waitForSelector('text="Please verify your email address, and then login "');
+		await page.waitForSelector('text="Email verification sent. Login "');
 
 		// when
-		await loginTestUser(page, email, 'password12');
+		await logInTestUser(page, email, 'password12');
 
 		// then
 		await expect(page.locator('h1')).toHaveText('Todo List');
@@ -121,9 +122,8 @@ test.skip('user without email verification cannot create tasks, and is asked to 
 		);
 	} finally {
 		// cleanup
-		await authenticateAsAdmin(pb);
-		const user = await pb.collection('users').getFirstListItem(`email="${email}"`);
-		await pb.collection('users').delete(user.id);
+		const userId = await logInTestUserWithClient(client, email, 'password12');
+		await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
 	}
 });
 test('empty task cannot be created', async ({ page }) => {
