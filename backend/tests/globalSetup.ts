@@ -32,11 +32,11 @@ export default async () => {
 
 	async function createAdmin() {
 		try {
-			await axios.post(`${process.env.BASE_URL}/api/users`, {
-				email: process.env.ADMIN_EMAIL,
-				password: process.env.ADMIN_PASSWORD,
-				confirmPassword: process.env.ADMIN_PASSWORD
-			});
+			// await axios.post(`${process.env.BASE_URL}/api/users`, {
+			// 	email: process.env.ADMIN_EMAIL,
+			// 	password: process.env.ADMIN_PASSWORD,
+			// 	confirmPassword: process.env.ADMIN_PASSWORD
+			// });
 		} catch (error) {
 			throw error
 		}
