@@ -73,6 +73,7 @@ describe('Verification resource', () => {
 				// cleanup
 				const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
 				expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
+				await dataSource.destroy()
 			}
 		}
 	});
