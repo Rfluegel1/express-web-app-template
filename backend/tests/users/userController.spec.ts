@@ -187,6 +187,7 @@ describe('User controller', () => {
         const mockUser = {id: id, ...user}
         const request = {
             isAuthenticated: () => true,
+            user: {email: user.email},
             query: {email: user.email},
         }
         const response = {
@@ -214,6 +215,8 @@ describe('User controller', () => {
     it('getUserByEmail should next error that is returned from the UserService', async () => {
         // given
         const request = {
+            isAuthenticated: () => true,
+            user: {email: user.email},
             query: {email: user.email},
         }
         const response = {};

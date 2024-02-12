@@ -102,6 +102,9 @@ export default class UserController {
     async getUserByEmail(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get user by email request', {requestQuery: request.query})
         let email: string = request.query.email as string
+        if (!request.isAuthenticated() || (request.user as User).email !== email && (request.user as User).role !== 'admin') {
+            return next(new UnauthorizedException('get user by email'))
+        }
         let user: User
         try {
             user = await this.userService.getUserByEmail(email)

@@ -31,12 +31,14 @@ describe('User controller', () => {
     ${'getUser'}             | ${userController.getUser}
     ${'deleteUser'}          | ${userController.deleteUser}
     ${'updateUser'}          | ${userController.updateUser}
+    ${'getUserByEmail'}      | ${userController.getUserByEmail}
     `('$apiEndpoint returns unauthorized when the request session is not authenticated', async (
 		{ apiEndpoint, controllerFunction }
 	) => {
 		const request = {
 			user: { id: 'who cares' },
 			params: { id: 'who cares' },
+			query: {email: 'who cares'},
 			isAuthenticated: () => false
 		}
 		const response = {
@@ -75,6 +77,27 @@ describe('User controller', () => {
 
 		// when
 		await controllerFunction(request as any, response as any, next)
+
+		// then
+		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
+	})
+
+	it('getUserByEmail returns unauthorized when auth user email does not match query email', async () => {
+		// given
+		const request = {
+			isAuthenticated: () => true,
+			user: { email: 'user' },
+			query: { email: 'other' },
+		}
+		const response = {
+			status: jest.fn(function() {
+				return this
+			}), send: jest.fn(),
+		}
+		const next = jest.fn()
+
+		// when
+		await userController.getUserByEmail(request as any, response as any, next)
 
 		// then
 		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
@@ -163,6 +186,37 @@ describe('User controller', () => {
 
 		// when
 		await userController.getUser(request as any, response as any, jest.fn())
+
+		// then
+		expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+		expect(response.send).toHaveBeenCalledWith({id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified})
+	})
+	it('getUserByEmail should function normally when called by admin', async () => {
+		// given
+		let id: string = uuidv4()
+		const mockUser = {id: id, ...user}
+		const request = {
+			isAuthenticated: () => true,
+			query: {email: user.email},
+			user: {email: 'other', role: 'admin'}
+		}
+		const response = {
+			status: jest.fn(function () {
+				return this
+			}),
+			send: jest.fn(),
+		};
+
+		(userController.userService.getUserByEmail as jest.Mock).mockImplementation((email) => {
+			if (user.email === email) {
+				return mockUser
+			} else {
+				return null
+			}
+		})
+
+		// when
+		await userController.getUserByEmail(request as any, response as any, jest.fn())
 
 		// then
 		expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
