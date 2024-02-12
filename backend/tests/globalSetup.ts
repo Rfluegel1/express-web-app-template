@@ -54,6 +54,6 @@ export default async () => {
 
 	await startBackend();
 	if (process.env.NODE_ENV === 'development') {
-		await createAdmin();
+		// await createAdmin();
 	}
 };
