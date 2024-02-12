@@ -158,7 +158,7 @@ describe('User resource', () => {
 		} finally {
 			// cleanup
 			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
-			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
+			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
 		}
 	});
 
@@ -167,9 +167,10 @@ describe('User resource', () => {
 		let userId;
 		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
 		const password = 'password';
-		const adminEmail = process.env.ADMIN_EMAIL;
-		const adminPassword = process.env.ADMIN_PASSWORD;
-		await logInTestUser(client, adminEmail, adminPassword);
+		const adminEmail = process.env.ADMIN_EMAIL
+		const adminPassword = process.env.ADMIN_PASSWORD
+		const adminId = await logInTestUser(client, adminEmail, adminPassword);
+		expect(adminId).toMatch(UUID_REG_EXP)
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
 			email: email, password: password, confirmPassword: password
 		});
@@ -177,16 +178,11 @@ describe('User resource', () => {
 		//expect
 		expect(postResponse.status).toEqual(StatusCodes.CREATED);
 		userId = postResponse.data.id;
-		let deleteResponse;
-		// when
-		try {
 
-			deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
-		} catch (error) {
-			console.log(error)
-		}
+		// when
+		const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
 
 		// then
-		expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
-	});
+		expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+	})
 });
