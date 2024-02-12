@@ -476,27 +476,6 @@ describe('User controller', () => {
 			// then
 			expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
 		});
-		it('deleteUser should function normally when called by admin', async () => {
-			// given
-			let id: string = uuidv4();
-			const request = {
-				isAuthenticated: () => true,
-				user: { id: 'other', role: 'admin' },
-				params: { id: id }
-			};
-			const response = {
-				sendStatus: jest.fn(function() {
-					return this;
-				})
-			};
-
-			// when
-			await userController.deleteUser(request as any, response as any, jest.fn());
-
-			// then
-			expect(userController.userService.deleteUser).toHaveBeenCalledWith(id);
-			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
-		});
 		it('updateUser should function normally when called by admin', async () => {
 			// given
 			let id = uuidv4();
@@ -593,6 +572,29 @@ describe('User controller', () => {
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
 		});
+		it('deleteUser should function normally when called by admin', async () => {
+			// given
+			let id: string = uuidv4();
+			const request = {
+				isAuthenticated: () => true,
+				user: { id: 'other', role: 'admin' },
+				params: { id: id }
+			};
+			const response = {
+				sendStatus: jest.fn(function() {
+					return this;
+				})
+			};
+			(userController.userService.deleteUser as jest.Mock).mockImplementation(() => {
+				jest.fn()
+			});
+
+			// when
+			await userController.deleteUser(request as any, response as any, jest.fn());
+
+			// then
+			expect(userController.userService.deleteUser).toHaveBeenCalledWith(id);
+			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
+		});
 	});
 });
-
