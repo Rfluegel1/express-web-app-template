@@ -252,6 +252,27 @@ describe('User controller', () => {
         expect(userController.userService.deleteUser).toHaveBeenCalledWith(id)
         expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
     })
+    it('deleteUser should function normally when called by admin', async () => {
+        // given
+        let id: string = uuidv4()
+        const request = {
+            isAuthenticated: () => true,
+            user: {id: 'other', role: 'admin'},
+            params: {id: id},
+        }
+        const response = {
+            sendStatus: jest.fn(function () {
+                return this
+            })
+        }
+
+        // when
+        await userController.deleteUser(request as any, response as any, jest.fn())
+
+        // then
+        expect(userController.userService.deleteUser).toHaveBeenCalledWith(id)
+        expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
+    })
     it('deleteUser should next error when id is not UUID', async () => {
         // given
         const request = {

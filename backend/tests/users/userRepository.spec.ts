@@ -102,7 +102,8 @@ describe('User repository', () => {
                     email: 'the email',
                     passwordhash: 'the passwordHash',
                     isverified: false,
-                    emailverificationtoken: 'token'
+                    emailverificationtoken: 'token',
+                    role: 'admin'
                 }]
             }
         }))
@@ -115,6 +116,7 @@ describe('User repository', () => {
         expect(actual.passwordHash).toEqual('the passwordHash')
         expect(actual.isVerified).toEqual(false)
         expect(actual.emailVerificationToken).toEqual('token')
+        expect(actual.role).toEqual('admin')
     })
     it('getUserByEmail logs error and throws database exception', async () => {
         // given

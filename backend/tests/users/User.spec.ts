@@ -12,16 +12,18 @@ describe('User object', () => {
         expect(result.passwordHash).toEqual('')
         expect(result.isVerified).toEqual(false)
         expect(result.emailVerificationToken).toEqual('')
+        expect(result.role).toEqual('user')
     })
     it('values constructor sets values', () => {
         // when
-        const result: User = new User('the email', 'the passwordHash', true, 'emailVerificationToken')
+        const result: User = new User('the email', 'the passwordHash', true, 'emailVerificationToken', 'role')
         // then
         expect(result.id).toMatch(UUID_REG_EXP)
         expect(result.email).toEqual('the email')
         expect(result.passwordHash).toEqual('the passwordHash')
         expect(result.isVerified).toEqual(true)
         expect(result.emailVerificationToken).toEqual('emailVerificationToken')
+        expect(result.role).toEqual('role')
     })
     it('compares input password to password hash', async () => {
         // given

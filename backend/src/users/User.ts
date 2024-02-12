@@ -8,17 +8,20 @@ export default class User {
     passwordHash: string
     isVerified: boolean
     emailVerificationToken: string
+    role: string
 
     constructor(
       email: string = '',
       passwordHash: string = '',
       isVerified: boolean = false,
-      emailVerificationToken: string = ''
+      emailVerificationToken: string = '',
+      role: string = 'user'
     ) {
         this.email = email
         this.passwordHash = passwordHash
         this.isVerified = isVerified
         this.emailVerificationToken = emailVerificationToken
+        this.role = role
     }
 
     userMapper(queryResult: any): User {
@@ -27,7 +30,8 @@ export default class User {
             email: queryResult?.email,
             passwordHash: queryResult?.passwordhash,
             isVerified: queryResult?.isverified,
-            emailVerificationToken: queryResult?.emailverificationtoken
+            emailVerificationToken: queryResult?.emailverificationtoken,
+            role: queryResult?.role
         }
         return plainToClass(User, intermediate)
     }

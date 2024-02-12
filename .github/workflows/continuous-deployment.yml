@@ -13,6 +13,8 @@ jobs:
       APP_NAME: 'express-web-app-template'
       PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
     timeout-minutes: 10
 
     services:

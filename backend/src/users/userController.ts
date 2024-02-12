@@ -64,7 +64,7 @@ export default class UserController {
     async deleteUser(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received delete users request', {requestParam: request.params})
         let id: string = request.params.id
-        if (!request.isAuthenticated() || (request.user as User).id !== id) {
+        if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin'){
             next(new UnauthorizedException('delete user'))
             return
         }

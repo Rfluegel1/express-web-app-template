@@ -33,9 +33,9 @@ export default async () => {
 	async function createAdmin() {
 		try {
 			await axios.post(`${process.env.BASE_URL}/api/users`, {
-				email: process.env.PB_ADMIN_EMAIL,
-				password: process.env.PB_ADMIN_PASSWORD,
-				confirmPassword: process.env.PB_ADMIN_PASSWORD
+				email: process.env.ADMIN_EMAIL,
+				password: process.env.ADMIN_PASSWORD,
+				confirmPassword: process.env.ADMIN_PASSWORD
 			});
 		} catch (error) {
 			console.error(error);
@@ -45,7 +45,7 @@ export default async () => {
 			await dataSource.initialize();
 			await dataSource.query(
 				'UPDATE users SET isVerified=$1, role=$2 where email=$3',
-				[true, 'admin', process.env.PB_ADMIN_EMAIL]
+				[true, 'admin', process.env.ADMIN_EMAIL]
 			);
 		} catch (error) {
 			console.error(error);
