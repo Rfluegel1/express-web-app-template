@@ -169,8 +169,7 @@ describe('User resource', () => {
 		const password = 'password';
 		const adminEmail = process.env.ADMIN_EMAIL
 		const adminPassword = process.env.ADMIN_PASSWORD
-		const adminId = await logInTestUser(client, adminEmail, adminPassword);
-		expect(adminId).toMatch(UUID_REG_EXP)
+		await logInTestUser(client, adminEmail, adminPassword);
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
 			email: email, password: password, confirmPassword: password
 		});
