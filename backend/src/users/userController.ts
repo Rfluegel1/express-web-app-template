@@ -17,8 +17,7 @@ export default class UserController {
         )
         const id: string = request.params.id
         if (!request.isAuthenticated() || (request.user as User).id !== id) {
-            next(new UnauthorizedException('update user'))
-            return
+            return next(new UnauthorizedException('update user'))
         }
         const email: string = request.body.email
         const password: string = request.body.password
@@ -64,9 +63,8 @@ export default class UserController {
     async deleteUser(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received delete users request', {requestParam: request.params})
         let id: string = request.params.id
-        if ((!request.isAuthenticated() || (request.user as User).id !== id) && (request.user as User).role !== 'admin'){
-            next(new UnauthorizedException('delete user'))
-            return
+        if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin'){
+            return next(new UnauthorizedException('delete user'))
         }
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
@@ -84,8 +82,7 @@ export default class UserController {
         getLogger().info('Received get users request', {requestParam: request.params})
         let id: string = request.params.id
         if (!request.isAuthenticated() || (request.user as User).id !== id) {
-            next(new UnauthorizedException('get user'))
-            return
+            return next(new UnauthorizedException('get user'))
         }
         let user: User
         if (!id.match(UUID_REG_EXP)) {
