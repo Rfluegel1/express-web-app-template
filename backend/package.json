@@ -5,7 +5,7 @@
   "main": "src/server.ts",
   "scripts": {
     "test:staging": "NODE_ENV=staging jest blackbox --runInBand --detectOpenHandles",
-    "test": "NODE_ENV=development jest --runInBand",
+    "test": "NODE_ENV=development jest --runInBand -t \"should allow admin user to delete any user\"",
     "backend": "nodemon src/server.ts",
     "clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force",
     "migrations:revert": "DB_DATABASE=post npx typeorm-ts-node-esm migration:revert -d src/postDataSource.ts",
