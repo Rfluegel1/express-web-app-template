@@ -38,18 +38,19 @@ export default async () => {
 				confirmPassword: process.env.ADMIN_PASSWORD
 			});
 		} catch (error) {
-			throw error
+			console.error(error);
 		}
 		try {
-			dataSource.setOptions({database: process.env.DB_DATABASE})
-			dataSource.setOptions({password: process.env.DB_PASSWORD || 'asd'})
+			dataSource.setOptions({ database: process.env.DB_DATABASE });
+			dataSource.setOptions({ password: process.env.DB_PASSWORD });
+			dataSource.setOptions({ username: process.env.DB_USERNAME });
 			await dataSource.initialize();
 			await dataSource.query(
 				'UPDATE users SET isVerified=$1, role=$2 where email=$3',
 				[true, 'admin', process.env.ADMIN_EMAIL]
 			);
 		} catch (error) {
-			throw error
+			console.error(error);
 		}
 	}
 
