@@ -41,12 +41,12 @@ export default async () => {
 			throw error
 		}
 		try {
-			dataSource.setOptions({database: process.env.DB_DATABASE})
-			await dataSource.initialize();
-			await dataSource.query(
-				'UPDATE users SET isVerified=$1, role=$2 where email=$3',
-				[true, 'admin', process.env.ADMIN_EMAIL]
-			);
+			// dataSource.setOptions({database: process.env.DB_DATABASE})
+			// await dataSource.initialize();
+			// await dataSource.query(
+			// 	'UPDATE users SET isVerified=$1, role=$2 where email=$3',
+			// 	[true, 'admin', process.env.ADMIN_EMAIL]
+			// );
 		} catch (error) {
 			throw error
 		}
