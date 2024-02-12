@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import axios from 'axios';
 import { UUID_REG_EXP } from '../../src/contants';
 import { AxiosError } from 'axios';
-import { logInTestUser } from '../helpers';
+import { authenticateAsAdmin, logInTestUser } from '../helpers';
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 
@@ -167,9 +167,7 @@ describe('User resource', () => {
 		let userId;
 		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
 		const password = 'password';
-		const adminEmail = process.env.ADMIN_EMAIL
-		const adminPassword = process.env.ADMIN_PASSWORD
-		await logInTestUser(client, adminEmail, adminPassword);
+		await authenticateAsAdmin(client)
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
 			email: email, password: password, confirmPassword: password
 		});

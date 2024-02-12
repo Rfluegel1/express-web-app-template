@@ -40,3 +40,7 @@ export async function logOutUser(client: AxiosInstance) {
     expect(logOutResponse.status).toEqual(StatusCodes.OK)
     return logOutResponse
 }
+
+export async function authenticateAsAdmin(client: AxiosInstance) {
+    await logInTestUser(client, process.env.ADMIN_EMAIL as string, process.env.ADMIN_PASSWORD as string)
+}
