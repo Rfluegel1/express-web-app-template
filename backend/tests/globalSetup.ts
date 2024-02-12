@@ -12,11 +12,13 @@ require('dotenv').config({ path: `.env.${env}` });
 
 export default async () => {
 	const startBackend = () => new Promise((resolve) => {
-		const server = spawn('./node_modules/.bin/ts-node', ['./src/server.ts']);
+		const server = spawn('./node_modules/.bin/ts-node', ['./src/server.ts'], {
+			env: { ...process.env }, // Pass current process.env to the child process
+		});
 		let pid = server.pid?.toString() ? server.pid?.toString() : 'pid undefined';
 		console.log('created pid : ', pid);
 		fs.writeFileSync(path.join(__dirname, 'server.pid'), pid);
-		server.stdout.on('data', (data) => {
+		server.stdout?.on('data', (data) => {
 			const output = data.toString();
 			if (output.includes('The server is running on port 8090')) {
 				resolve(server);
@@ -38,9 +40,9 @@ export default async () => {
 				password: process.env.ADMIN_PASSWORD,
 				confirmPassword: process.env.ADMIN_PASSWORD
 			});
-			console.log('finished posting')
+			console.log('finished posting');
 		} catch (error) {
-			console.error(error)
+			console.error(error);
 		}
 		try {
 			console.log('updating ', process.env.ADMIN_EMAIL);
@@ -52,9 +54,9 @@ export default async () => {
 				'UPDATE users SET isVerified=$1, role=$2 where email=$3',
 				[true, 'admin', process.env.ADMIN_EMAIL]
 			);
-			console.log('finished updating')
+			console.log('finished updating');
 		} catch (error) {
-			console.error(error)
+			console.error(error);
 		}
 	}
 
