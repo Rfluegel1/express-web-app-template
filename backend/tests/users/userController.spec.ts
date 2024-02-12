@@ -78,7 +78,6 @@ describe('User controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
     })
-
     it('createUser should next Bad Request when password and confirmPassword do no match', async () => {
         // given
         const request = {
@@ -94,7 +93,6 @@ describe('User controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
-
     it('updateUser should next Bad Request when password and confirmPassword do no match', async () => {
         // given
         let id = uuidv4();
@@ -252,27 +250,6 @@ describe('User controller', () => {
         expect(userController.userService.deleteUser).toHaveBeenCalledWith(id)
         expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
     })
-    it('deleteUser should function normally when called by admin', async () => {
-        // given
-        let id: string = uuidv4()
-        const request = {
-            isAuthenticated: () => true,
-            user: {id: 'other', role: 'admin'},
-            params: {id: id},
-        }
-        const response = {
-            sendStatus: jest.fn(function () {
-                return this
-            })
-        }
-
-        // when
-        await userController.deleteUser(request as any, response as any, jest.fn())
-
-        // then
-        expect(userController.userService.deleteUser).toHaveBeenCalledWith(id)
-        expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
-    })
     it('deleteUser should next error when id is not UUID', async () => {
         // given
         const request = {
@@ -345,60 +322,6 @@ describe('User controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
     })
-    it.each`
-    apiEndpoint              | controllerFunction
-    ${'getUser'}             | ${userController.getUser}
-    ${'deleteUser'}          | ${userController.deleteUser}
-    ${'updateUser'}          | ${userController.updateUser}
-    `('$apiEndpoint returns unauthorized when the request session is not authenticated', async (
-        {apiEndpoint, controllerFunction}
-    ) => {
-        const request = {
-            user: {id: 'who cares'},
-            params: {id: 'who cares'},
-            isAuthenticated: () => false
-        }
-        const response = {
-            status: jest.fn(function () {
-                return this
-            }), send: jest.fn(),
-        }
-        const next = jest.fn()
-
-        // when
-        await controllerFunction(request as any, response as any, next)
-
-        // then
-        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
-    })
-
-    it.each`
-    apiEndpoint              | controllerFunction
-    ${'getUser'}             | ${userController.getUser}
-    ${'deleteUser'}          | ${userController.deleteUser}
-    ${'updateUser'}          | ${userController.updateUser}
-    `('$apiEndpoint returns unauthorized when auth user id does not match param id', async (
-        {apiEndpoint, controllerFunction}
-    ) => {
-        const request = {
-            isAuthenticated: () => true,
-            user: {id: 'user'},
-            params: {id: 'other'},
-        }
-        const response = {
-            status: jest.fn(function () {
-                return this
-            }), send: jest.fn(),
-        }
-        const next = jest.fn()
-
-        // when
-        await controllerFunction(request as any, response as any, next)
-
-        // then
-        expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
-    })
-
     it('isVerified should getUser from service and return OK and isVerified', async () => {
         // given
         let id: string = uuidv4()

@@ -16,7 +16,7 @@ export default class UserController {
             {requestParam: request.params, requestBody: request.body}
         )
         const id: string = request.params.id
-        if (!request.isAuthenticated() || (request.user as User).id !== id) {
+        if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin') {
             return next(new UnauthorizedException('update user'))
         }
         const email: string = request.body.email
@@ -81,7 +81,7 @@ export default class UserController {
     async getUser(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received get users request', {requestParam: request.params})
         let id: string = request.params.id
-        if (!request.isAuthenticated() || (request.user as User).id !== id) {
+        if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin') {
             return next(new UnauthorizedException('get user'))
         }
         let user: User
