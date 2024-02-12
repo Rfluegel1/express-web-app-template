@@ -181,7 +181,7 @@ describe('User resource', () => {
 		// when
 		const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
 
-		//
+		// then
 		expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
 	})
 });

@@ -32,15 +32,18 @@ export default async () => {
 
 	async function createAdmin() {
 		try {
+			console.log('posting ', process.env.ADMIN_EMAIL);
 			await axios.post(`${process.env.BASE_URL}/api/users`, {
 				email: process.env.ADMIN_EMAIL,
 				password: process.env.ADMIN_PASSWORD,
 				confirmPassword: process.env.ADMIN_PASSWORD
 			});
+			console.log('finished posting')
 		} catch (error) {
-			throw error
+			console.error(error)
 		}
 		try {
+			console.log('updating ', process.env.ADMIN_EMAIL);
 			dataSource.setOptions({ database: process.env.DB_DATABASE });
 			dataSource.setOptions({ password: process.env.DB_PASSWORD });
 			dataSource.setOptions({ username: process.env.DB_USERNAME });
@@ -49,8 +52,9 @@ export default async () => {
 				'UPDATE users SET isVerified=$1, role=$2 where email=$3',
 				[true, 'admin', process.env.ADMIN_EMAIL]
 			);
+			console.log('finished updating')
 		} catch (error) {
-			throw error
+			console.error(error)
 		}
 	}
 
