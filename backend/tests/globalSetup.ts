@@ -37,8 +37,7 @@ export default async () => {
 				password: process.env.ADMIN_PASSWORD,
 				confirmPassword: process.env.ADMIN_PASSWORD
 			});
-		} catch (error) {
-			console.error(error);
+		} catch {
 		}
 		try {
 			dataSource.setOptions({ database: process.env.DB_DATABASE });
