@@ -12,9 +12,7 @@ require('dotenv').config({ path: `.env.${env}` });
 
 export default async () => {
 	const startBackend = () => new Promise((resolve) => {
-		const server = spawn('./node_modules/.bin/ts-node', ['./src/server.ts'], {
-			env: { ...process.env }, // Pass current process.env to the child process
-		});
+		const server = spawn('./node_modules/.bin/ts-node', ['./src/server.ts']);
 		let pid = server.pid?.toString() ? server.pid?.toString() : 'pid undefined';
 		console.log('created pid : ', pid);
 		fs.writeFileSync(path.join(__dirname, 'server.pid'), pid);
