@@ -1,6 +1,6 @@
 import {DatabaseException} from '../../src/exceptions/DatabaseException'
 
-describe('custom not found exception', () => {
+describe('custom database exception', () => {
     it('constructor returns message and sets name', async () => {
         // when
         const dummyFunction = () => {

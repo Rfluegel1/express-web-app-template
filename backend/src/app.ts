@@ -28,6 +28,7 @@ const app: Express = express()
 
 import PgSession from 'connect-pg-simple';
 import verificationRoutes from './verification/verificationRoutes'
+import { DuplicateRowException } from './exceptions/DuplicateRowException';
 
 const pgSession = PgSession(session)
 
@@ -154,6 +155,10 @@ app.use((function (error: any, request: Request, response: Response, next: any) 
     if (error instanceof DatabaseException) {
         getLogger().error(errorWithStatus)
         return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
+    }
+    if (error instanceof DuplicateRowException) {
+        getLogger().error(errorWithStatus)
+        return response.status(StatusCodes.CONFLICT).send({message: error.message})
     }
     if (error instanceof UnauthorizedException) {
         getLogger().error(errorWithStatus)

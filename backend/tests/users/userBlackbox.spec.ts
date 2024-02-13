@@ -142,12 +142,35 @@ describe('User resource', () => {
 		expect(postResponse?.data.message).toEqual('Password and passwordConfirm do not match');
 	});
 
+	it('should throw error when email is already taken', async () => {
+		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
+		let userId
+		try {
+			userId = (await client.post(`${process.env.BASE_URL}/api/users`, {
+				email: email, password: 'password', confirmPassword: 'password'
+			})).data.id;
+			let secondResponse;
+			try {
+				secondResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
+					email: email, password: 'password', confirmPassword: 'password'
+				});
+			} catch (e) {
+				secondResponse = (e as AxiosError).response;
+			}
+			expect(secondResponse?.status).toEqual(StatusCodes.CONFLICT);
+			expect(secondResponse?.data.message).toEqual('Duplicate key value violates unique constraint=users_email_key');
+		} finally {
+			await authenticateAsAdmin(client)
+			await client.delete(`${process.env.BASE_URL}/api/users/${userId}`)
+		}
+	});
+
 	it('should allow admin user to delete any user', async () => {
 		// given
 		let userId;
 		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
 		const password = 'password';
-		await authenticateAsAdmin(client)
+		await authenticateAsAdmin(client);
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
 			email: email, password: password, confirmPassword: password
 		});
@@ -160,6 +183,6 @@ describe('User resource', () => {
 		const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
 
 		// then
-		expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
-	})
+		expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
+	});
 });

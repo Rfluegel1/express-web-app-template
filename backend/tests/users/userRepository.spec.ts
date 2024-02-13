@@ -192,6 +192,23 @@ describe('User repository', () => {
         //expect
         await expect(repository.createUser(new User())).rejects.toThrow('Error interacting with the database')
     })
+    it('createUser logs error and throws duplicate row exception', async () => {
+        //given
+        class CustomError extends Error {
+            constraint: string;
+
+            constructor(message: string, constraint: string) {
+                super(message);
+                this.constraint = constraint;
+                this.name = 'CustomError';
+            }
+        }
+
+        let error = new CustomError('duplicate key value violates unique constraint', 'asdasd');
+        (repository.userDataSource.query as jest.Mock).mockRejectedValue(error)
+        //expect
+        await expect(repository.createUser(new User())).rejects.toThrow('Duplicate key value violates unique constraint=asdasd')
+    })
     it('deleteUser deletes from userDataSource', async () => {
         //given
         const id = uuidv4()
