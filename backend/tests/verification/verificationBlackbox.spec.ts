@@ -1,7 +1,7 @@
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 import axios from 'axios';
-import { logInTestUser, logOutUser } from '../helpers';
+import { generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 import { StatusCodes } from 'http-status-codes';
 import { dataSource } from '../../src/postDataSource';
 
@@ -14,7 +14,7 @@ describe('Verification resource', () => {
 		// given
 		await logInTestUser(
 			client,
-			`test${Math.floor(Math.random() * 10000)}@temp.com`,
+			generateTemporaryUserEmail(),
 			'password'
 		);
 
@@ -35,7 +35,7 @@ describe('Verification resource', () => {
 		} else {
 			let userId
 			// given
-			let email = `test${Math.floor(Math.random() * 10000)}@temp.com`;
+			let email = generateTemporaryUserEmail()
 			await logInTestUser(
 				client,
 				email,

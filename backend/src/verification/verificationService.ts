@@ -7,7 +7,7 @@ export default class VerificationService {
 	userRepository = new UserRepository();
 
 	async sendVerificationEmail(userId: string) {
-		const user = await this.userRepository.getUser(userId)
+		const user = await this.userRepository.getUser(userId);
 		const token = v4();
 		user.emailVerificationToken = token;
 		await this.userRepository.updateUser(user);
@@ -21,12 +21,14 @@ export default class VerificationService {
 			text: `Please click on the following link to verify your email: ${verificationUrl}`
 		};
 
-		transporter.sendMail(mailOptions, (error, info) => {
-			if (error) {
-				getLogger().error(error);
-			}
-			getLogger().info(`Email verification message sent for email=${user.email}`);
-		});
+		if (!user.email.includes('expresswebapptemplate.com')) {
+			transporter.sendMail(mailOptions, (error, info) => {
+				if (error) {
+					getLogger().error(error);
+				}
+				getLogger().info(`Email verification message sent for email=${user.email}`);
+			});
+		}
 	}
 
 	async verifyEmail(token: string) {

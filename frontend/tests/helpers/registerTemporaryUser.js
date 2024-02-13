@@ -1,3 +1,5 @@
+import { generateTemporaryUserEmail } from './generateTemporaryUserEmail.js';
+
 export async function registerTemporaryUser(
 	page,
 	email = undefined,
@@ -5,7 +7,7 @@ export async function registerTemporaryUser(
 	passwordConfirm = 'password12'
 ) {
 	if (!email) {
-		email = `test.user-${Math.random()}@temporary.dev`;
+		email = generateTemporaryUserEmail()
 	}
 	await page.goto('/register');
 	await page.fill('input[type="email"]', email);

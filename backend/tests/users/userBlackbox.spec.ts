@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import axios from 'axios';
 import { UUID_REG_EXP } from '../../src/contants';
 import { AxiosError } from 'axios';
-import { authenticateAsAdmin, logInTestUser } from '../helpers';
+import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser } from '../helpers';
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 
@@ -19,8 +19,8 @@ describe('User resource', () => {
 	it('should create, get, update, and delete', async () => {
 		// given
 		let id;
-		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
-		const updatedEmail = `test${Math.floor(Math.random() * 10000)}@updated.com`;
+		const email = generateTemporaryUserEmail()
+		const updatedEmail = generateTemporaryUserEmail()
 		const password = 'password';
 		const updatedPassword = 'newPassword';
 
@@ -126,7 +126,7 @@ describe('User resource', () => {
 
 	it('should throw error when password and confirmPassword do not match', async () => {
 		//given
-		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
+		const email = generateTemporaryUserEmail()
 		let postResponse;
 
 		// when
@@ -143,7 +143,7 @@ describe('User resource', () => {
 	});
 
 	it('should throw error when email is already taken', async () => {
-		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
+		const email = generateTemporaryUserEmail()
 		let userId
 		try {
 			userId = (await client.post(`${process.env.BASE_URL}/api/users`, {
@@ -168,7 +168,7 @@ describe('User resource', () => {
 	it('should allow admin user to delete any user', async () => {
 		// given
 		let userId;
-		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
+		const email = generateTemporaryUserEmail()
 		const password = 'password';
 		await authenticateAsAdmin(client);
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {

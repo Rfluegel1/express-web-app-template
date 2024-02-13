@@ -5,6 +5,7 @@ import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 import { logInTestUserWithClient, logOutUserWithClient } from './helpers/api.js';
 import { registerTemporaryUser } from './helpers/registerTemporaryUser.js';
+import { generateTemporaryUserEmail } from './helpers/generateTemporaryUserEmail.js';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar, withCredentials: true }));
@@ -24,7 +25,7 @@ test('should display only todo records made by user', async ({ page }) => {
 		firstTodoId = (await client.post(`${process.env.BASE_URL}/api/todos`, { task: 'squash bugs' })).data.message.id;
 		secondTodoId = (await client.post(`${process.env.BASE_URL}/api/todos`, { task: 'sanitize' })).data.message.id;
 
-		const email = `test${Math.floor(Math.random() * 10000)}@example.com`;
+		const email = generateTemporaryUserEmail();
 		const password = 'password';
 		userId = await logInTestUserWithClient(otherClient, email, password);
 		otherTodoId = (await otherClient.post(`${process.env.BASE_URL}/api/todos`, { task: 'watch grass grow' })).data.message.id;

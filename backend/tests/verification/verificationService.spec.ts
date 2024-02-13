@@ -50,7 +50,29 @@ describe('Verification service', () => {
 			subject: 'Email Verification',
 			text: `Please click on the following link to verify your email: ${process.env.BASE_URL}/api/verify-email?token=1234`
 		}, expect.any(Function));
+
+		// cleanup
+		transporter.sendMail = jest.fn()
 	});
+
+	it('should not send email verification email if user email is from expresswebapptemplate.com', async () => {
+		// given
+		const userId = v4();
+		const mockUser = new User('email@expresswebapptemplate.com', 'hash');
+		mockUser.id = userId;
+		(v4 as jest.Mock).mockImplementation(() => '1234');
+		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
+			if (sentId === userId) {
+				return mockUser
+			}
+		});
+
+		// when
+		await verificationService.sendVerificationEmail(userId);
+
+		// then
+		expect(transporter.sendMail).not.toHaveBeenCalled()
+	})
 
 	it('should verify email verification token', async () => {
 		//given

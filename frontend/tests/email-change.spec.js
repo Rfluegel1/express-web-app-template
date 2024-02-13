@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { generateTemporaryUserEmail } from './helpers/generateTemporaryUserEmail.js';
 
 test.describe('Email change page', () => {
 	test('should route to login if not logged in', async ({ page }) => {
@@ -18,7 +19,7 @@ test.describe('Email change page', () => {
 				});
 			});
 		}
-		const email = 'new.email@web-app-template.dev';
+		const email = generateTemporaryUserEmail()
 		const requestPromise = page.waitForRequest('**/request-email-change');
 		await loginTestUser(page);
 

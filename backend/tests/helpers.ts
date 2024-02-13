@@ -55,3 +55,7 @@ export async function authenticateAsAdmin(client: AxiosInstance) {
     })
     expect(logInResponse.status).toEqual(StatusCodes.OK)
 }
+
+export function generateTemporaryUserEmail() {
+    return `test${Math.floor(Math.random() * 10000)}@expresswebapptemplate.com`
+}

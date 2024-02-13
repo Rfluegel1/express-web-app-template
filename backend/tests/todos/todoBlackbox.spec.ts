@@ -4,7 +4,7 @@ import {UUID_REG_EXP} from '../../src/contants'
 import axios, {AxiosError} from 'axios'
 import {wrapper} from 'axios-cookiejar-support'
 import {CookieJar} from 'tough-cookie'
-import { authenticateAsAdmin, logInTestUser, logOutUser } from '../helpers';
+import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 
 const jar = new CookieJar()
 const client = wrapper(axios.create({jar, withCredentials: true}))
@@ -101,7 +101,7 @@ describe('Todo resource', () => {
             await client.get(`${process.env.BASE_URL}/api/users?email=${process.env.ADMIN_EMAIL}`)
         ).data.id
 
-        const email = `test${Math.floor(Math.random() * 10000)}@example.com`
+        const email = generateTemporaryUserEmail()
         const password = 'password'
         const createUserResponse = await axios.post(
             `${process.env.BASE_URL}/api/users`, {
