@@ -11,6 +11,8 @@ jobs:
     env:
       PASSPORT_SECRET: ${{ secrets.PASSPORT_SECRET }}
       TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
     timeout-minutes: 10
 
     services:
