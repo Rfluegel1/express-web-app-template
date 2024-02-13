@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import axios from 'axios';
 import { dataSource } from '../src/postDataSource';
+import { StatusCodes } from 'http-status-codes';
 
 if (process.env.NODE_ENV === 'test') {
 	process.env.NODE_ENV = 'development';
@@ -37,21 +38,21 @@ export default async () => {
 				password: process.env.ADMIN_PASSWORD,
 				confirmPassword: process.env.ADMIN_PASSWORD
 			});
-		} catch {
+		} catch (error: any) {
+			if (error.response.status !== StatusCodes.CONFLICT) {
+				throw error;
+			}
 		}
-		try {
-			dataSource.setOptions({ database: process.env.DB_DATABASE });
-			dataSource.setOptions({ password: process.env.DB_PASSWORD });
-			dataSource.setOptions({ username: process.env.DB_USERNAME });
-			await dataSource.initialize();
-			await dataSource.query(
-				'UPDATE users SET isVerified=$1, role=$2 where email=$3',
-				[true, 'admin', process.env.ADMIN_EMAIL]
-			);
-			await dataSource.destroy()
-		} catch (error) {
-			console.error(error);
-		}
+		dataSource.setOptions({ database: process.env.DB_DATABASE });
+		dataSource.setOptions({ password: process.env.DB_PASSWORD });
+		dataSource.setOptions({ username: process.env.DB_USERNAME });
+		await dataSource.initialize();
+		await dataSource.query(
+			'UPDATE users SET isVerified=$1, role=$2 where email=$3',
+			[true, 'admin', process.env.ADMIN_EMAIL]
+		);
+		await dataSource.destroy();
+
 	}
 
 	await startBackend();
