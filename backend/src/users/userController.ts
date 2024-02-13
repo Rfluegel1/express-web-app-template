@@ -23,8 +23,7 @@ export default class UserController {
         const password: string = request.body.password
         let confirmPassword: string = request.body.confirmPassword
         if (password !== confirmPassword) {
-            next(new BadRequestException())
-            return
+            return next(new BadRequestException())
         }
         if (!id.match(UUID_REG_EXP)) {
             return next(new BadRequestException(id))
@@ -46,8 +45,7 @@ export default class UserController {
         let password: string = request.body.password
         let confirmPassword: string = request.body.confirmPassword
         if (password !== confirmPassword) {
-            next(new BadRequestException())
-            return
+            return next(new BadRequestException())
         }
         try {
             const user: User = await this.userService.createUser(email, password)
@@ -115,12 +113,5 @@ export default class UserController {
         } catch (error) {
             next(error)
         }
-    }
-
-    async isVerified(request: Request, response: Response, next: NextFunction) {
-        getLogger().info('Received isVerified request')
-        const userId = (request.user as User).id
-        const user = await this.userService.getUser(userId)
-        return response.status(StatusCodes.OK).send({isVerified: user.isVerified})
     }
 }
