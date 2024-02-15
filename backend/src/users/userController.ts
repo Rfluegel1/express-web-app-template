@@ -26,6 +26,7 @@ export default class UserController {
 		const emailVerificationToken: string = request.body.emailVerificationToken;
 		const isVerified: boolean = request.body.isVerified;
 		const role: string = request.body.role;
+		const passwordResetToken: string = request.body.passwordResetToken;
 		if (password !== confirmPassword) {
 			return next(new BadRequestException());
 		}
@@ -34,7 +35,7 @@ export default class UserController {
 		}
 		try {
 			let user: User = isAdmin
-				? await this.userService.updateUser(id, email, password, isVerified, emailVerificationToken, role)
+				? await this.userService.updateUser(id, email, password, isVerified, emailVerificationToken, role, passwordResetToken)
 				: await this.userService.updateUser(id, email, password);
 			getLogger().info('Sending update user request', { status: StatusCodes.OK });
 			return response.status(StatusCodes.OK).send(

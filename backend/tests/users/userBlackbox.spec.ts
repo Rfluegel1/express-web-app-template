@@ -217,6 +217,7 @@ describe('User resource', () => {
 			expect(detData.passwordHash).not.toEqual(undefined);
 			expect(detData.isVerified).toEqual(false);
 			expect(detData.emailVerificationToken).not.toEqual(undefined);
+			expect(detData.passwordResetToken).toBeNull()
 			expect(detData.role).toEqual('user');
 
 			// when
@@ -226,6 +227,7 @@ describe('User resource', () => {
 				confirmPassword: updatedPassword,
 				isVerified: true,
 				emailVerificationToken: 'emailVerificationToken',
+				passwordResetToken: 'passwordResetToken',
 				role: 'anything'
 			});
 
@@ -238,6 +240,7 @@ describe('User resource', () => {
 			expect(updateData.passwordHash).not.toEqual(undefined);
 			expect(updateData.isVerified).toEqual(true);
 			expect(updateData.emailVerificationToken).toEqual('emailVerificationToken');
+			expect(updateData.passwordResetToken).toEqual('passwordResetToken');
 			expect(updateData.role).toEqual('anything');
 
 			// when
@@ -252,6 +255,7 @@ describe('User resource', () => {
 			expect(getAfterUpdateData.passwordHash).not.toEqual(undefined);
 			expect(getAfterUpdateData.isVerified).toEqual(true);
 			expect(getAfterUpdateData.emailVerificationToken).toEqual('emailVerificationToken');
+			expect(getAfterUpdateData.passwordResetToken).toEqual('passwordResetToken');
 			expect(getAfterUpdateData.role).toEqual('anything');
 		} finally {
 			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);

@@ -86,14 +86,14 @@ describe('User service', () => {
     it('updateUser gets from repository, calls repository to update, and returns User', async () => {
         //given
         const id: string = uuidv4()
-        const expectedUser = {email: 'email', passwordHash: 'passwordHash', isVerified: true, emailVerificationToken: 'emailVerificationToken', role: 'role'};
+        const expectedUser = {email: 'email', passwordHash: 'passwordHash', isVerified: true, emailVerificationToken: 'emailVerificationToken', role: 'role', passwordResetToken: 'passwordResetToken'};
         (service.userRepository.getUser as jest.Mock).mockImplementation(jest.fn(() => {
             let user = new User()
             user.id = id
             return user
         }))
         // when
-        let result: User = await service.updateUser(id, 'email', 'password', true, 'emailVerificationToken', 'role')
+        let result: User = await service.updateUser(id, 'email', 'password', true, 'emailVerificationToken', 'role', 'passwordResetToken')
         // then
         expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expectedUser))
         expect(result.email).toEqual('email')
@@ -102,22 +102,23 @@ describe('User service', () => {
         expect(result.isVerified).toEqual(true)
         expect(result.emailVerificationToken).toEqual('emailVerificationToken')
         expect(result.role).toEqual('role')
+        expect(result.passwordResetToken).toEqual('passwordResetToken')
     })
     it.each`
-    email          | password      | isVerified    | emailVerificationToken          | role          | expected
-    ${undefined}   | ${undefined}  | ${undefined}  | ${undefined}                    | ${undefined}  | ${{email: 'old email', passwordHash: 'old passwordHash', isVerified: false, emailVerificationToken: 'old emailVerificationToken', role: 'old role'}}
-    ${'new email'} | ${'password'} | ${true}       | ${'new emailVerificationToken'} | ${'new role'} | ${{email: 'new email', passwordHash: 'passwordHash', isVerified: true, emailVerificationToken: 'new emailVerificationToken', role: 'new role'}}
+    email          | password      | isVerified    | emailVerificationToken          | role          | passwordResetToken| expected
+    ${undefined}   | ${undefined}  | ${undefined}  | ${undefined}                    | ${undefined}  | ${undefined}  | ${{email: 'old email', passwordHash: 'old passwordHash', isVerified: false, emailVerificationToken: 'old emailVerificationToken', role: 'old role', passwordResetToken: 'old passwordResetToken'}}
+    ${'new email'} | ${'password'} | ${true}       | ${'new emailVerificationToken'} | ${'new role'} | ${'new passwordResetToken'} | ${{email: 'new email', passwordHash: 'passwordHash', isVerified: true, emailVerificationToken: 'new emailVerificationToken', role: 'new role', passwordResetToken: 'new passwordResetToken'}}
     `('updateUser only sets defined fields on updated User',
-        async ({email, password, isVerified, emailVerificationToken, role, expected}) => {
+        async ({email, password, isVerified, emailVerificationToken, role, passwordResetToken, expected}) => {
             //given
-            const existingUser = new User('old email', 'old passwordHash', false, 'old emailVerificationToken', 'old role');
+            const existingUser = new User('old email', 'old passwordHash', false, 'old emailVerificationToken', 'old role', 'old passwordResetToken');
             (service.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
                 if (sentId === existingUser.id) {
                     return existingUser
                 }
             })
             // when
-            let result: User = await service.updateUser(existingUser.id, email, password, isVerified, emailVerificationToken, role)
+            let result: User = await service.updateUser(existingUser.id, email, password, isVerified, emailVerificationToken, role, passwordResetToken)
             // then
             expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expected))
             expect(result.email).toEqual(expected.email)
@@ -126,5 +127,6 @@ describe('User service', () => {
             expect(result.isVerified).toEqual(expected.isVerified)
             expect(result.emailVerificationToken).toEqual(expected.emailVerificationToken)
             expect(result.role).toEqual(expected.role)
+            expect(result.passwordResetToken).toEqual(expected.passwordResetToken)
         })
 })

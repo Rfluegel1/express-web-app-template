@@ -24,6 +24,10 @@ jest.mock('uuid', () => ({
 jest.mock('../../src/nodemailerConfig')
 transporter.sendMail = jest.fn()
 
+jest.mock('bcrypt', () => ({
+	hash: jest.fn().mockResolvedValue('passwordHash')
+}));
+
 describe('Verification service', () => {
 	let verificationService = new VerificationService();
 	it('should send email verification email', async () => {
@@ -157,12 +161,12 @@ describe('Verification service', () => {
 		});
 
 		// when
-		await verificationService.verifyPasswordReset(token, 'new hash')
+		await verificationService.resetPassword(token, 'password')
 
 		// then
 		expect(verificationService.userRepository.updateUser).toHaveBeenCalledWith({
 			...mockUser,
-			passwordHash: 'new hash',
+			passwordHash: 'passwordHash',
 			passwordResetToken: ''
 		})
 	})

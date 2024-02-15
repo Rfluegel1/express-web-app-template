@@ -28,13 +28,13 @@ export default class UserService {
         return await this.userRepository.getUserByEmail(email)
     }
 
-    async updateUser(id: string, email: string, password: string, isVerified?: boolean, emailVerificationToken?: string, role?: string): Promise<User> {
+    async updateUser(id: string, email: string, password: string, isVerified?: boolean, emailVerificationToken?: string, role?: string, passwordResetToken?: string): Promise<User> {
         let user: User = await this.userRepository.getUser(id)
         let passwordHash
         if (password) {
             passwordHash = await bcrypt.hash(password, 10)
         }
-        user.updateDefinedFields(email, passwordHash, isVerified, emailVerificationToken, role)
+        user.updateDefinedFields(email, passwordHash, isVerified, emailVerificationToken, role, passwordResetToken)
         await this.userRepository.updateUser(user)
         return user
     }

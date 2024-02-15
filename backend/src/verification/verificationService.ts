@@ -2,6 +2,7 @@ import { v4 } from 'uuid';
 import { transporter } from '../nodemailerConfig';
 import UserRepository from '../users/userRepository';
 import { getLogger } from '../Logger';
+import bcrypt from 'bcrypt';
 
 export default class VerificationService {
 	userRepository = new UserRepository();
@@ -62,9 +63,13 @@ export default class VerificationService {
 		}
 	}
 
-	async verifyPasswordReset(token: string, newHash: string) {
+	async resetPassword(token: string, password: string) {
 		const user = await this.userRepository.getUserByPasswordResetToken(token);
-		user.passwordHash = newHash;
+		let passwordHash;
+		if (password) {
+			passwordHash = await bcrypt.hash(password, 10);
+		}
+		user.passwordHash = passwordHash;
 		user.passwordResetToken = '';
 		await this.userRepository.updateUser(user);
 	}

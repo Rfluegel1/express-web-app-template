@@ -33,7 +33,9 @@ describe('User controller', () => {
 		email: 'email',
 		passwordHash: 'passwordHash',
 		isVerified: false,
-		emailVerificationToken: 'emailVerificationToken'
+		emailVerificationToken: 'emailVerificationToken',
+		role: 'role',
+		passwordResetToken: 'passwordResetToken'
 	};
 	const userController = new UserController();
 	describe('in regards to normal operation', () => {
@@ -479,7 +481,8 @@ describe('User controller', () => {
 					password: undefined,
 					isVerified: true,
 					emailVerificationToken: 'emailVerificationToken',
-					role: 'role'
+					role: 'role',
+					passwordResetToken: 'passwordResetToken'
 				}
 			};
 			const response = {
@@ -490,8 +493,8 @@ describe('User controller', () => {
 			};
 
 			(userController.userService.updateUser as jest.Mock).mockImplementation(
-				(sentId, email, passwordHash, isVerified, emailVerificationToken, role) => {
-					if (sentId === id && email === 'email' && passwordHash === undefined && emailVerificationToken === 'emailVerificationToken' && isVerified && role === 'role') {
+				(sentId, email, passwordHash, isVerified, emailVerificationToken, role, passwordResetToken) => {
+					if (sentId === id && email === 'email' && passwordHash === undefined && emailVerificationToken === 'emailVerificationToken' && isVerified && role === 'role' && passwordResetToken === 'passwordResetToken') {
 						return mockUser;
 					} else {
 						return null;

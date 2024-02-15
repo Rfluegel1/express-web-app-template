@@ -17,14 +17,14 @@ export default class User {
       isVerified: boolean = false,
       emailVerificationToken: string = '',
       role: string = 'user',
-      passwordVerificationToken: string = ''
+      passwordResetToken: string = ''
     ) {
         this.email = email
         this.passwordHash = passwordHash
         this.isVerified = isVerified
         this.emailVerificationToken = emailVerificationToken
         this.role = role
-        this.passwordResetToken = passwordVerificationToken
+        this.passwordResetToken = passwordResetToken
     }
 
     userMapper(queryResult: any): User {
@@ -44,7 +44,7 @@ export default class User {
 		return await bcrypt.compare(password, this.passwordHash);
 	}
 
-	updateDefinedFields(email: string | undefined, passwordHash: string | undefined, isVerified: boolean | undefined, emailVerificationToken: string | undefined, role: string | undefined) {
+	updateDefinedFields(email: string | undefined, passwordHash: string | undefined, isVerified: boolean | undefined, emailVerificationToken: string | undefined, role: string | undefined, passwordResetToken: string | undefined) {
 		if (email !== undefined) {
 			this.email = email;
 		}
@@ -59,6 +59,9 @@ export default class User {
 		}
 		if (role !== undefined) {
 			this.role = role;
+		}
+		if (passwordResetToken !== undefined) {
+			this.passwordResetToken = passwordResetToken;
 		}
 	}
 
