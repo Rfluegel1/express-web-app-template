@@ -230,13 +230,13 @@ describe('User repository', () => {
     it('updateUser updates users in userDataSource', async () => {
         //given
         repository.userDataSource.query = jest.fn()
-        const mockUser = new User('email', 'passwordHash', false, 'token')
+        const mockUser = new User('email', 'passwordHash', false, 'token', 'role')
         // when
         await repository.updateUser(mockUser)
         // then
         expect(repository.userDataSource.query).toHaveBeenCalledWith(
-            'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerificationToken=$4 WHERE id=$5',
-            ['email', 'passwordHash', false, 'token', mockUser.id]
+            'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerificationToken=$4, role=$5 WHERE id=$6',
+            ['email', 'passwordHash', false, 'token', 'role', mockUser.id]
         )
     })
     it('updateUser logs error and throws database exception', async () => {

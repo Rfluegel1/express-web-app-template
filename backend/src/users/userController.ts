@@ -87,7 +87,8 @@ export default class UserController {
 	async getUser(request: Request, response: Response, next: NextFunction) {
 		getLogger().info('Received get users request', { requestParam: request.params });
 		let id: string = request.params.id;
-		if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin') {
+		const isAdmin = (request.user as User).role === 'admin';
+		if (!request.isAuthenticated() || (request.user as User).id !== id && !isAdmin) {
 			return next(new UnauthorizedException('get user'));
 		}
 		let user: User;
@@ -97,9 +98,10 @@ export default class UserController {
 		try {
 			user = await this.userService.getUser(id);
 			getLogger().info('Sending get users response', { status: StatusCodes.OK });
-			return response.status(StatusCodes.OK).send({
-				id: user.id, email: user.email, isVerified: user.isVerified
-			});
+			return response.status(StatusCodes.OK).send(isAdmin
+				? user
+				: { id: user.id, email: user.email, isVerified: user.isVerified }
+			);
 		} catch (error) {
 			next(error);
 		}

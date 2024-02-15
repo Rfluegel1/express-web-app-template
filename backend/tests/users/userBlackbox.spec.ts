@@ -19,8 +19,8 @@ describe('User resource', () => {
 	it('should create, get, update, and delete', async () => {
 		// given
 		let id;
-		const email = generateTemporaryUserEmail()
-		const updatedEmail = generateTemporaryUserEmail()
+		const email = generateTemporaryUserEmail();
+		const updatedEmail = generateTemporaryUserEmail();
 		const password = 'password';
 		const updatedPassword = 'newPassword';
 
@@ -126,7 +126,7 @@ describe('User resource', () => {
 
 	it('should throw error when password and confirmPassword do not match', async () => {
 		//given
-		const email = generateTemporaryUserEmail()
+		const email = generateTemporaryUserEmail();
 		let postResponse;
 
 		// when
@@ -143,8 +143,8 @@ describe('User resource', () => {
 	});
 
 	it('should throw error when email is already taken', async () => {
-		const email = generateTemporaryUserEmail()
-		let userId
+		const email = generateTemporaryUserEmail();
+		let userId;
 		try {
 			userId = (await client.post(`${process.env.BASE_URL}/api/users`, {
 				email: email, password: 'password', confirmPassword: 'password'
@@ -160,15 +160,15 @@ describe('User resource', () => {
 			expect(secondResponse?.status).toEqual(StatusCodes.CONFLICT);
 			expect(secondResponse?.data.message).toEqual('Duplicate key value violates unique constraint=users_email_key');
 		} finally {
-			await authenticateAsAdmin(client)
-			await client.delete(`${process.env.BASE_URL}/api/users/${userId}`)
+			await authenticateAsAdmin(client);
+			await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
 		}
 	});
 
 	it('should allow admin user to delete any user', async () => {
 		// given
 		let userId;
-		const email = generateTemporaryUserEmail()
+		const email = generateTemporaryUserEmail();
 		const password = 'password';
 		await authenticateAsAdmin(client);
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
@@ -189,41 +189,73 @@ describe('User resource', () => {
 	it('should allow admin to view and update all fields of any user', async () => {
 		// given
 		let id;
-		const email = generateTemporaryUserEmail()
-		const updatedEmail = generateTemporaryUserEmail()
+		const email = generateTemporaryUserEmail();
+		const updatedEmail = generateTemporaryUserEmail();
 		const password = 'password';
 		const updatedPassword = 'newPassword';
 
-		await authenticateAsAdmin(client)
-		// when
+		await authenticateAsAdmin(client);
 		try {
+			// when
+			const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
+				email: email, password: password, confirmPassword: password
+			});
 
-		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
-			email: email, password: password, confirmPassword: password
-		});
+			// then
+			expect(postResponse.status).toEqual(StatusCodes.CREATED);
+			id = postResponse.data.id;
 
-		// then
-		expect(postResponse.status).toEqual(StatusCodes.CREATED);
-		id = postResponse.data.id;
+			// when
+			const getResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`);
 
-		// when
-		const updateResponse = await client.put(`${process.env.BASE_URL}/api/users/${id}`, {
-			email: updatedEmail, password: updatedPassword, confirmPassword: updatedPassword, isVerified: true, emailVerificationToken: 'emailVerificationToken', role: 'anything'
-		})
+			// then
+			expect(getResponse.status).toEqual(StatusCodes.OK);
+			const detData = getResponse.data;
+			expect(detData.id).toEqual(id);
+			expect(detData.email).toEqual(email);
+			expect(detData.password).toEqual(undefined);
+			expect(detData.passwordHash).not.toEqual(undefined);
+			expect(detData.isVerified).toEqual(false);
+			expect(detData.emailVerificationToken).not.toEqual(undefined);
+			expect(detData.role).toEqual('user');
 
-		// then
-		expect(updateResponse.status).toEqual(StatusCodes.OK);
-		const updateData = updateResponse.data;
-		expect(updateData.id).toEqual(id);
-		expect(updateData.email).toEqual(updatedEmail);
-		expect(updateData.password).toEqual(undefined);
-		expect(updateData.passwordHash).not.toEqual(undefined);
-		expect(updateData.isVerified).toEqual(true);
-		expect(updateData.emailVerificationToken).toEqual('emailVerificationToken');
-		expect(updateData.role).toEqual('anything');
+			// when
+			const updateResponse = await client.put(`${process.env.BASE_URL}/api/users/${id}`, {
+				email: updatedEmail,
+				password: updatedPassword,
+				confirmPassword: updatedPassword,
+				isVerified: true,
+				emailVerificationToken: 'emailVerificationToken',
+				role: 'anything'
+			});
+
+			// then
+			expect(updateResponse.status).toEqual(StatusCodes.OK);
+			const updateData = updateResponse.data;
+			expect(updateData.id).toEqual(id);
+			expect(updateData.email).toEqual(updatedEmail);
+			expect(updateData.password).toEqual(undefined);
+			expect(updateData.passwordHash).not.toEqual(undefined);
+			expect(updateData.isVerified).toEqual(true);
+			expect(updateData.emailVerificationToken).toEqual('emailVerificationToken');
+			expect(updateData.role).toEqual('anything');
+
+			// when
+			const getAfterUpdateResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`);
+
+			// then
+			expect(getAfterUpdateResponse.status).toEqual(StatusCodes.OK);
+			const getAfterUpdateData = getAfterUpdateResponse.data;
+			expect(getAfterUpdateData.id).toEqual(id);
+			expect(getAfterUpdateData.email).toEqual(updatedEmail);
+			expect(getAfterUpdateData.password).toEqual(undefined);
+			expect(getAfterUpdateData.passwordHash).not.toEqual(undefined);
+			expect(getAfterUpdateData.isVerified).toEqual(true);
+			expect(getAfterUpdateData.emailVerificationToken).toEqual('emailVerificationToken');
+			expect(getAfterUpdateData.role).toEqual('anything');
 		} finally {
-			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`)
-			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);
+			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
 		}
 	});
 });

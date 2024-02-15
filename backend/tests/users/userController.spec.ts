@@ -466,7 +466,7 @@ describe('User controller', () => {
 			// then
 			expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
 		});
-		it('updateUser should return all fields when called by admin', async () => {
+		it('updateUser should avoid unauthorized and return all fields when called by admin', async () => {
 			// given
 			let id = uuidv4();
 			const mockUser = { id: id, ...user };
@@ -506,7 +506,7 @@ describe('User controller', () => {
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 			expect(response.send).toHaveBeenCalledWith(mockUser);
 		});
-		it('getUser should function normally when called by admin', async () => {
+		it('getUser should avoid unauthorized and return all fields when called by admin', async () => {
 			// given
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
@@ -535,11 +535,7 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({
-				id: mockUser.id,
-				email: mockUser.email,
-				isVerified: mockUser.isVerified
-			});
+			expect(response.send).toHaveBeenCalledWith(mockUser);
 		});
 		it('getUserByEmail should function normally when called by admin', async () => {
 			// given
