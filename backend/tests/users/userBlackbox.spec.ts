@@ -185,4 +185,45 @@ describe('User resource', () => {
 		// then
 		expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
 	});
+
+	it('should allow admin to view and update all fields of any user', async () => {
+		// given
+		let id;
+		const email = generateTemporaryUserEmail()
+		const updatedEmail = generateTemporaryUserEmail()
+		const password = 'password';
+		const updatedPassword = 'newPassword';
+
+		await authenticateAsAdmin(client)
+		// when
+		try {
+
+		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
+			email: email, password: password, confirmPassword: password
+		});
+
+		// then
+		expect(postResponse.status).toEqual(StatusCodes.CREATED);
+		id = postResponse.data.id;
+
+		// when
+		const updateResponse = await client.put(`${process.env.BASE_URL}/api/users/${id}`, {
+			email: updatedEmail, password: updatedPassword, confirmPassword: updatedPassword, isVerified: true, emailVerificationToken: 'emailVerificationToken', role: 'anything'
+		})
+
+		// then
+		expect(updateResponse.status).toEqual(StatusCodes.OK);
+		const updateData = updateResponse.data;
+		expect(updateData.id).toEqual(id);
+		expect(updateData.email).toEqual(updatedEmail);
+		expect(updateData.password).toEqual(undefined);
+		expect(updateData.passwordHash).not.toEqual(undefined);
+		expect(updateData.isVerified).toEqual(true);
+		expect(updateData.emailVerificationToken).toEqual('emailVerificationToken');
+		expect(updateData.role).toEqual('anything');
+		} finally {
+			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`)
+			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
+		}
+	});
 });

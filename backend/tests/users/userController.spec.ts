@@ -29,7 +29,12 @@ jest.mock('../../src/Logger', () => ({
 }));
 
 describe('User controller', () => {
-	const user = { email: 'email', passwordHash: 'passwordHash', isVerified: false };
+	const user = {
+		email: 'email',
+		passwordHash: 'passwordHash',
+		isVerified: false,
+		emailVerificationToken: 'emailVerificationToken'
+	};
 	const userController = new UserController();
 	describe('in regards to normal operation', () => {
 		it('createUser responds with data that is returned from the UserService', async () => {
@@ -89,7 +94,11 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
+			expect(response.send).toHaveBeenCalledWith({
+				id: mockUser.id,
+				email: mockUser.email,
+				isVerified: mockUser.isVerified
+			});
 		});
 		it('getUserByEmail responds with data that is returned from the UserService', async () => {
 			// given
@@ -120,7 +129,11 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
+			expect(response.send).toHaveBeenCalledWith({
+				id: mockUser.id,
+				email: mockUser.email,
+				isVerified: mockUser.isVerified
+			});
 		});
 		it('deleteUser should call service and respond with NO_CONTENT', async () => {
 			// given
@@ -175,7 +188,11 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
+			expect(response.send).toHaveBeenCalledWith({
+				id: mockUser.id,
+				email: mockUser.email,
+				isVerified: mockUser.isVerified
+			});
 		});
 	});
 	describe('in regards to error handling', () => {
@@ -449,7 +466,7 @@ describe('User controller', () => {
 			// then
 			expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
 		});
-		it('updateUser should function normally when called by admin', async () => {
+		it('updateUser should return all fields when called by admin', async () => {
 			// given
 			let id = uuidv4();
 			const mockUser = { id: id, ...user };
@@ -457,7 +474,13 @@ describe('User controller', () => {
 				isAuthenticated: () => true,
 				user: { id: 'other', role: 'admin' },
 				params: { id: id },
-				body: { email: 'email', password: undefined }
+				body: {
+					email: 'email',
+					password: undefined,
+					isVerified: true,
+					emailVerificationToken: 'emailVerificationToken',
+					role: 'role'
+				}
 			};
 			const response = {
 				status: jest.fn(function() {
@@ -467,8 +490,8 @@ describe('User controller', () => {
 			};
 
 			(userController.userService.updateUser as jest.Mock).mockImplementation(
-				(sentId, email, passwordHash) => {
-					if (sentId === id && email === 'email' && passwordHash === undefined) {
+				(sentId, email, passwordHash, isVerified, emailVerificationToken, role) => {
+					if (sentId === id && email === 'email' && passwordHash === undefined && emailVerificationToken === 'emailVerificationToken' && isVerified && role === 'role') {
 						return mockUser;
 					} else {
 						return null;
@@ -481,7 +504,7 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
+			expect(response.send).toHaveBeenCalledWith(mockUser);
 		});
 		it('getUser should function normally when called by admin', async () => {
 			// given
@@ -512,7 +535,11 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
+			expect(response.send).toHaveBeenCalledWith({
+				id: mockUser.id,
+				email: mockUser.email,
+				isVerified: mockUser.isVerified
+			});
 		});
 		it('getUserByEmail should function normally when called by admin', async () => {
 			// given
@@ -543,7 +570,11 @@ describe('User controller', () => {
 
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({ id: mockUser.id, email: mockUser.email, isVerified: mockUser.isVerified });
+			expect(response.send).toHaveBeenCalledWith({
+				id: mockUser.id,
+				email: mockUser.email,
+				isVerified: mockUser.isVerified
+			});
 		});
 		it('deleteUser should function normally when called by admin', async () => {
 			// given
@@ -559,7 +590,7 @@ describe('User controller', () => {
 				})
 			};
 			(userController.userService.deleteUser as jest.Mock).mockImplementation(() => {
-				jest.fn()
+				jest.fn();
 			});
 
 			// when
