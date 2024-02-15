@@ -9,19 +9,22 @@ export default class User {
     isVerified: boolean
     emailVerificationToken: string
     role: string
+    passwordResetToken: string
 
     constructor(
       email: string = '',
       passwordHash: string = '',
       isVerified: boolean = false,
       emailVerificationToken: string = '',
-      role: string = 'user'
+      role: string = 'user',
+      passwordVerificationToken: string = ''
     ) {
         this.email = email
         this.passwordHash = passwordHash
         this.isVerified = isVerified
         this.emailVerificationToken = emailVerificationToken
         this.role = role
+        this.passwordResetToken = passwordVerificationToken
     }
 
     userMapper(queryResult: any): User {
@@ -31,7 +34,8 @@ export default class User {
             passwordHash: queryResult?.passwordhash,
             isVerified: queryResult?.isverified,
             emailVerificationToken: queryResult?.emailverificationtoken,
-            role: queryResult?.role
+            role: queryResult?.role,
+            passwordResetToken: queryResult?.passwordresettoken
         }
         return plainToClass(User, intermediate)
     }
