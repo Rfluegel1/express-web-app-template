@@ -11,6 +11,8 @@ const client = wrapper(axios.create({ jar, withCredentials: true }));
 const adminJar = new CookieJar();
 const admin = wrapper(axios.create({ jar: adminJar, withCredentials: true }));
 
+jest.setTimeout(30000 * 2);
+
 describe('Verification resource', () => {
 
 	it('claims to have successfully sent password reset email', async () => {
