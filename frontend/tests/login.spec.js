@@ -63,13 +63,13 @@ test('link to create user routes to register page', async ({ page }) => {
     await expect(page.locator('h1')).toHaveText('Register');
 });
 
-test('should link to password reset page', async ({ page }) => {
+test('should link to Password Reset Request page', async ({ page }) => {
     // given
     await page.goto('/login');
 
     // when
-    await page.click('a[href="/password-reset"]');
+    await page.click('a[href="/password-reset-request"]');
 
     // then
-    await expect(page.locator('h1')).toHaveText('Password Reset');
+    await expect(page.locator('h1')).toHaveText('Password Reset Request');
 });

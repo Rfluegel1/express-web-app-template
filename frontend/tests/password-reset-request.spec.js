@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { generateTemporaryUserEmail } from './helpers/generateTemporaryUserEmail.js';
 
-test.describe('Password reset page', () => {
-	test('should call to password reset when email is submitted and link to login', async ({
+test.describe('Password Reset Request page', () => {
+	test('should call to Password Reset Request when email is submitted and link to login', async ({
 		page
 	}) => {
 		// given
-		await page.goto('/password-reset');
+		await page.goto('/password-reset-request');
 		let email = generateTemporaryUserEmail()
 		await page.fill('input[type="email"]', email);
 
@@ -33,7 +33,7 @@ test.describe('Password reset page', () => {
 				status: 500
 			});
 		});
-		await page.goto('/password-reset');
+		await page.goto('/password-reset-request');
 		await page.fill('input[type="email"]', generateTemporaryUserEmail());
 
 		// when

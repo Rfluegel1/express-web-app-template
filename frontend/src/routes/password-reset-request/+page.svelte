@@ -16,7 +16,7 @@
 </script>
 
 <main>
-	<h1>Password Reset</h1>
+	<h1>Password Reset Request</h1>
 	<form on:submit|preventDefault={handleSubmit}>
 		<label for="email">Email:</label>
 		<input type="email" id="email" bind:value={email} required />

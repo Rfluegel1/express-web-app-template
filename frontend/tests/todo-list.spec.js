@@ -160,13 +160,13 @@ test('should have link to email change', async ({ page }) => {
 	await expect(page.locator('h1')).toHaveText('Change Email');
 });
 
-test('should have link to password reset', async ({ page }) => {
+test('should have link to Password Reset Request', async ({ page }) => {
 	// given
 	await logInTestUser(page);
 
 	// when
-	await page.click('a[href="/password-reset"]');
+	await page.click('a[href="/password-reset-request"]');
 
 	// then
-	await expect(page.locator('h1')).toHaveText('Password Reset');
+	await expect(page.locator('h1')).toHaveText('Password Reset Request');
 });

@@ -50,7 +50,7 @@
 		<button type='submit'>Login</button>
 	</form>
 		<a href="/register">Create Account</a>
-		<a href="/password-reset">Reset Password</a>
+		<a href="/password-reset-request">Reset Password</a>
 	{#if error}
 		<div class='error' role='alert'>{error}</div>
 	{/if}
