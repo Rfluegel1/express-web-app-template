@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import axios from 'axios';
 import { UUID_REG_EXP } from '../../src/contants';
 import { AxiosError } from 'axios';
-import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser } from '../helpers';
+import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
 
@@ -175,15 +175,17 @@ describe('User resource', () => {
 
 			// then
 			expect(getResponse.status).toEqual(StatusCodes.OK);
-			const detData = getResponse.data;
-			expect(detData.id).toEqual(id);
-			expect(detData.email).toEqual(email);
-			expect(detData.password).toEqual(undefined);
-			expect(detData.passwordHash).not.toEqual(undefined);
-			expect(detData.isVerified).toEqual(false);
-			expect(detData.emailVerificationToken).not.toEqual(undefined);
-			expect(detData.passwordResetToken).toBeNull()
-			expect(detData.role).toEqual('user');
+			const getData = getResponse.data;
+			expect(getData.id).toEqual(id);
+			expect(getData.email).toEqual(email);
+			expect(getData.password).toEqual(undefined);
+			expect(getData.passwordHash).not.toEqual(undefined);
+			expect(getData.isVerified).toEqual(false);
+			expect(getData.emailVerificationToken).not.toEqual(undefined);
+			expect(getData.passwordResetToken).toBeNull()
+			expect(getData.role).toEqual('user');
+			expect(getData.emailUpdateToken).toBeNull()
+			expect(getData.pendingEmail).toBeNull()
 
 			// when
 			const updateResponse = await client.put(`${process.env.BASE_URL}/api/users/${id}`, {
@@ -193,7 +195,9 @@ describe('User resource', () => {
 				isVerified: true,
 				emailVerificationToken: 'emailVerificationToken',
 				passwordResetToken: 'passwordResetToken',
-				role: 'anything'
+				role: 'anything',
+				emailUpdateToken: 'emailUpdateToken',
+				pendingEmail: 'pendingEmail'
 			});
 
 			// then
@@ -207,6 +211,8 @@ describe('User resource', () => {
 			expect(updateData.emailVerificationToken).toEqual('emailVerificationToken');
 			expect(updateData.passwordResetToken).toEqual('passwordResetToken');
 			expect(updateData.role).toEqual('anything');
+			expect(updateData.emailUpdateToken).toEqual('emailUpdateToken')
+			expect(updateData.pendingEmail).toEqual('pendingEmail')
 
 			// when
 			const getAfterUpdateResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`);
@@ -222,9 +228,12 @@ describe('User resource', () => {
 			expect(getAfterUpdateData.emailVerificationToken).toEqual('emailVerificationToken');
 			expect(getAfterUpdateData.passwordResetToken).toEqual('passwordResetToken');
 			expect(getAfterUpdateData.role).toEqual('anything');
+			expect(getAfterUpdateData.emailUpdateToken).toEqual('emailUpdateToken')
+			expect(getAfterUpdateData.pendingEmail).toEqual('pendingEmail')
 		} finally {
 			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);
 			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
+			await logOutUser(client)
 		}
 	});
 });

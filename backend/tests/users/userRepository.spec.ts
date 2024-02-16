@@ -182,7 +182,10 @@ describe('User repository', () => {
 					email: 'the email',
 					passwordhash: 'the passwordHash',
 					isverified: false,
-					passwordresettoken: 'token'
+					passwordresettoken: 'token',
+					emailupdatetoken: 'emailUpdateToken',
+					pendingemail: 'pendingEmail',
+					emailverificationtoken: 'emailVerificationToken'
 				}];
 			}
 		}));
@@ -195,6 +198,9 @@ describe('User repository', () => {
 		expect(actual.passwordHash).toEqual('the passwordHash');
 		expect(actual.isVerified).toEqual(false);
 		expect(actual.passwordResetToken).toEqual('token');
+		expect(actual.emailUpdateToken).toEqual('emailUpdateToken');
+		expect(actual.emailVerificationToken).toEqual('emailVerificationToken');
+		expect(actual.pendingEmail).toEqual('pendingEmail');
 	});
 	it('getUserByPasswordResetToken logs error and throws database exception', async () => {
 		// given
@@ -269,13 +275,13 @@ describe('User repository', () => {
 	it('updateUser updates users in userDataSource', async () => {
 		//given
 		repository.userDataSource.query = jest.fn();
-		const mockUser = new User('email', 'passwordHash', false, 'token', 'role', 'passwordResetToken');
+		const mockUser = new User('email', 'passwordHash', false, 'token', 'role', 'passwordResetToken', 'emailUpdateToken', 'pendingEmail')
 		// when
 		await repository.updateUser(mockUser);
 		// then
 		expect(repository.userDataSource.query).toHaveBeenCalledWith(
-			'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerificationToken=$4, role=$5, passwordResetToken=$6 WHERE id=$7',
-			['email', 'passwordHash', false, 'token', 'role', 'passwordResetToken', mockUser.id]
+			'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerificationToken=$4, role=$5, passwordResetToken=$6, emailUpdateToken=$7, pendingEmail=$8 WHERE id=$9',
+			['email', 'passwordHash', false, 'token', 'role', 'passwordResetToken', 'emailUpdateToken', 'pendingEmail', mockUser.id]
 		);
 	});
 	it('updateUser logs error and throws database exception', async () => {

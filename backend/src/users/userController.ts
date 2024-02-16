@@ -26,6 +26,8 @@ export default class UserController {
 		const isVerified: boolean = request.body.isVerified;
 		const role: string = request.body.role;
 		const passwordResetToken: string = request.body.passwordResetToken;
+		const emailUpdateToken: string = request.body.emailUpdateToken;
+		const pendingEmail: string = request.body.pendingEmail;
 		if (password !== confirmPassword) {
 			return next(new BadRequestException());
 		}
@@ -33,7 +35,17 @@ export default class UserController {
 			return next(new BadRequestException(id));
 		}
 		try {
-			let user: User = await this.userService.updateUser(id, email, password, isVerified, emailVerificationToken, role, passwordResetToken)
+			let user: User = await this.userService.updateUser(
+				id,
+				email,
+				password,
+				isVerified,
+				emailVerificationToken,
+				role,
+				passwordResetToken,
+				emailUpdateToken,
+				pendingEmail
+			);
 			getLogger().info('Sending update user request', { status: StatusCodes.OK });
 			return response.status(StatusCodes.OK).send(user);
 		} catch (error) {

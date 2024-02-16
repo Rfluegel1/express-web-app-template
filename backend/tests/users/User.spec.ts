@@ -14,6 +14,8 @@ describe('User object', () => {
         expect(result.emailVerificationToken).toEqual('')
         expect(result.role).toEqual('user')
         expect(result.passwordResetToken).toEqual('')
+        expect(result.emailUpdateToken).toEqual('')
+        expect(result.pendingEmail).toEqual('')
     })
     it('values constructor sets values', () => {
         // when
@@ -23,7 +25,9 @@ describe('User object', () => {
           true,
           'emailVerificationToken',
           'role',
-          'passwordVerificationToken'
+          'passwordResetToken',
+          'emailUpdateToken',
+          'pendingEmail'
         )
         // then
         expect(result.id).toMatch(UUID_REG_EXP)
@@ -32,7 +36,9 @@ describe('User object', () => {
         expect(result.isVerified).toEqual(true)
         expect(result.emailVerificationToken).toEqual('emailVerificationToken')
         expect(result.role).toEqual('role')
-        expect(result.passwordResetToken).toEqual('passwordVerificationToken')
+        expect(result.passwordResetToken).toEqual('passwordResetToken')
+        expect(result.emailUpdateToken).toEqual('emailUpdateToken')
+        expect(result.pendingEmail).toEqual('pendingEmail')
     })
     it('compares input password to password hash', async () => {
         // given
