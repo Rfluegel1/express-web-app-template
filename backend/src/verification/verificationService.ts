@@ -3,6 +3,8 @@ import { transporter } from '../nodemailerConfig';
 import UserRepository from '../users/userRepository';
 import { getLogger } from '../Logger';
 import bcrypt from 'bcrypt';
+import User from '../users/User';
+import { NotFoundException } from '../exceptions/NotFoundException';
 
 export default class VerificationService {
 	userRepository = new UserRepository();
@@ -41,7 +43,16 @@ export default class VerificationService {
 
 	async sendPasswordResetEmail(email: string) {
 		const id = v4();
-		const user = await this.userRepository.getUserByEmail(email);
+		let user: User;
+		try {
+			user = await this.userRepository.getUserByEmail(email);
+		} catch (e) {
+			if (e instanceof NotFoundException) {
+				getLogger().error(e.message);
+				return;
+			}
+			throw e
+		}
 		user.passwordResetToken = id;
 		await this.userRepository.updateUser(user);
 
@@ -88,7 +99,7 @@ export default class VerificationService {
 			to: user.pendingEmail,
 			subject: 'Email Update',
 			text: `Please click on the following link to update your email: ${verificationUrl}`
-		}
+		};
 
 		if (!user.pendingEmail.includes('expresswebapptemplate.com')) {
 			transporter.sendMail(mailOptions, (error, info) => {

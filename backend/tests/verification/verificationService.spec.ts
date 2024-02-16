@@ -2,6 +2,7 @@ import User from '../../src/users/User';
 import VerificationService from '../../src/verification/verificationService';
 import { v4 } from 'uuid';
 import { transporter } from '../../src/nodemailerConfig';
+import { NotFoundException } from '../../src/exceptions/NotFoundException';
 
 jest.mock('../../src/users/userRepository', () => {
 	return jest.fn().mockImplementation(() => {
@@ -13,7 +14,7 @@ jest.mock('../../src/users/userRepository', () => {
 			updateUser: jest.fn(),
 			getUserByEmailVerificationToken: jest.fn(),
 			getUserByPasswordResetToken: jest.fn(),
-			getUserByEmailUpdateToken: jest.fn(),
+			getUserByEmailUpdateToken: jest.fn()
 		};
 	});
 });
@@ -22,11 +23,18 @@ jest.mock('uuid', () => ({
 	v4: jest.fn()
 }));
 
-jest.mock('../../src/nodemailerConfig')
-transporter.sendMail = jest.fn()
+jest.mock('../../src/nodemailerConfig');
+transporter.sendMail = jest.fn();
 
 jest.mock('bcrypt', () => ({
 	hash: jest.fn().mockResolvedValue('passwordHash')
+}));
+
+jest.mock('../../src/Logger', () => ({
+	getLogger: jest.fn().mockReturnValue({
+		info: jest.fn(),
+		error: jest.fn()
+	})
 }));
 
 describe('Verification service', () => {
@@ -39,7 +47,7 @@ describe('Verification service', () => {
 		(v4 as jest.Mock).mockImplementation(() => '1234');
 		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === userId) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
@@ -49,7 +57,7 @@ describe('Verification service', () => {
 		// then
 		expect(verificationService.userRepository.updateUser)
 			.toHaveBeenCalledWith({ ...mockUser, emailVerificationToken: '1234' });
-		expect(transporter.sendMail).toHaveBeenCalled()
+		expect(transporter.sendMail).toHaveBeenCalled();
 		expect(transporter.sendMail).toHaveBeenCalledWith({
 			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
 			to: mockUser.email,
@@ -58,7 +66,7 @@ describe('Verification service', () => {
 		}, expect.any(Function));
 
 		// cleanup
-		transporter.sendMail = jest.fn()
+		transporter.sendMail = jest.fn();
 	});
 
 	it('should not send email verification email if user email is from expresswebapptemplate.com', async () => {
@@ -69,7 +77,7 @@ describe('Verification service', () => {
 		(v4 as jest.Mock).mockImplementation(() => '1234');
 		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === userId) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
@@ -77,8 +85,8 @@ describe('Verification service', () => {
 		await verificationService.sendVerificationEmail(userId);
 
 		// then
-		expect(transporter.sendMail).not.toHaveBeenCalled()
-	})
+		expect(transporter.sendMail).not.toHaveBeenCalled();
+	});
 
 	it('should verify email verification token', async () => {
 		//given
@@ -86,20 +94,20 @@ describe('Verification service', () => {
 		const mockUser = new User('email', 'hash', false, token);
 		(verificationService.userRepository.getUserByEmailVerificationToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
 		// when
-		await verificationService.verifyEmail(token)
+		await verificationService.verifyEmail(token);
 
 		// then
 		expect(verificationService.userRepository.updateUser).toHaveBeenCalledWith({
 			...mockUser,
 			isVerified: true,
 			emailVerificationToken: ''
-		})
-	})
+		});
+	});
 
 	it('should send password reset email', async () => {
 		// given
@@ -109,7 +117,7 @@ describe('Verification service', () => {
 		(v4 as jest.Mock).mockImplementation(() => '1234');
 		(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation((email: string) => {
 			if (email === 'email') {
-				return mockUser
+				return mockUser;
 			}
 		});
 
@@ -119,7 +127,7 @@ describe('Verification service', () => {
 		// then
 		expect(verificationService.userRepository.updateUser)
 			.toHaveBeenCalledWith({ ...mockUser, passwordResetToken: '1234' });
-		expect(transporter.sendMail).toHaveBeenCalled()
+		expect(transporter.sendMail).toHaveBeenCalled();
 		expect(transporter.sendMail).toHaveBeenCalledWith({
 			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
 			to: mockUser.email,
@@ -129,8 +137,44 @@ describe('Verification service', () => {
 		}, expect.any(Function));
 
 		// cleanup
-		transporter.sendMail = jest.fn()
+		transporter.sendMail = jest.fn();
 	});
+
+	it('should catch not found error for password reset email', async () => {
+		// given
+		const userId = v4();
+		const mockUser = new User('email', 'hash');
+		mockUser.id = userId;
+		(v4 as jest.Mock).mockImplementation(() => '1234');
+		(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation(() => {
+			throw new NotFoundException('email');
+		});
+
+		// expect
+		await verificationService.sendPasswordResetEmail('email');
+	});
+
+	it('should throw non not found error for password reset email', async () => {
+			// given
+			const userId = v4();
+			const mockUser = new User('email', 'hash');
+			mockUser.id = userId;
+			(v4 as jest.Mock).mockImplementation(() => '1234');
+			(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation(() => {
+				throw new Error('something');
+			});
+
+			let result;
+			try {
+				// when
+				await verificationService.sendPasswordResetEmail('email');
+			} catch (e) {
+				result = e;
+			}
+
+			// then
+			expect(result).toEqual(new Error('something'));
+		});
 
 	it('should not send password reset email if user email is from expresswebapptemplate.com', async () => {
 		// given
@@ -140,7 +184,7 @@ describe('Verification service', () => {
 		(v4 as jest.Mock).mockImplementation(() => '1234');
 		(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation((email: string) => {
 			if (email === 'email') {
-				return mockUser
+				return mockUser;
 			}
 		});
 
@@ -148,8 +192,8 @@ describe('Verification service', () => {
 		await verificationService.sendPasswordResetEmail('email');
 
 		// then
-		expect(transporter.sendMail).not.toHaveBeenCalled()
-	})
+		expect(transporter.sendMail).not.toHaveBeenCalled();
+	});
 
 	it('should verify password reset token', async () => {
 		//given
@@ -157,20 +201,20 @@ describe('Verification service', () => {
 		const mockUser = new User('email', 'hash', true, '', 'user', token);
 		(verificationService.userRepository.getUserByPasswordResetToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
 		// when
-		await verificationService.resetPassword(token, 'password')
+		await verificationService.resetPassword(token, 'password');
 
 		// then
 		expect(verificationService.userRepository.updateUser).toHaveBeenCalledWith({
 			...mockUser,
 			passwordHash: 'passwordHash',
 			passwordResetToken: ''
-		})
-	})
+		});
+	});
 
 	it('should send email update email', async () => {
 		// given
@@ -180,7 +224,7 @@ describe('Verification service', () => {
 		(v4 as jest.Mock).mockImplementation(() => '1234');
 		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === userId) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
@@ -189,8 +233,8 @@ describe('Verification service', () => {
 
 		// then
 		expect(verificationService.userRepository.updateUser)
-			.toHaveBeenCalledWith({ ...mockUser, emailUpdateToken: '1234', pendingEmail: 'newEmail'});
-		expect(transporter.sendMail).toHaveBeenCalled()
+			.toHaveBeenCalledWith({ ...mockUser, emailUpdateToken: '1234', pendingEmail: 'newEmail' });
+		expect(transporter.sendMail).toHaveBeenCalled();
 		expect(transporter.sendMail).toHaveBeenCalledWith({
 			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
 			to: 'newEmail',
@@ -200,7 +244,7 @@ describe('Verification service', () => {
 		}, expect.any(Function));
 
 		// cleanup
-		transporter.sendMail = jest.fn()
+		transporter.sendMail = jest.fn();
 	});
 
 	it('should not send email update email if user pending email is from expresswebapptemplate.com', async () => {
@@ -211,7 +255,7 @@ describe('Verification service', () => {
 		(v4 as jest.Mock).mockImplementation(() => '1234');
 		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === userId) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
@@ -219,8 +263,8 @@ describe('Verification service', () => {
 		await verificationService.sendEmailUpdateEmail(userId, 'email@expresswebapptemplate.com');
 
 		// then
-		expect(transporter.sendMail).not.toHaveBeenCalled()
-	})
+		expect(transporter.sendMail).not.toHaveBeenCalled();
+	});
 
 	it('should verify email update token', async () => {
 		//given
@@ -228,12 +272,12 @@ describe('Verification service', () => {
 		const mockUser = new User('email', 'hash', false, '', 'user', '', token, 'newEmail');
 		(verificationService.userRepository.getUserByEmailUpdateToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
-				return mockUser
+				return mockUser;
 			}
 		});
 
 		// when
-		await verificationService.updateEmail(token)
+		await verificationService.updateEmail(token);
 
 		// then
 		expect(verificationService.userRepository.updateUser).toHaveBeenCalledWith({
@@ -242,6 +286,6 @@ describe('Verification service', () => {
 			pendingEmail: '',
 			email: 'newEmail',
 			isVerified: true
-		})
-	})
+		});
+	});
 });
