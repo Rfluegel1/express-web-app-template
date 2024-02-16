@@ -107,14 +107,14 @@ describe('Verification service', () => {
 		const mockUser = new User('email', 'hash');
 		mockUser.id = userId;
 		(v4 as jest.Mock).mockImplementation(() => '1234');
-		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
-			if (sentId === userId) {
+		(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation((email: string) => {
+			if (email === 'email') {
 				return mockUser
 			}
 		});
 
 		// when
-		await verificationService.sendPasswordResetEmail(userId);
+		await verificationService.sendPasswordResetEmail('email');
 
 		// then
 		expect(verificationService.userRepository.updateUser)
@@ -138,14 +138,14 @@ describe('Verification service', () => {
 		const mockUser = new User('email@expresswebapptemplate.com', 'hash');
 		mockUser.id = userId;
 		(v4 as jest.Mock).mockImplementation(() => '1234');
-		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
-			if (sentId === userId) {
+		(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation((email: string) => {
+			if (email === 'email') {
 				return mockUser
 			}
 		});
 
 		// when
-		await verificationService.sendPasswordResetEmail(userId);
+		await verificationService.sendPasswordResetEmail('email');
 
 		// then
 		expect(transporter.sendMail).not.toHaveBeenCalled()

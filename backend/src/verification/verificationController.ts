@@ -38,15 +38,11 @@ export default class VerificationController {
 	}
 
 	async sendPasswordResetEmail(request: Request, response: Response, next: NextFunction) {
-		if (!request.isAuthenticated()) {
-			next(new UnauthorizedException('send password reset email'))
-			return
-		}
-		const userId = (request.user as User).id;
-		getLogger().info(`Received send password reset email request for user id=${userId}`);
+		const email = request.body.email;
+		getLogger().info(`Received send password reset email request for email=${email}`);
 		try {
-			await this.verificationService.sendPasswordResetEmail(userId);
-			getLogger().info(`Successful send password reset email request for user id=${userId}`);
+			await this.verificationService.sendPasswordResetEmail(email);
+			getLogger().info(`Successful send password reset email request for user email=${email}`);
 			response.status(StatusCodes.CREATED).send();
 		} catch (error) {
 			next(error);

@@ -21,11 +21,13 @@ describe('Verification resource', () => {
 
 		await authenticateAsAdmin(admin);
 		try {
-			userId = await logInTestUser(
-				client,
-				generateTemporaryUserEmail(),
-				'password'
-			);
+			const email = generateTemporaryUserEmail();
+			const createResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
+				email: email,
+				password: 'password',
+				confirmPassword: 'password'
+			});
+			userId = createResponse.data.id;
 
 			// when
 			const getBeforeResponse = await admin.get(`${process.env.BASE_URL}/api/users/${userId}`);
@@ -37,7 +39,9 @@ describe('Verification resource', () => {
 			passwordHash = getBeforeResponse.data.passwordHash;
 
 			// when
-			const response = await client.post(`${process.env.BASE_URL}/api/send-password-reset-email`);
+			const response = await client.post(`${process.env.BASE_URL}/api/send-password-reset-email`, {
+				email: email
+			});
 
 			// then
 			expect(response.status).toEqual(StatusCodes.CREATED);

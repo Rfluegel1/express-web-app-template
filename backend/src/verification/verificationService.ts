@@ -39,9 +39,9 @@ export default class VerificationService {
 		await this.userRepository.updateUser(user);
 	}
 
-	async sendPasswordResetEmail(userId: string) {
+	async sendPasswordResetEmail(email: string) {
 		const id = v4();
-		const user = await this.userRepository.getUser(userId);
+		const user = await this.userRepository.getUserByEmail(email);
 		user.passwordResetToken = id;
 		await this.userRepository.updateUser(user);
 

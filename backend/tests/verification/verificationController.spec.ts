@@ -88,16 +88,15 @@ describe('Verification controller', () => {
 	it('sendPasswordResetEmail should respond with created when service is successful', async () => {
 		// given
 		const request = {
-			isAuthenticated: () => true,
-			user: { id: '123' }
+			body: { email: 'email'}
 		};
 		const response = {
 			status: jest.fn(function() {
 				return this;
 			}), send: jest.fn()
 		};
-		(verificationController.verificationService.sendPasswordResetEmail as jest.Mock).mockImplementation((sentId) => {
-			if (sentId !== '123') {
+		(verificationController.verificationService.sendPasswordResetEmail as jest.Mock).mockImplementation((email) => {
+			if (email !== 'email') {
 				throw new Error('sentId does not match');
 			}
 		});
@@ -106,13 +105,13 @@ describe('Verification controller', () => {
 		await verificationController.sendPasswordResetEmail(request as any, response as any, jest.fn());
 
 		//then
+		expect(verificationController.verificationService.sendPasswordResetEmail).toHaveBeenCalledWith('email');
 		expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
 	});
 	it('sendPasswordResetEmail should next any error thrown from service', async () => {
 		// given
 		const request = {
-			isAuthenticated: () => true,
-			user: { id: '123' }
+			body: { email: 'email'}
 		};
 		const response = {};
 		(verificationController.verificationService.sendPasswordResetEmail as jest.Mock).mockImplementation(() => {
@@ -125,23 +124,6 @@ describe('Verification controller', () => {
 
 		//then
 		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
-	});
-	it('sendPasswordResetEmail should return unauthorized when user not authenticated', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => false,
-		};
-		const response = {};
-		(verificationController.verificationService.sendPasswordResetEmail as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.sendPasswordResetEmail(request as any, response as any, next);
-
-		//then
-		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
 	});
 	it('sendEmailUpdateEmail should respond with created when service is successful', async () => {
 		// given
