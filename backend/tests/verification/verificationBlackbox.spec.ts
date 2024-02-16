@@ -39,7 +39,7 @@ describe('Verification resource', () => {
 			passwordHash = getBeforeResponse.data.passwordHash;
 
 			// when
-			const response = await client.post(`${process.env.BASE_URL}/api/send-password-reset-email`, {
+			const response = await client.post(`${process.env.BASE_URL}/api/request-password-reset`, {
 				email: email
 			});
 

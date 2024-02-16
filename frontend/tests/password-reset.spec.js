@@ -28,7 +28,7 @@ test.describe('Password reset page', () => {
 
 	test('should display error message when request fails', async ({ page, context }) => {
 		// given
-		await context.route('**/send-password-reset-email', (route) => {
+		await context.route('**/request-password-reset', (route) => {
 			route.fulfill({
 				status: 500
 			});

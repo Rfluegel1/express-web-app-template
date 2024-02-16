@@ -10,7 +10,7 @@ jest.mock('../../src/verification/verificationService', () => {
 		return {
 			sendVerificationEmail: jest.fn(),
 			verifyEmail: jest.fn(),
-			sendPasswordResetEmail: jest.fn(),
+			requestPasswordReset: jest.fn(),
 			resetPassword: jest.fn(),
 			sendEmailUpdateEmail: jest.fn(),
 			updateEmail: jest.fn()
@@ -95,17 +95,17 @@ describe('Verification controller', () => {
 				return this;
 			}), send: jest.fn()
 		};
-		(verificationController.verificationService.sendPasswordResetEmail as jest.Mock).mockImplementation((email) => {
+		(verificationController.verificationService.requestPasswordReset as jest.Mock).mockImplementation((email) => {
 			if (email !== 'email') {
 				throw new Error('sentId does not match');
 			}
 		});
 
 		// when
-		await verificationController.sendPasswordResetEmail(request as any, response as any, jest.fn());
+		await verificationController.requestPasswordReset(request as any, response as any, jest.fn());
 
 		//then
-		expect(verificationController.verificationService.sendPasswordResetEmail).toHaveBeenCalledWith('email');
+		expect(verificationController.verificationService.requestPasswordReset).toHaveBeenCalledWith('email');
 		expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
 	});
 	it('sendPasswordResetEmail should next any error thrown from service', async () => {
@@ -114,13 +114,13 @@ describe('Verification controller', () => {
 			body: { email: 'email'}
 		};
 		const response = {};
-		(verificationController.verificationService.sendPasswordResetEmail as jest.Mock).mockImplementation(() => {
+		(verificationController.verificationService.requestPasswordReset as jest.Mock).mockImplementation(() => {
 			throw new DatabaseException();
 		});
 		const next: NextFunction = jest.fn();
 
 		// when
-		await verificationController.sendPasswordResetEmail(request as any, response as any, next);
+		await verificationController.requestPasswordReset(request as any, response as any, next);
 
 		//then
 		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));

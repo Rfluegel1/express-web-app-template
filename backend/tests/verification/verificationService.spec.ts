@@ -122,7 +122,7 @@ describe('Verification service', () => {
 		});
 
 		// when
-		await verificationService.sendPasswordResetEmail('email');
+		await verificationService.requestPasswordReset('email');
 
 		// then
 		expect(verificationService.userRepository.updateUser)
@@ -151,7 +151,7 @@ describe('Verification service', () => {
 		});
 
 		// expect
-		await verificationService.sendPasswordResetEmail('email');
+		await verificationService.requestPasswordReset('email');
 	});
 
 	it('should throw non not found error for password reset email', async () => {
@@ -167,7 +167,7 @@ describe('Verification service', () => {
 			let result;
 			try {
 				// when
-				await verificationService.sendPasswordResetEmail('email');
+				await verificationService.requestPasswordReset('email');
 			} catch (e) {
 				result = e;
 			}
@@ -189,7 +189,7 @@ describe('Verification service', () => {
 		});
 
 		// when
-		await verificationService.sendPasswordResetEmail('email');
+		await verificationService.requestPasswordReset('email');
 
 		// then
 		expect(transporter.sendMail).not.toHaveBeenCalled();

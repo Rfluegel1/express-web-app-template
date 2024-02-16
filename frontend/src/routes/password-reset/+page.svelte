@@ -6,7 +6,7 @@
 
 	async function handleSubmit() {
 		try {
-			await axios.post('/api/send-password-reset-email', { email });
+			await axios.post('/api/request-password-reset', { email });
 			message = `If an account exists for ${email}, an email will be sent with further instructions`;
 			email = '';
 		} catch (error) {
