@@ -3,7 +3,6 @@ import { wrapper } from 'axios-cookiejar-support';
 import axios from 'axios';
 import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 import { StatusCodes } from 'http-status-codes';
-import { dataSource } from '../../src/postDataSource';
 import { UUID_REG_EXP } from '../../src/contants';
 
 const jar = new CookieJar();
@@ -14,8 +13,7 @@ const admin = wrapper(axios.create({ jar: adminJar, withCredentials: true }));
 jest.setTimeout(30000 * 2);
 
 describe('Verification resource', () => {
-
-	it('claims to have successfully sent password reset email', async () => {
+	it('claims to have successfully sent password reset email and token verification works', async () => {
 		// given
 		let userId;
 		let passwordResetToken;
@@ -77,71 +75,57 @@ describe('Verification resource', () => {
 			await logOutUser(admin);
 		}
 	});
-	it('claims to have successfully sent verification email', async () => {
+	it('claims to have successfully sent verification email and token verification works', async () => {
 		// given
-		await logInTestUser(
-			client,
-			generateTemporaryUserEmail(),
-			'password'
-		);
-
-		// when
-		const response = await client.post(`${process.env.BASE_URL}/api/send-verification-email`);
-
-		// then
-		expect(response.status).toEqual(StatusCodes.CREATED);
-
-		// cleanup
-		await logOutUser(client);
-	});
-
-	it('updates user status when email is verified', async () => {
-		if (process.env.NODE_ENV !== 'development') {
-			// cannot access database from tests in non development
-			expect(true);
-		} else {
-			let userId;
-			// given
-			let email = generateTemporaryUserEmail();
-			await logInTestUser(
+		let userId;
+		let emailVerificationToken;
+		await authenticateAsAdmin(admin);
+		try {
+			userId = await logInTestUser(
 				client,
-				email,
+				generateTemporaryUserEmail(),
 				'password'
 			);
-			try {
 
-				userId = (
-					await client.get(`${process.env.BASE_URL}/api/users?email=${email}`)
-				).data.id;
-				await dataSource.initialize();
-				await dataSource.query(`UPDATE users SET emailVerificationToken=$1 WHERE email=$2`, ['123', email]);
+			// when
+			const getBeforeVerification = await client.get(`${process.env.BASE_URL}/api/users/${userId}`);
 
-				// when
-				const getBeforeVerification = await client.get(`${process.env.BASE_URL}/api/users?email=${email}`);
+			// then
+			expect(getBeforeVerification.status).toEqual(StatusCodes.OK);
+			expect(getBeforeVerification.data.isVerified).toEqual(false);
 
-				// then
-				expect(getBeforeVerification.status).toEqual(StatusCodes.OK);
-				expect(getBeforeVerification.data.isVerified).toEqual(false);
+			// when
+			const response = await client.post(`${process.env.BASE_URL}/api/send-verification-email`);
 
-				// when
-				const response = await client.get(`${process.env.BASE_URL}/api/verify-email?token=123`);
+			// then
+			expect(response.status).toEqual(StatusCodes.CREATED);
 
-				// then
-				expect(response.status).toEqual(StatusCodes.OK);
+			// when
+			const getResponse = await admin.get(`${process.env.BASE_URL}/api/users/${userId}`);
 
-				// when
-				const getAfterVerification = await client.get(`${process.env.BASE_URL}/api/users?email=${email}`);
+			// then
+			expect(getResponse.status).toEqual(StatusCodes.OK);
+			emailVerificationToken = getResponse.data.emailVerificationToken;
 
-				// then
-				expect(getAfterVerification.status).toEqual(StatusCodes.OK);
-				expect(getAfterVerification.data.isVerified).toEqual(true);
-			} finally {
+			// when
+			const verifyResponse = await client.get(`${process.env.BASE_URL}/api/verify-email?token=${emailVerificationToken}`);
 
-				// cleanup
-				const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
-				expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
-				await dataSource.destroy();
-			}
+			// then
+			expect(verifyResponse.status).toEqual(StatusCodes.OK);
+
+			// when
+			const getAfterVerification = await admin.get(`${process.env.BASE_URL}/api/users/${userId}`);
+
+			// then
+			expect(getAfterVerification.status).toEqual(StatusCodes.OK);
+			expect(getAfterVerification.data.isVerified).toEqual(true);
+			expect(getAfterVerification.data.emailVerificationToken).toEqual('');
+		} finally {
+			// cleanup
+			await logOutUser(client);
+			const deleteResponse = await admin.delete(`${process.env.BASE_URL}/api/users/${userId}`);
+			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
+			await logOutUser(admin);
 		}
 	});
 });
