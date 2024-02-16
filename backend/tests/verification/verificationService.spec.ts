@@ -133,7 +133,7 @@ describe('Verification service', () => {
 			to: mockUser.email,
 			subject: 'Password Reset',
 			text: 'Please click on the following link to reset your password: '
-				+ `${process.env.BASE_URL}/api/reset-password?token=1234`
+				+ `${process.env.BASE_URL}/reset-password?token=1234`
 		}, expect.any(Function));
 
 		// cleanup

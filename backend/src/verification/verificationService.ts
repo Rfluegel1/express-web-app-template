@@ -56,7 +56,7 @@ export default class VerificationService {
 		user.passwordResetToken = id;
 		await this.userRepository.updateUser(user);
 
-		const verificationUrl = `${process.env.BASE_URL}/api/reset-password?token=${id}`;
+		const verificationUrl = `${process.env.BASE_URL}/reset-password?token=${id}`;
 
 		let mailOptions = {
 			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
