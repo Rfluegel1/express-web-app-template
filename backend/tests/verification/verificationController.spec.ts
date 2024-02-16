@@ -11,7 +11,9 @@ jest.mock('../../src/verification/verificationService', () => {
 			sendVerificationEmail: jest.fn(),
 			verifyEmail: jest.fn(),
 			sendPasswordResetEmail: jest.fn(),
-			resetPassword: jest.fn()
+			resetPassword: jest.fn(),
+			sendEmailUpdateEmail: jest.fn(),
+			updateEmail: jest.fn()
 		};
 	});
 });
@@ -141,6 +143,67 @@ describe('Verification controller', () => {
 		//then
 		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
 	});
+	it('sendEmailUpdateEmail should respond with created when service is successful', async () => {
+		// given
+		const request = {
+			isAuthenticated: () => true,
+			user: { id: '123' },
+			body: { email: 'newEmail' }
+		};
+		const response = {
+			status: jest.fn(function() {
+				return this;
+			}), send: jest.fn()
+		};
+		(verificationController.verificationService.sendEmailUpdateEmail as jest.Mock).mockImplementation((sentId, email) => {
+			if (sentId !== '123' || email !== 'newEmail') {
+				throw new Error('sentId does not match');
+			}
+		});
+
+		// when
+		await verificationController.sendEmailUpdateEmail(request as any, response as any, jest.fn());
+
+		//then
+		expect(verificationController.verificationService.sendVerificationEmail).toHaveBeenCalled();
+		expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
+	});
+	it('sendEmailUpdateEmail should next any error thrown from service', async () => {
+		// given
+		const request = {
+			isAuthenticated: () => true,
+			user: { id: '123' },
+			body: { email: 'newEmail' }
+		};
+		const response = {};
+		(verificationController.verificationService.sendEmailUpdateEmail as jest.Mock).mockImplementation(() => {
+			throw new DatabaseException();
+		});
+		const next: NextFunction = jest.fn();
+
+		// when
+		await verificationController.sendEmailUpdateEmail(request as any, response as any, next);
+
+		//then
+		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
+	});
+	it('sendEmailUpdateEmail should return unauthorized when user not authenticated', async () => {
+		// given
+		const request = {
+			isAuthenticated: () => false,
+		};
+		const response = {};
+		(verificationController.verificationService.sendEmailUpdateEmail as jest.Mock).mockImplementation(() => {
+			throw new DatabaseException();
+		});
+		const next: NextFunction = jest.fn();
+
+		// when
+		await verificationController.sendEmailUpdateEmail(request as any, response as any, next);
+
+		//then
+		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
+	});
 	it('verifyEmail should respond with ok when service is successful', async () => {
 		// given
 		const request = {
@@ -250,5 +313,49 @@ describe('Verification controller', () => {
 
 		// then
 		expect(next).toHaveBeenCalledWith(expect.any(BadRequestException));
+	});
+	it('updateEmail should respond with ok when service is successful', async () => {
+		// given
+		const request = {
+			query: { token: '123' },
+		};
+		const response = {
+			status: jest.fn(function() {
+				return this;
+			}), send: jest.fn()
+		};
+		(verificationController.verificationService.updateEmail as jest.Mock).mockImplementation((sentId) => {
+			if (sentId !== '123') {
+				throw new Error('sentId does not match');
+			}
+		});
+
+		// when
+		await verificationController.updateEmail(request as any, response as any, jest.fn());
+
+		// then
+		expect(verificationController.verificationService.updateEmail).toHaveBeenCalled();
+		expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
+	});
+	it('updateEmail should next any error thrown from service', async () => {
+		// given
+		const request = {
+			query: { token: '123' },
+		};
+		const response = {
+			status: jest.fn(function() {
+				return this;
+			}), send: jest.fn()
+		};
+		(verificationController.verificationService.updateEmail as jest.Mock).mockImplementation(() => {
+			throw new DatabaseException();
+		});
+		const next: NextFunction = jest.fn();
+
+		// when
+		await verificationController.updateEmail(request as any, response as any, next);
+
+		// then
+		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
 	});
 });

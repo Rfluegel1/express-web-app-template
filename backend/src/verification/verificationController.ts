@@ -70,4 +70,33 @@ export default class VerificationController {
 			next(error);
 		}
 	}
+
+	async sendEmailUpdateEmail(request: Request, response: Response, next: NextFunction) {
+		if (!request.isAuthenticated()) {
+			next(new UnauthorizedException('send email update email'))
+			return
+		}
+		const userId = (request.user as User).id;
+		const email = request.body.email;
+		getLogger().info(`Received send email update email request for user id=${userId}`);
+		try {
+			await this.verificationService.sendEmailUpdateEmail(userId, email);
+			getLogger().info(`Successful send email update email request for user id=${userId}`);
+			response.status(StatusCodes.CREATED).send();
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async updateEmail(request: Request, response: Response, next: NextFunction) {
+		const token = request.query.token as string;
+		getLogger().info(`Received update email request for token=${token}`);
+		try {
+			await this.verificationService.updateEmail(token);
+			getLogger().info(`Successful update email request for token=${token}`);
+			response.status(StatusCodes.OK).send();
+		} catch (error) {
+			next(error);
+		}
+	}
 }

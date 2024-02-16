@@ -128,4 +128,67 @@ describe('Verification resource', () => {
 			await logOutUser(admin);
 		}
 	});
+	it('claims to have successfully sent "update email" email and token verification works', async () => {
+		// given
+		let userId;
+		let emailUpdateToken;
+		await authenticateAsAdmin(admin);
+		try {
+			const originalEmail = generateTemporaryUserEmail();
+			userId = await logInTestUser(
+				client,
+				originalEmail,
+				'password'
+			);
+
+			// when
+			const getBeforeVerification = await client.get(`${process.env.BASE_URL}/api/users/${userId}`);
+
+			// then
+			expect(getBeforeVerification.status).toEqual(StatusCodes.OK);
+			expect(getBeforeVerification.data.emailUpdateToken).toEqual(undefined);
+
+			// when
+			const newEmail = generateTemporaryUserEmail();
+			const response = await client.post(`${process.env.BASE_URL}/api/send-email-update-email`, {
+				email: newEmail
+			});
+
+			// then
+			expect(response.status).toEqual(StatusCodes.CREATED);
+
+			// when
+			const getResponse = await admin.get(`${process.env.BASE_URL}/api/users/${userId}`);
+
+			// then
+			expect(getResponse.status).toEqual(StatusCodes.OK);
+			expect(getResponse.data.emailUpdateToken).toMatch(UUID_REG_EXP);
+			expect(getResponse.data.pendingEmail).toEqual(newEmail);
+			expect(getResponse.data.email).toEqual(originalEmail);
+			expect(getResponse.data.isVerified).toEqual(false);
+			emailUpdateToken = getResponse.data.emailUpdateToken;
+
+			// when
+			const verifyResponse = await client.get(`${process.env.BASE_URL}/api/update-email?token=${emailUpdateToken}`);
+
+			// then
+			expect(verifyResponse.status).toEqual(StatusCodes.OK);
+
+			// when
+			const getAfterVerification = await admin.get(`${process.env.BASE_URL}/api/users/${userId}`);
+
+			// then
+			expect(getAfterVerification.status).toEqual(StatusCodes.OK);
+			expect(getAfterVerification.data.isVerified).toEqual(true);
+			expect(getAfterVerification.data.emailUpdateToken).toEqual('');
+			expect(getAfterVerification.data.pendingEmail).toEqual('');
+			expect(getAfterVerification.data.email).toEqual(newEmail);
+		} finally {
+			// cleanup
+			await logOutUser(client);
+			const deleteResponse = await admin.delete(`${process.env.BASE_URL}/api/users/${userId}`);
+			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
+			await logOutUser(admin);
+		}
+	});
 });

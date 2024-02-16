@@ -73,4 +73,39 @@ export default class VerificationService {
 		user.passwordResetToken = '';
 		await this.userRepository.updateUser(user);
 	}
+
+	async sendEmailUpdateEmail(userId: string, newEmail: string) {
+		const user = await this.userRepository.getUser(userId);
+		const token = v4();
+		user.emailUpdateToken = token;
+		user.pendingEmail = newEmail;
+		await this.userRepository.updateUser(user);
+
+		const verificationUrl = `${process.env.BASE_URL}/api/update-email?token=${token}`;
+
+		let mailOptions = {
+			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
+			to: user.pendingEmail,
+			subject: 'Email Update',
+			text: `Please click on the following link to update your email: ${verificationUrl}`
+		}
+
+		if (!user.pendingEmail.includes('expresswebapptemplate.com')) {
+			transporter.sendMail(mailOptions, (error, info) => {
+				if (error) {
+					getLogger().error(error);
+				}
+				getLogger().info(`Email update message sent for email=${user.email}`);
+			});
+		}
+	}
+
+	async updateEmail(token: string) {
+		const user = await this.userRepository.getUserByEmailUpdateToken(token);
+		user.email = user.pendingEmail;
+		user.isVerified = true;
+		user.pendingEmail = '';
+		user.emailUpdateToken = '';
+		await this.userRepository.updateUser(user);
+	}
 }

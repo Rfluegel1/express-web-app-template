@@ -13,6 +13,7 @@ jest.mock('../../src/users/userRepository', () => {
 			updateUser: jest.fn(),
 			getUserByEmailVerificationToken: jest.fn(),
 			getUserByPasswordResetToken: jest.fn(),
+			getUserByEmailUpdateToken: jest.fn(),
 		};
 	});
 });
@@ -168,6 +169,79 @@ describe('Verification service', () => {
 			...mockUser,
 			passwordHash: 'passwordHash',
 			passwordResetToken: ''
+		})
+	})
+
+	it('should send email update email', async () => {
+		// given
+		const userId = v4();
+		const mockUser = new User('email', 'hash');
+		mockUser.id = userId;
+		(v4 as jest.Mock).mockImplementation(() => '1234');
+		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
+			if (sentId === userId) {
+				return mockUser
+			}
+		});
+
+		// when
+		await verificationService.sendEmailUpdateEmail(userId, 'newEmail');
+
+		// then
+		expect(verificationService.userRepository.updateUser)
+			.toHaveBeenCalledWith({ ...mockUser, emailUpdateToken: '1234', pendingEmail: 'newEmail'});
+		expect(transporter.sendMail).toHaveBeenCalled()
+		expect(transporter.sendMail).toHaveBeenCalledWith({
+			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
+			to: 'newEmail',
+			subject: 'Email Update',
+			text: 'Please click on the following link to update your email: '
+				+ `${process.env.BASE_URL}/api/update-email?token=1234`
+		}, expect.any(Function));
+
+		// cleanup
+		transporter.sendMail = jest.fn()
+	});
+
+	it('should not send email update email if user pending email is from expresswebapptemplate.com', async () => {
+		// given
+		const userId = v4();
+		const mockUser = new User();
+		mockUser.id = userId;
+		(v4 as jest.Mock).mockImplementation(() => '1234');
+		(verificationService.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
+			if (sentId === userId) {
+				return mockUser
+			}
+		});
+
+		// when
+		await verificationService.sendEmailUpdateEmail(userId, 'email@expresswebapptemplate.com');
+
+		// then
+		expect(transporter.sendMail).not.toHaveBeenCalled()
+	})
+
+	it('should verify email update token', async () => {
+		//given
+		let token = '1234';
+		const mockUser = new User('email', 'hash', false, '', 'user', '', token, 'newEmail');
+		(verificationService.userRepository.getUserByEmailUpdateToken as jest.Mock).mockImplementation((sentId: string) => {
+			if (sentId === token) {
+				return mockUser
+			}
+		});
+
+		// when
+		await verificationService.updateEmail(token)
+
+		// then
+		expect(verificationService.userRepository.updateUser).toHaveBeenCalledWith({
+			...mockUser,
+			emailUpdateToken: '',
+			pendingEmail: '',
+			email: 'newEmail',
+			isVerified: true
 		})
 	})
 });

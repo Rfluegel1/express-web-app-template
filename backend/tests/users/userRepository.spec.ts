@@ -217,6 +217,51 @@ describe('User repository', () => {
 		// when and then
 		await expect(() => repository.getUserByPasswordResetToken(uuidv4())).rejects.toThrow(NotFoundException);
 	});
+	it('getUserByEmailUpdateToken selects from userDataSource', async () => {
+		//given
+		const id = uuidv4();
+		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
+			if (query === 'SELECT * FROM users WHERE emailUpdateToken=$1' && parameters[0] === 'token') {
+				return [{
+					id: id,
+					email: 'the email',
+					passwordhash: 'the passwordHash',
+					isverified: false,
+					passwordresettoken: 'token',
+					emailupdatetoken: 'emailUpdateToken',
+					pendingemail: 'pendingEmail',
+					emailverificationtoken: 'emailVerificationToken'
+				}];
+			}
+		}));
+		// when
+		const actual = await repository.getUserByEmailUpdateToken('token');
+		// then
+		expect(actual).toBeInstanceOf(User);
+		expect(actual.id).toEqual(id);
+		expect(actual.email).toEqual('the email');
+		expect(actual.passwordHash).toEqual('the passwordHash');
+		expect(actual.isVerified).toEqual(false);
+		expect(actual.passwordResetToken).toEqual('token');
+		expect(actual.emailUpdateToken).toEqual('emailUpdateToken');
+		expect(actual.emailVerificationToken).toEqual('emailVerificationToken');
+		expect(actual.pendingEmail).toEqual('pendingEmail');
+	});
+	it('getUserByEmailUpdateToken logs error and throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.getUserByEmailUpdateToken('token')).rejects.toThrow('Error interacting with the database');
+	});
+	it('getUserByEmailUpdateToken throws not found when query result is empty', async () => {
+		//given
+		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
+			return [];
+		}));
+		// when and then
+		await expect(() => repository.getUserByEmailUpdateToken(uuidv4())).rejects.toThrow(NotFoundException);
+	});
 	it('createUser inserts into userDataSource', async () => {
 		//given
 		const user = new User('the email', 'the passwordHash', false, 'token');
