@@ -16,13 +16,11 @@ beforeEach(() => {
 });
 
 describe('User resource', () => {
-	it('should create, get, update, and delete', async () => {
+	it('should create, get, and delete', async () => {
 		// given
 		let id;
 		const email = generateTemporaryUserEmail();
-		const updatedEmail = generateTemporaryUserEmail();
 		const password = 'password';
-		const updatedPassword = 'newPassword';
 
 		// when
 		const postResponse = await axios.post(`${process.env.BASE_URL}/api/users`, {
@@ -70,39 +68,6 @@ describe('User resource', () => {
 		expect(getByEmailData.passwordHash).toEqual(undefined);
 		expect(getByEmailData.isVerified).toEqual(false);
 		expect(getByEmailData.emailVerificationToken).toEqual(undefined);
-
-		// when
-		const updateResponse = await client.put(
-			`${process.env.BASE_URL}/api/users/${id}`,
-			{
-				email: updatedEmail, password: updatedPassword, confirmPassword: updatedPassword
-			}
-		);
-
-		// then
-		expect(updateResponse.status).toEqual(StatusCodes.OK);
-		const updateData = updateResponse.data;
-		expect(updateData.id).toEqual(id);
-		expect(updateData.email).toEqual(updatedEmail);
-		expect(updateData.password).toEqual(undefined);
-		expect(updateData.passwordHash).toEqual(undefined);
-		expect(updateData.isVerified).toEqual(false);
-		expect(updateData.emailVerificationToken).toEqual(undefined);
-
-		// when
-		const getAfterUpdateResponse = await client.get(
-			`${process.env.BASE_URL}/api/users/${id}`
-		);
-
-		// then
-		expect(getAfterUpdateResponse.status).toEqual(StatusCodes.OK);
-		const getAfterUpdateData = getAfterUpdateResponse.data;
-		expect(getAfterUpdateData.id).toEqual(id);
-		expect(getAfterUpdateData.email).toEqual(updatedEmail);
-		expect(getAfterUpdateData.password).toEqual(undefined);
-		expect(getAfterUpdateData.passwordHash).toEqual(undefined);
-		expect(getAfterUpdateData.isVerified).toEqual(false);
-		expect(getAfterUpdateData.emailVerificationToken).toEqual(undefined);
 
 		// when
 		const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);

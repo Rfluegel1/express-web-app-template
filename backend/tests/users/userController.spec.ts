@@ -158,44 +158,6 @@ describe('User controller', () => {
 			expect(userController.userService.deleteUser).toHaveBeenCalledWith(id);
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
 		});
-		it('updateUser responds with data that is returned from the UserService', async () => {
-			// given
-			let id = uuidv4();
-			const mockUser = { id: id, ...user };
-			const request = {
-				isAuthenticated: () => true,
-				user: { id: id },
-				params: { id: id },
-				body: { email: 'email', password: undefined }
-			};
-			const response = {
-				status: jest.fn(function() {
-					return this;
-				}),
-				send: jest.fn()
-			};
-
-			(userController.userService.updateUser as jest.Mock).mockImplementation(
-				(sentId, email, passwordHash) => {
-					if (sentId === id && email === 'email' && passwordHash === undefined) {
-						return mockUser;
-					} else {
-						return null;
-					}
-				}
-			);
-
-			// when
-			await userController.updateUser(request as any, response as any, jest.fn());
-
-			// then
-			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith({
-				id: mockUser.id,
-				email: mockUser.email,
-				isVerified: mockUser.isVerified
-			});
-		});
 	});
 	describe('in regards to error handling', () => {
 		it('createUser should next error that is returned from the UserService', async () => {
@@ -223,7 +185,7 @@ describe('User controller', () => {
 			const request = {
 				isAuthenticated: () => true,
 				body: { password: 'password', confirmPassword: 'password' },
-				user: { id: id },
+				user: { id: id, role: 'admin'},
 				params: { id: id }
 			};
 			const response = {};
@@ -307,7 +269,7 @@ describe('User controller', () => {
 			// given
 			const request = {
 				isAuthenticated: () => true,
-				user: { id: 'undefined' },
+				user: { id: 'undefined', role: 'admin'},
 				params: { id: 'undefined' },
 				body: {
 					task: 'the user',
@@ -380,7 +342,7 @@ describe('User controller', () => {
 				body: { password: 'password', confirmPassword: 'other' },
 				isAuthenticated: () => true,
 				params: { id: id },
-				user: { id: id }
+				user: { id: id, role: 'admin' }
 			};
 			const response = {};
 

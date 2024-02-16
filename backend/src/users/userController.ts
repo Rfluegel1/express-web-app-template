@@ -16,8 +16,7 @@ export default class UserController {
 			{ requestParam: request.params, requestBody: request.body }
 		);
 		const id: string = request.params.id;
-		const isAdmin = (request.user as User).role === 'admin';
-		if (!request.isAuthenticated() || (request.user as User).id !== id && !isAdmin) {
+		if ((request.user as User).role !== 'admin') {
 			return next(new UnauthorizedException('update user'));
 		}
 		const email: string = request.body.email;
@@ -34,15 +33,9 @@ export default class UserController {
 			return next(new BadRequestException(id));
 		}
 		try {
-			let user: User = isAdmin
-				? await this.userService.updateUser(id, email, password, isVerified, emailVerificationToken, role, passwordResetToken)
-				: await this.userService.updateUser(id, email, password);
+			let user: User = await this.userService.updateUser(id, email, password, isVerified, emailVerificationToken, role, passwordResetToken)
 			getLogger().info('Sending update user request', { status: StatusCodes.OK });
-			return response.status(StatusCodes.OK).send(
-				isAdmin
-					? user
-					: { id: user.id, email: user.email, isVerified: user.isVerified }
-			);
+			return response.status(StatusCodes.OK).send(user);
 		} catch (error) {
 			next(error);
 		}
