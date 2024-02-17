@@ -3,11 +3,11 @@ import { generateTemporaryUserEmail } from './helpers/generateTemporaryUserEmail
 
 test.describe('Password Reset Request page', () => {
 	test('should call to Password Reset Request when email is submitted and link to login', async ({
-		page
-	}) => {
+																																																	 page
+																																																 }) => {
 		// given
 		await page.goto('/password-reset-request');
-		let email = generateTemporaryUserEmail()
+		let email = generateTemporaryUserEmail();
 		await page.fill('input[type="email"]', email);
 
 		// when
@@ -41,5 +41,16 @@ test.describe('Password Reset Request page', () => {
 
 		// then
 		await page.waitForSelector(`text="Something went wrong. Please try again."`);
+	});
+
+	test('should have link to login page', async ({ page }) => {
+		// given
+		await page.goto('/password-reset-request');
+
+		// when
+		await page.click('a[href="/login"]');
+
+		// then
+		await expect(page.locator('h1')).toHaveText('Login');
 	});
 });

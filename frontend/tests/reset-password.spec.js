@@ -36,4 +36,28 @@ test.describe('Password Reset page', () => {
 			await logOutUserWithClient(admin)
 		}
 	});
+
+	test('should display error message when request fails', async ({ page }) => {
+		// given
+		await page.goto('/reset-password');
+		await page.fill('input[id="password"]', 'new-password');
+		await page.fill('input[id="confirmPassword"]', 'new-password');
+
+		// when
+		await page.click('button[type="submit"]');
+
+		// then
+		await page.waitForSelector(`text="Something went wrong. Please try again."`);
+	});
+
+	test('should have link to login page', async ({ page }) => {
+		// given
+		await page.goto('/reset-password');
+
+		// when
+		await page.click('a[href="/login"]');
+
+		// then
+		await expect(page.locator('h1')).toHaveText('Login');
+	});
 });

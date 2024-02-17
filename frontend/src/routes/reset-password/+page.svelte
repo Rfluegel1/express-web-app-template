@@ -38,5 +38,5 @@
 	{#if message}
 			<div>{message}</div>
 		{/if}
-	<!--	<a href="/login">Login</a>-->
+		<a href="/login">Login</a>
 </main>
