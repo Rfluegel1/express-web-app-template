@@ -67,7 +67,7 @@ export default class VerificationController {
 		}
 	}
 
-	async sendEmailUpdateEmail(request: Request, response: Response, next: NextFunction) {
+	async requestEmailChange(request: Request, response: Response, next: NextFunction) {
 		if (!request.isAuthenticated()) {
 			next(new UnauthorizedException('send email update email'))
 			return
@@ -76,7 +76,7 @@ export default class VerificationController {
 		const email = request.body.email;
 		getLogger().info(`Received send email update email request for user id=${userId}`);
 		try {
-			await this.verificationService.sendEmailUpdateEmail(userId, email);
+			await this.verificationService.requestEmailChange(userId, email);
 			getLogger().info(`Successful send email update email request for user id=${userId}`);
 			response.status(StatusCodes.CREATED).send();
 		} catch (error) {

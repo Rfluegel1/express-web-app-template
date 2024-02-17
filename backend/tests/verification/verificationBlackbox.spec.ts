@@ -154,7 +154,7 @@ describe('Verification resource', () => {
 
 			// when
 			const newEmail = generateTemporaryUserEmail();
-			const response = await client.post(`${process.env.BASE_URL}/api/send-email-update-email`, {
+			const response = await client.post(`${process.env.BASE_URL}/api/request-email-change`, {
 				email: newEmail
 			});
 

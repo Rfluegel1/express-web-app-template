@@ -85,7 +85,7 @@ export default class VerificationService {
 		await this.userRepository.updateUser(user);
 	}
 
-	async sendEmailUpdateEmail(userId: string, newEmail: string) {
+	async requestEmailChange(userId: string, newEmail: string) {
 		const user = await this.userRepository.getUser(userId);
 		const token = v4();
 		user.emailUpdateToken = token;

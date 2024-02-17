@@ -229,7 +229,7 @@ describe('Verification service', () => {
 		});
 
 		// when
-		await verificationService.sendEmailUpdateEmail(userId, 'newEmail');
+		await verificationService.requestEmailChange(userId, 'newEmail');
 
 		// then
 		expect(verificationService.userRepository.updateUser)
@@ -260,7 +260,7 @@ describe('Verification service', () => {
 		});
 
 		// when
-		await verificationService.sendEmailUpdateEmail(userId, 'email@expresswebapptemplate.com');
+		await verificationService.requestEmailChange(userId, 'email@expresswebapptemplate.com');
 
 		// then
 		expect(transporter.sendMail).not.toHaveBeenCalled();
