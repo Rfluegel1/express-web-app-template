@@ -117,7 +117,6 @@ test.skip('user without email verification cannot create tasks, and is asked to 
 		await logInTestUser(page, email, 'password12');
 
 		// then
-		await expect(page.locator('h1')).toHaveText('Todo List');
 		await expect(page.locator('div[role="alert"]')).toHaveText(
 			'Please verify your email address'
 		);

@@ -11,7 +11,7 @@ test('valid login should redirect to todoList', async ({ page }) => {
 
 test('invalid login displays error message', async ({ page }) => {
     // when
-    await logInTestUser(page, 'invalid@invalid.invalid', 'invalid');
+    await logInTestUser(page, 'invalid@invalid.invalid', 'invalid', false);
 
     // then
     await expect(
@@ -26,9 +26,6 @@ test('logged in user should be redirected to todoList when visiting login page',
                                                                                         }) => {
     // given
     await logInTestUser(page);
-
-    // expect
-    await expect(page.locator('h1')).toHaveText('Todo List');
 
     // when
     await page.goto('/login');
@@ -46,7 +43,7 @@ test('should display other error message', async ({ page, context }) => {
     });
 
     // when
-    await logInTestUser(page);
+    await logInTestUser(page, 'invalid@invalid.invalid', 'invalid', false);
 
     // then
     await expect(page.locator('text="Something went wrong. Please try again."')).toBeVisible();

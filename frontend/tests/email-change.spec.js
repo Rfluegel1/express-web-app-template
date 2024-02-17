@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { generateTemporaryUserEmail } from './helpers/generateTemporaryUserEmail.js';
+import { logInTestUser } from './helpers/logInTestUser.js';
 
 test.describe('Email change page', () => {
 	test('should route to login if not logged in', async ({ page }) => {
@@ -10,21 +11,18 @@ test.describe('Email change page', () => {
 		await expect(page.locator('h1')).toHaveText('Login');
 	});
 
-	test.skip('should call to email change for logged in user', async ({ page, context }) => {
+	test('should call to email change for logged in user', async ({ page }) => {
 		// given
-		if (process.env.IS_GITHUB) {
-			await context.route('**/request-email-change', (route) => {
-				route.fulfill({
-					status: 204
-				});
-			});
-		}
+		// if (process.env.IS_GITHUB) {
+		// 	await context.route('**/request-email-change', (route) => {
+		// 		route.fulfill({
+		// 			status: 204
+		// 		});
+		// 	});
+		// }
 		const email = generateTemporaryUserEmail()
 		const requestPromise = page.waitForRequest('**/request-email-change');
-		await loginTestUser(page);
-
-		// expect
-		await expect(page.locator('h1')).toHaveText('Todo List');
+		await logInTestUser(page);
 
 		// when
 		await page.goto('/email-change');
@@ -44,24 +42,33 @@ test.describe('Email change page', () => {
 		await expect(page.locator('h1')).toHaveText('Todo List');
 	});
 
-	test.skip('should display error message when request fails', async ({ page, context }) => {
+	test('should display error message when request fails', async ({ page, context }) => {
 		// given
 		await context.route('**/request-email-change', (route) => {
 			route.fulfill({
 				status: 500
 			});
 		});
-		await loginTestUser(page);
-
-		// expect
-		await expect(page.locator('h1')).toHaveText('Todo List');
+		await logInTestUser(page);
 
 		// when
 		await page.goto('/email-change');
-		await page.fill('input[type="email"]', 'test.user@temporary.com');
+		await page.fill('input[type="email"]', generateTemporaryUserEmail());
 		await page.click('button[type="submit"]');
 
 		// then
 		await page.waitForSelector(`text="Something went wrong. Please try again."`);
+	});
+
+	test('should have link to todo list page', async ({ page }) => {
+		// given
+		await logInTestUser(page);
+		await page.goto('/email-change');
+
+		// when
+		await page.click('a[href="/"]');
+
+		// then
+		await expect(page.locator('h1')).toHaveText('Todo List');
 	});
 });
