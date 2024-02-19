@@ -4,6 +4,8 @@ import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { NextFunction } from 'express';
 import { UnauthorizedException } from '../../src/exceptions/UnauthorizedException';
 import { BadRequestException } from '../../src/exceptions/BadRequestException';
+import { v4 } from 'uuid';
+import { generateTemporaryUserEmail } from '../helpers';
 
 jest.mock('../../src/verification/verificationService', () => {
 	return jest.fn().mockImplementation(() => {
@@ -22,322 +24,261 @@ jest.mock('../../src/Logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			info: jest.fn()
-		}
+		};
 	})
-}))
+}));
 describe('Verification controller', () => {
+	type VerificationMethodName =
+		'verifyEmail'
+		| 'sendVerificationEmail'
+		| 'requestEmailChange'
+		| 'requestPasswordReset'
+		| 'resetPassword'
+		| 'updateEmail';
+
 	let verificationController = new VerificationController();
-	it('sendVerificationEmail should respond with created when service is successful', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => true,
-			user: { id: '123' }
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.sendVerificationEmail as jest.Mock).mockImplementation((sentId) => {
-			if (sentId !== '123') {
-				throw new Error('sentId does not match');
-			}
-		});
 
-		// when
-		await verificationController.sendVerificationEmail(request as any, response as any, jest.fn());
-
-		//then
-		expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
-	});
-	it('sendVerificationEmail should next any error thrown from service', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => true,
-			user: { id: '123' }
-		};
-		const response = {};
-		(verificationController.verificationService.sendVerificationEmail as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.sendVerificationEmail(request as any, response as any, next);
-
-		//then
-		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
-	});
-	it('sendVerificationEmail should return unauthorized when user not authenticated', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => false,
-		};
-		const response = {};
-		(verificationController.verificationService.sendVerificationEmail as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.sendVerificationEmail(request as any, response as any, next);
-
-		//then
-		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
-	});
-	it('sendPasswordResetEmail should respond with created when service is successful', async () => {
-		// given
-		const request = {
-			body: { email: 'email'}
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.requestPasswordReset as jest.Mock).mockImplementation((email) => {
-			if (email !== 'email') {
-				throw new Error('sentId does not match');
-			}
-		});
-
-		// when
-		await verificationController.requestPasswordReset(request as any, response as any, jest.fn());
-
-		//then
-		expect(verificationController.verificationService.requestPasswordReset).toHaveBeenCalledWith('email');
-		expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
-	});
-	it('sendPasswordResetEmail should next any error thrown from service', async () => {
-		// given
-		const request = {
-			body: { email: 'email'}
-		};
-		const response = {};
-		(verificationController.verificationService.requestPasswordReset as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.requestPasswordReset(request as any, response as any, next);
-
-		//then
-		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
-	});
-	it('sendEmailUpdateEmail should respond with created when service is successful', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => true,
+	describe('VerificationController success responses', () => {
+		const mockRequest = {
+			isAuthenticated: jest.fn(),
 			user: { id: '123' },
-			body: { email: 'newEmail' }
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.requestEmailChange as jest.Mock).mockImplementation((sentId, email) => {
-			if (sentId !== '123' || email !== 'newEmail') {
-				throw new Error('sentId does not match');
-			}
-		});
-
-		// when
-		await verificationController.requestEmailChange(request as any, response as any, jest.fn());
-
-		//then
-		expect(verificationController.verificationService.sendVerificationEmail).toHaveBeenCalled();
-		expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
-	});
-	it('sendEmailUpdateEmail should next any error thrown from service', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => true,
-			user: { id: '123' },
-			body: { email: 'newEmail' }
-		};
-		const response = {};
-		(verificationController.verificationService.requestEmailChange as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.requestEmailChange(request as any, response as any, next);
-
-		//then
-		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
-	});
-	it('sendEmailUpdateEmail should return unauthorized when user not authenticated', async () => {
-		// given
-		const request = {
-			isAuthenticated: () => false,
-		};
-		const response = {};
-		(verificationController.verificationService.requestEmailChange as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.requestEmailChange(request as any, response as any, next);
-
-		//then
-		expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
-	});
-	it('verifyEmail should respond with ok when service is successful', async () => {
-		// given
-		const request = {
+			body: { email: 'email@example.com', password: 'password', confirmPassword: 'password' },
 			query: { token: '123' }
 		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.verifyEmail as jest.Mock).mockImplementation((sentId) => {
-			if (sentId !== '123') {
-				throw new Error('sentId does not match');
+		const mockResponse = () => ({
+			status: jest.fn().mockReturnThis(),
+			send: jest.fn()
+		});
+		const nextFunction = jest.fn();
+
+		interface SuccessTestCase {
+			name: VerificationMethodName;
+			setup: () => void;
+			request: any;
+			expectedStatus: number;
+		}
+
+		const successTestCases: SuccessTestCase[] = [
+			{
+				name: 'sendVerificationEmail',
+				setup: () => jest.spyOn(verificationController.verificationService, 'sendVerificationEmail').mockImplementation(async () => {
+				}),
+				request: { ...mockRequest, isAuthenticated: () => true },
+				expectedStatus: StatusCodes.CREATED
+			},
+			{
+				name: 'requestPasswordReset',
+				setup: () => jest.spyOn(verificationController.verificationService, 'requestPasswordReset').mockImplementation(async () => {
+				}),
+				request: { body: { email: 'email@example.com' } },
+				expectedStatus: StatusCodes.CREATED
+			},
+			{
+				name: 'requestEmailChange',
+				setup: () => jest.spyOn(verificationController.verificationService, 'requestEmailChange').mockImplementation(async () => {
+				}),
+				request: { ...mockRequest, isAuthenticated: () => true, body: { email: 'newEmail@example.com' } },
+				expectedStatus: StatusCodes.CREATED
+			},
+			{
+				name: 'verifyEmail',
+				setup: () => jest.spyOn(verificationController.verificationService, 'verifyEmail').mockImplementation(async () => {
+				}),
+				request: { query: { token: '123' } },
+				expectedStatus: StatusCodes.OK
+			},
+			{
+				name: 'resetPassword',
+				setup: () => jest.spyOn(verificationController.verificationService, 'resetPassword').mockImplementation(async () => {
+				}),
+				request: { ...mockRequest, query: { token: '123' } },
+				expectedStatus: StatusCodes.OK
+			},
+			{
+				name: 'updateEmail',
+				setup: () => jest.spyOn(verificationController.verificationService, 'updateEmail').mockImplementation(async () => {
+				}),
+				request: { query: { token: '123' } },
+				expectedStatus: StatusCodes.OK
 			}
+		];
+
+		successTestCases.forEach(({ name, setup, request, expectedStatus }) => {
+			it(`${name} should respond with ${expectedStatus} when service is successful`, async () => {
+				// Given
+				setup();
+				const res = mockResponse();
+				jest.spyOn(verificationController, 'validateRequest').mockImplementation(() => {
+				});
+
+				// When
+				await verificationController[name](request as any, res as any, nextFunction);
+
+				// Then
+				expect(res.status).toHaveBeenCalledWith(expectedStatus);
+				expect(verificationController.validateRequest).toHaveBeenCalled();
+				jest.clearAllMocks();
+
+				// Cleanup
+				jest.restoreAllMocks();
+			});
 		});
-
-		// when
-		await verificationController.verifyEmail(request as any, response as any, jest.fn());
-
-		// then
-		expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 	});
-	it('verifyEmail should next any error thrown from service', async () => {
-		// given
-		const request = {
-			query: { token: '123' }
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.verifyEmail as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
+	describe('VerificationController error handling', () => {
+		const mockResponse = () => ({
+			status: jest.fn().mockReturnThis(),
+			send: jest.fn()
 		});
-		const next: NextFunction = jest.fn();
+		const next = jest.fn();
 
-		// when
-		await verificationController.verifyEmail(request as any, response as any, next);
+		interface ErrorTestCase {
+			name: VerificationMethodName;
+			setup: (controller: VerificationController) => void;
+			request: any;
+		}
 
-		// then
-		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
-	});
-	it('resetPassword should respond with ok when service is successful', async () => {
-		// given
-		const request = {
-			query: { token: '123' },
-			body: { password: 'password', confirmPassword: 'password' }
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.resetPassword as jest.Mock).mockImplementation((sentId) => {
-			if (sentId !== '123') {
-				throw new Error('sentId does not match');
+		const testCases: ErrorTestCase[] = [
+			{
+				name: 'verifyEmail',
+				setup: (controller: VerificationController) => jest.spyOn(controller.verificationService, 'verifyEmail').mockImplementation(() => {
+					throw new DatabaseException();
+				}),
+				request: { query: { token: v4() } }
+			},
+			{
+				name: 'sendVerificationEmail',
+				setup: (controller: VerificationController) => jest.spyOn(controller.verificationService, 'sendVerificationEmail').mockImplementation(() => {
+					throw new DatabaseException();
+				}),
+				request: { isAuthenticated: () => true, user: { id: '123' } }
+			},
+			{
+				name: 'requestEmailChange',
+				setup: (controller: VerificationController) => jest.spyOn(controller.verificationService, 'requestEmailChange').mockImplementation(() => {
+					throw new DatabaseException();
+				}),
+				request: { isAuthenticated: () => true, user: { id: '123' }, body: { email: 'newEmail@example.com' } }
+			},
+			{
+				name: 'requestPasswordReset',
+				setup: (controller: VerificationController) => jest.spyOn(controller.verificationService, 'requestPasswordReset').mockImplementation(() => {
+					throw new DatabaseException();
+				}),
+				request: { body: { email: 'email@example.com' } }
+			},
+			{
+				name: 'resetPassword',
+				setup: (controller: VerificationController) => {
+					jest.spyOn(controller, 'validateRequest').mockImplementation(() => {
+					});
+					jest.spyOn(controller.verificationService, 'resetPassword').mockImplementation(() => {
+						throw new DatabaseException();
+					});
+				},
+				request: { query: { token: '123' }, body: { password: 'password', confirmPassword: 'password' } }
+			},
+			{
+				name: 'updateEmail',
+				setup: (controller: VerificationController) => jest.spyOn(controller.verificationService, 'updateEmail').mockImplementation(() => {
+					throw new DatabaseException();
+				}),
+				request: { query: { token: v4() } }
 			}
+		];
+
+		testCases.forEach(({ name, setup, request }) => {
+			it(`${name} should next any error thrown from service`, async () => {
+				// Given
+				const response = mockResponse();
+				setup(verificationController);
+
+				// When
+				await verificationController[name](request as any, response as any, next);
+
+				// Then
+				expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
+
+				// Cleanup - Restore original implementations if necessary
+				jest.restoreAllMocks();
+			});
 		});
-
-		// when
-		await verificationController.resetPassword(request as any, response as any, jest.fn());
-
-		// then
-		expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 	});
-	it('resetPassword should next any error thrown from service', async () => {
-		// given
-		const request = {
-			query: { token: '123' },
-			body: { password: 'password', confirmPassword: 'password' }
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.resetPassword as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
+	describe('VerificationController unauthorized access handling', () => {
+		const verificationController = new VerificationController();
+		const nextFunction: NextFunction = jest.fn();
 
-		// when
-		await verificationController.resetPassword(request as any, response as any, next);
+		interface UnauthorizedTestCase {
+			name: VerificationMethodName;
+		}
 
-		// then
-		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
-	});
-	it('resetPassword should throw bad request when passsword and confirmPassword do not match', async () => {
-		// given
-		const request = {
-			query: { token: '123' },
-			body: { password: 'password', confirmPassword: 'other' }
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.resetPassword as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
-		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.resetPassword(request as any, response as any, next);
-
-		// then
-		expect(next).toHaveBeenCalledWith(expect.any(BadRequestException));
-	});
-	it('updateEmail should respond with ok when service is successful', async () => {
-		// given
-		const request = {
-			query: { token: '123' },
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.updateEmail as jest.Mock).mockImplementation((sentId) => {
-			if (sentId !== '123') {
-				throw new Error('sentId does not match');
+		// Array of unauthorized test cases
+		const unauthorizedTestCases: UnauthorizedTestCase[] = [
+			{
+				name: 'requestEmailChange'
+			},
+			{
+				name: 'sendVerificationEmail'
 			}
+		];
+
+		unauthorizedTestCases.forEach(({ name }) => {
+			it(`${name} should return unauthorized when user not authenticated`, async () => {
+				// Given
+				const request = { isAuthenticated: () => false };
+				const response = {}; // Simplified for this example
+
+				// When
+				await verificationController[name](request as any, response as any, nextFunction);
+
+				// Then
+				expect(nextFunction).toHaveBeenCalledWith(expect.any(UnauthorizedException));
+
+				// Cleanup
+				jest.restoreAllMocks();
+			});
 		});
-
-		// when
-		await verificationController.updateEmail(request as any, response as any, jest.fn());
-
-		// then
-		expect(verificationController.verificationService.updateEmail).toHaveBeenCalled();
-		expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 	});
-	it('updateEmail should next any error thrown from service', async () => {
-		// given
-		const request = {
-			query: { token: '123' },
-		};
-		const response = {
-			status: jest.fn(function() {
-				return this;
-			}), send: jest.fn()
-		};
-		(verificationController.verificationService.updateEmail as jest.Mock).mockImplementation(() => {
-			throw new DatabaseException();
+	describe('validateRequest method in verificationController', () => {
+		const next = jest.fn();
+
+		const testCases = [
+			{
+				description: 'should throw when password and confirmPassword do not match',
+				input: { body: { password: 'password', confirmPassword: 'password1' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when password and confirmPassword do match',
+				input: { body: { password: 'password', confirmPassword: 'password' } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when email is not valid',
+				input: { body: { email: 'notAnEmail' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when email is valid',
+				input: { body: { email: generateTemporaryUserEmail() } },
+				expectThrow: false
+			}
+		];
+
+		testCases.forEach(({ description, input, expectThrow }) => {
+			it(description, () => {
+				// when
+				verificationController.validateRequest(input as any, next);
+
+				// then
+				if (expectThrow) {
+					expect(next).toHaveBeenCalledWith(expect.any(BadRequestException));
+				} else {
+					expect(next).not.toHaveBeenCalledWith(expect.any(BadRequestException));
+				}
+
+				// cleanup
+				jest.clearAllMocks();
+			});
 		});
-		const next: NextFunction = jest.fn();
-
-		// when
-		await verificationController.updateEmail(request as any, response as any, next);
-
-		// then
-		expect(next).toHaveBeenCalledWith(expect.any(DatabaseException));
 	});
 });

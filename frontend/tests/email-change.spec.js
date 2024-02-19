@@ -12,14 +12,6 @@ test.describe('Email change page', () => {
 	});
 
 	test('should call to email change for logged in user', async ({ page }) => {
-		// given
-		// if (process.env.IS_GITHUB) {
-		// 	await context.route('**/request-email-change', (route) => {
-		// 		route.fulfill({
-		// 			status: 204
-		// 		});
-		// 	});
-		// }
 		const email = generateTemporaryUserEmail()
 		const requestPromise = page.waitForRequest('**/request-email-change');
 		await logInTestUser(page);
