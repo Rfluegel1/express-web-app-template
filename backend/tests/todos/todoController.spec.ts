@@ -32,6 +32,8 @@ describe('Todo controller', () => {
     const todoController = new TodoController()
     it('createTodo responds with data that is returned from the TodoService', async () => {
         // given
+        jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
+        });
         const mockTodo = {id: uuidv4(), task: 'the task', createdBy: 'the createdBy'}
         const request = {
             isAuthenticated: () => true,
@@ -58,7 +60,182 @@ describe('Todo controller', () => {
         // then
         expect(response.send).toHaveBeenCalledWith({message: mockTodo})
         expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED)
+        expect(todoController.validateRequest).toHaveBeenCalled();
+
+        // cleanup
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
     })
+    it('updateTodo responds with data that is returned from the TodoService', async () => {
+        // given
+        jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
+        });
+        let id = uuidv4()
+        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
+        const request = {
+            params: {
+                id: id
+            },
+            body: {
+                task: 'the task',
+                createdBy: undefined
+            },
+            isAuthenticated: () => true,
+            user: {id: 'the createdBy'}
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            send: jest.fn(),
+        };
+
+        (todoController.todoService.updateTodo as jest.Mock).mockImplementation((sentId, task, createdBy) => {
+            if (sentId === id && task === 'the task' && createdBy === undefined) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
+
+        // when
+        await todoController.updateTodo(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.send).toHaveBeenCalledWith({message: mockTodo})
+        expect(todoController.validateRequest).toHaveBeenCalled();
+
+        // cleanup
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
+    })
+    it('getTodo responds with data that is returned from the TodoService', async () => {
+        // given
+        jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
+        });
+        let id: string = uuidv4()
+        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
+        const request = {
+            params: {id: id},
+            isAuthenticated: () => true,
+            user: {id: 'the createdBy'}
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            send: jest.fn(),
+        };
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        })
+
+        // when
+        await todoController.getTodo(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.send).toHaveBeenCalledWith({message: mockTodo})
+        expect(todoController.validateRequest).toHaveBeenCalled();
+
+        // cleanup
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
+    })
+    it('deleteTodo should call service and respond with NO_CONTENT', async () => {
+        // given
+        jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
+        });
+        let id: string = uuidv4()
+        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
+        const request = {
+            isAuthenticated: () => true,
+            params: {id: id},
+            user: {id: 'the createdBy'}
+        }
+        const response = {
+            sendStatus: jest.fn(function () {
+                return this
+            })
+        };
+
+        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
+            if (id === sentId) {
+                return mockTodo
+            } else {
+                return null
+            }
+        });
+
+        // when
+        await todoController.deleteTodo(request as any, response as any, jest.fn())
+
+        // then
+        expect(todoController.todoService.deleteTodo).toHaveBeenCalledWith(id)
+        expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
+        expect(todoController.validateRequest).toHaveBeenCalled();
+
+        // cleanup
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
+    })
+    it('getTodosByCreatedBy responds with data that is returned from the TodoService', async () => {
+        // given
+        jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
+        });
+        let id: string = uuidv4()
+        let id2: string = uuidv4()
+        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
+        const mockTodo2 = {id: id2, task: 'the task', createdBy: 'the createdBy'}
+        const request = {
+            isAuthenticated: () => true,
+            query: {
+                createdBy: 'the createdBy'
+            },
+            user: {id: 'the createdBy'}
+        }
+        const response = {
+            status: jest.fn(function () {
+                return this
+            }),
+            send: jest.fn(),
+        };
+
+        (todoController.todoService.getTodosByCreatedBy as jest.Mock).mockImplementation((createdBy: string) => {
+            if (createdBy === 'the createdBy') {
+                return [mockTodo, mockTodo2]
+            } else {
+                return null
+            }
+        })
+
+        // when
+        await todoController.getTodosByCreatedBy(request as any, response as any, jest.fn())
+
+        // then
+        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
+        expect(response.send).toHaveBeenCalledWith({message: [mockTodo, mockTodo2]})
+        expect(todoController.validateRequest).toHaveBeenCalled();
+
+        // cleanup
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
+    })
+
     it.each`
     apiEndpoint              | controllerFunction
     ${'createTodo'}          | ${todoController.createTodo}
@@ -67,7 +244,7 @@ describe('Todo controller', () => {
     ${'updateTodo'}          | ${todoController.updateTodo}
     ${'getTodosByCreatedBy'} | ${todoController.getTodosByCreatedBy}
     `('$apiEndpoint returns unauthorized when the request session is not authenticated', async (
-        {apiEndpoint, controllerFunction}
+        {controllerFunction}
     ) => {
         const request = {
             isAuthenticated: () => false,
@@ -86,6 +263,7 @@ describe('Todo controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException))
     })
+
     it('getTodo returns unauthorized when user id does not match todo createdBy', async () => {
         const id = uuidv4();
         const mockTodo = {id: id, task: 'the task', createdBy: 'other'};
@@ -145,7 +323,6 @@ describe('Todo controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
     })
-
     it('deleteTodo returns unauthorized when user id does not match todo createdBy', async () => {
         const id = uuidv4();
         const mockTodo = {id: id, task: 'the task', createdBy: 'other'};
@@ -196,102 +373,6 @@ describe('Todo controller', () => {
         // then
         expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
     })
-    it('updateTodo responds with data that is returned from the TodoService', async () => {
-        // given
-        let id = uuidv4()
-        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
-        const request = {
-            params: {
-                id: id
-            },
-            body: {
-                task: 'the task',
-                createdBy: undefined
-            },
-            isAuthenticated: () => true,
-            user: {id: 'the createdBy'}
-        }
-        const response = {
-            status: jest.fn(function () {
-                return this
-            }),
-            send: jest.fn(),
-        };
-
-        (todoController.todoService.updateTodo as jest.Mock).mockImplementation((sentId, task, createdBy) => {
-            if (sentId === id && task === 'the task' && createdBy === undefined) {
-                return mockTodo
-            } else {
-                return null
-            }
-        });
-
-        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
-            if (id === sentId) {
-                return mockTodo
-            } else {
-                return null
-            }
-        });
-
-        // when
-        await todoController.updateTodo(request as any, response as any, jest.fn())
-
-        // then
-        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.send).toHaveBeenCalledWith({message: mockTodo})
-    })
-    it('updateTodo should next error when id is not UUID', async () => {
-        // given
-        const request = {
-            params: {id: 'undefined'},
-            body: {
-                task: 'the user',
-                createdBy: undefined
-            },
-            isAuthenticated: () => true
-        }
-        const response = {}
-
-        const next: NextFunction = jest.fn()
-
-        // when
-        await todoController.updateTodo(request as any, response as any, next)
-
-        // then
-        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
-    })
-    it('getTodo responds with data that is returned from the TodoService', async () => {
-        // given
-        let id: string = uuidv4()
-        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
-        const request = {
-            params: {id: id},
-            isAuthenticated: () => true,
-            user: {id: 'the createdBy'}
-        }
-        const response = {
-            status: jest.fn(function () {
-                return this
-            }),
-            send: jest.fn(),
-        };
-
-        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
-            if (id === sentId) {
-                return mockTodo
-            } else {
-                return null
-            }
-        })
-
-        // when
-        await todoController.getTodo(request as any, response as any, jest.fn())
-
-        // then
-        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.send).toHaveBeenCalledWith({message: mockTodo})
-    })
     it('getTodo should next error that is returned from the TodoService', async () => {
         // given
         let id: string = uuidv4()
@@ -311,58 +392,6 @@ describe('Todo controller', () => {
 
         // then
         expect(next).toHaveBeenCalledWith(expect.any(NotFoundException))
-    })
-    it('getTodo should next error when id is not UUID', async () => {
-        // given
-        const request = {
-            isAuthenticated: () => true,
-            params: {id: 'undefined'},
-        }
-        const response = {}
-
-        const next: NextFunction = jest.fn()
-
-        // when
-        await todoController.getTodo(request as any, response as any, next)
-
-        // then
-        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
-    })
-
-    it('getTodosByCreatedBy responds with data that is returned from the TodoService', async () => {
-        // given
-        let id: string = uuidv4()
-        let id2: string = uuidv4()
-        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
-        const mockTodo2 = {id: id2, task: 'the task', createdBy: 'the createdBy'}
-        const request = {
-            isAuthenticated: () => true,
-            query: {
-                createdBy: 'the createdBy'
-            },
-            user: {id: 'the createdBy'}
-        }
-        const response = {
-            status: jest.fn(function () {
-                return this
-            }),
-            send: jest.fn(),
-        };
-
-        (todoController.todoService.getTodosByCreatedBy as jest.Mock).mockImplementation((createdBy: string) => {
-            if (createdBy === 'the createdBy') {
-                return [mockTodo, mockTodo2]
-            } else {
-                return null
-            }
-        })
-
-        // when
-        await todoController.getTodosByCreatedBy(request as any, response as any, jest.fn())
-
-        // then
-        expect(response.status).toHaveBeenCalledWith(StatusCodes.OK)
-        expect(response.send).toHaveBeenCalledWith({message: [mockTodo, mockTodo2]})
     })
     it('getTodosByCreatedBy should next error that is returned from the TodoService', async () => {
         // given
@@ -387,50 +416,47 @@ describe('Todo controller', () => {
         expect(next).toHaveBeenCalledWith(expect.any(DatabaseException))
     })
 
-    it('deleteTodo should call service and respond with NO_CONTENT', async () => {
-        // given
-        let id: string = uuidv4()
-        const mockTodo = {id: id, task: 'the task', createdBy: 'the createdBy'}
-        const request = {
-            isAuthenticated: () => true,
-            params: {id: id},
-            user: {id: 'the createdBy'}
-        }
-        const response = {
-            sendStatus: jest.fn(function () {
-                return this
-            })
-        };
+    describe('validateRequest method in todoController', () => {
+        const next = jest.fn();
 
-        (todoController.todoService.getTodo as jest.Mock).mockImplementation((sentId) => {
-            if (id === sentId) {
-                return mockTodo
-            } else {
-                return null
-            }
+        const testCases = [
+            {
+                description: 'should throw when id is not uuid',
+                input: { body: { id: 'notUuid' } },
+                expectThrow: true
+            },
+            {
+                description: 'should not throw when id is uuid',
+                input: { body: { id: uuidv4() } },
+                expectThrow: false
+            },
+            {
+                description: 'should throw when createdBy is not uuid',
+                input: { body: { createdBy: 'notUuid' } },
+                expectThrow: true
+            },
+            {
+                description: 'should not throw when createdBy is uuid',
+                input: { body: { createdBy: uuidv4() } },
+                expectThrow: false
+            },
+        ];
+
+        testCases.forEach(({ description, input, expectThrow }) => {
+            it(description, () => {
+                // when
+                todoController.validateRequest(input as any, next);
+
+                // then
+                if (expectThrow) {
+                    expect(next).toHaveBeenCalledWith(expect.any(BadRequestException));
+                } else {
+                    expect(next).not.toHaveBeenCalledWith(expect.any(BadRequestException));
+                }
+
+                // cleanup
+                jest.clearAllMocks();
+            });
         });
-
-        // when
-        await todoController.deleteTodo(request as any, response as any, jest.fn())
-
-        // then
-        expect(todoController.todoService.deleteTodo).toHaveBeenCalledWith(id)
-        expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT)
-    })
-    it('deleteTodo should next error when id is not UUID', async () => {
-        // given
-        const request = {
-            isAuthenticated: () => true,
-            params: {id: 'undefined'},
-        }
-        const response = {}
-
-        const next: NextFunction = jest.fn()
-
-        // when
-        await todoController.deleteTodo(request as any, response as any, next)
-
-        // then
-        expect(next).toHaveBeenCalledWith(expect.any(BadRequestException))
-    })
+    });
 })

@@ -96,11 +96,13 @@ describe('Todo resource', () => {
 
     it('get all returns all posts createdBy the authenticated user', async () => {
         // given
-        await authenticateAsAdmin(client)
-        const userId: string = (
-            await client.get(`${process.env.BASE_URL}/api/users?email=${process.env.ADMIN_EMAIL}`)
-        ).data.id
+        const adminJar = new CookieJar()
+        const admin = wrapper(axios.create({jar: adminJar, withCredentials: true}))
+        await authenticateAsAdmin(admin)
 
+        const userId: string = (
+            await admin.get(`${process.env.BASE_URL}/api/users?email=${process.env.ADMIN_EMAIL}`)
+        ).data.id
         const email = generateTemporaryUserEmail()
         const password = 'password'
         const createUserResponse = await axios.post(
@@ -115,14 +117,14 @@ describe('Todo resource', () => {
         await logInTestUser(otherClient, email, password)
 
         // given
-        const firstTodo: Todo = new Todo('first task')
-        const secondTodo: Todo = new Todo('second task')
-        const otherTodo: Todo = new Todo('other task')
-        const firstPostResponse = await client.post(
+        const firstTodo = {task: 'first task'}
+        const secondTodo= {task: 'second task'}
+        const otherTodo= {task: 'other task'}
+        const firstPostResponse = await admin.post(
             `${process.env.BASE_URL}/api/todos`,
             firstTodo
         )
-        const secondPostResponse = await client.post(
+        const secondPostResponse = await admin.post(
             `${process.env.BASE_URL}/api/todos`,
             secondTodo
         )
@@ -135,7 +137,7 @@ describe('Todo resource', () => {
         expect(otherPostResponse.status).toEqual(StatusCodes.CREATED)
         try {
             // when
-            const getAllResponse = await client.get(
+            const getAllResponse = await admin.get(
                 `${process.env.BASE_URL}/api/todos`
             )
 
@@ -155,10 +157,10 @@ describe('Todo resource', () => {
             expect(foundOther).toEqual(undefined)
         } finally {
             // cleanup
-            const firstDeleteResponse = await client.delete(
+            const firstDeleteResponse = await admin.delete(
                 `${process.env.BASE_URL}/api/todos/${firstPostResponse.data.message.id}`
             )
-            const secondDeleteResponse = await client.delete(
+            const secondDeleteResponse = await admin.delete(
                 `${process.env.BASE_URL}/api/todos/${secondPostResponse.data.message.id}`
             )
             const otherDeleteResponse = await otherClient.delete(
@@ -167,7 +169,7 @@ describe('Todo resource', () => {
             expect(firstDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(secondDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
             expect(otherDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
-            await logOutUser(client)
+            await logOutUser(admin)
             const otherUserDeleteResponse = await otherClient.delete(
                 `${process.env.BASE_URL}/api/users/${otherUserId}`
             )
@@ -187,7 +189,7 @@ describe('Todo resource', () => {
         }
         // then
         expect(getResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
-        expect(getResponse?.data.message).toEqual('Parameter id not of type UUID for id=undefined')
+        expect(getResponse?.data.message).toEqual('Parameter id not of type UUID for id=\"id\" with value \"undefined\" fails to match the required pattern: /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i')
 
         // cleanup
         await logOutUser(client)
