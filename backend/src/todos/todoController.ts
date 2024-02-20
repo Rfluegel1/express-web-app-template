@@ -29,6 +29,9 @@ export default class TodoController {
 
     async createTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received create todos request', {requestBody: request.body})
+        const sourceIP = request.headers['x-forwarded-for']
+        console.log(sourceIP)
+        getLogger().info({sourceIP: sourceIP})
         getLogger().info({clientIP: request.ip})
         getLogger().info({clientIPs: request.ips})
         if (!request.isAuthenticated()) {
