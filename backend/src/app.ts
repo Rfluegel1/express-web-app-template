@@ -55,8 +55,6 @@ app.use(cors({
     credentials: true
 }));
 
-app.set('trust proxy', true);
-
 app.use((request, response, next) => {
         response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
         response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
