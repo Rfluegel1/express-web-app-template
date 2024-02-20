@@ -6,34 +6,51 @@ import { getLogger } from '../Logger';
 import UserService from './userService';
 import User from './User';
 import { UnauthorizedException } from '../exceptions/UnauthorizedException';
+import Joi from 'joi';
 
 export default class UserController {
 	userService = new UserService();
 
+	validationSchema = Joi.object({
+		id: Joi.string().pattern(UUID_REG_EXP),
+		email: Joi.string().email(),
+		password: Joi.string(),
+		confirmPassword: Joi.ref('password'),
+		isVerified: Joi.boolean(),
+		role: Joi.string(),
+		pendingEmail: Joi.string().email(),
+		passwordResetToken: Joi.string().pattern(UUID_REG_EXP),
+		emailUpdateToken: Joi.string().pattern(UUID_REG_EXP),
+		emailVerificationToken: Joi.string().pattern(UUID_REG_EXP),
+	});
+
+	validateRequest(request: Request, next: NextFunction) {
+		let bodyValidations = this.validationSchema.validate(request.body);
+		let queryValidations = this.validationSchema.validate(request.query);
+		let paramsValidation = this.validationSchema.validate(request.params);
+		let error = bodyValidations.error || queryValidations.error || paramsValidation.error;
+		if (error) {
+			next(new BadRequestException(error.message));
+		}
+	}
 	async updateUser(request: Request, response: Response, next: NextFunction) {
 		getLogger().info(
 			'Received update users request',
 			{ requestParam: request.params, requestBody: request.body }
 		);
-		const id: string = request.params.id;
 		if ((request.user as User).role !== 'admin') {
 			return next(new UnauthorizedException('update user'));
 		}
+		const id: string = request.params.id;
 		const email: string = request.body.email;
 		const password: string = request.body.password;
-		const confirmPassword: string = request.body.confirmPassword;
 		const emailVerificationToken: string = request.body.emailVerificationToken;
 		const isVerified: boolean = request.body.isVerified;
 		const role: string = request.body.role;
 		const passwordResetToken: string = request.body.passwordResetToken;
 		const emailUpdateToken: string = request.body.emailUpdateToken;
 		const pendingEmail: string = request.body.pendingEmail;
-		if (password !== confirmPassword) {
-			return next(new BadRequestException());
-		}
-		if (!id.match(UUID_REG_EXP)) {
-			return next(new BadRequestException(id));
-		}
+		this.validateRequest(request, next);
 		try {
 			let user: User = await this.userService.updateUser(
 				id,
@@ -57,10 +74,7 @@ export default class UserController {
 		let email: string = request.body.email;
 		getLogger().info('Received create users request', { requestBody: { email: email } });
 		let password: string = request.body.password;
-		let confirmPassword: string = request.body.confirmPassword;
-		if (password !== confirmPassword) {
-			return next(new BadRequestException());
-		}
+		this.validateRequest(request, next);
 		try {
 			const user: User = await this.userService.createUser(email, password);
 			getLogger().info('Sending create users response', { status: StatusCodes.CREATED });
@@ -78,9 +92,7 @@ export default class UserController {
 		if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin') {
 			return next(new UnauthorizedException('delete user'));
 		}
-		if (!id.match(UUID_REG_EXP)) {
-			return next(new BadRequestException(id));
-		}
+		this.validateRequest(request, next);
 		try {
 			await this.userService.deleteUser(id);
 			getLogger().info('Sending delete users response', { status: StatusCodes.NO_CONTENT });
@@ -98,9 +110,7 @@ export default class UserController {
 			return next(new UnauthorizedException('get user'));
 		}
 		let user: User;
-		if (!id.match(UUID_REG_EXP)) {
-			return next(new BadRequestException(id));
-		}
+		this.validateRequest(request, next);
 		try {
 			user = await this.userService.getUser(id);
 			getLogger().info('Sending get users response', { status: StatusCodes.OK });
@@ -120,6 +130,7 @@ export default class UserController {
 			return next(new UnauthorizedException('get user by email'));
 		}
 		let user: User;
+		this.validateRequest(request, next);
 		try {
 			user = await this.userService.getUserByEmail(email);
 			getLogger().info('Sending get users response', { status: StatusCodes.OK });

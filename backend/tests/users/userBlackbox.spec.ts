@@ -5,6 +5,7 @@ import { AxiosError } from 'axios';
 import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
+import { v4 } from 'uuid';
 
 jest.setTimeout(30000 * 2);
 
@@ -104,7 +105,7 @@ describe('User resource', () => {
 		}
 		// then
 		expect(postResponse?.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(postResponse?.data.message).toEqual('Password and passwordConfirm do not match');
+		expect(postResponse?.data.message).toEqual('Parameter id not of type UUID for id=\"confirmPassword\" must be [ref:password]');
 	});
 
 	it('should throw error when email is already taken', async () => {
@@ -158,6 +159,10 @@ describe('User resource', () => {
 		const updatedEmail = generateTemporaryUserEmail();
 		const password = 'password';
 		const updatedPassword = 'newPassword';
+		const emailVerificationToken = v4();
+		const passwordResetToken = v4();
+		const emailUpdateToken = v4();
+		const pendingEmail = generateTemporaryUserEmail()
 
 		await authenticateAsAdmin(client);
 		try {
@@ -193,11 +198,11 @@ describe('User resource', () => {
 				password: updatedPassword,
 				confirmPassword: updatedPassword,
 				isVerified: true,
-				emailVerificationToken: 'emailVerificationToken',
-				passwordResetToken: 'passwordResetToken',
+				emailVerificationToken: emailVerificationToken,
+				passwordResetToken: passwordResetToken,
 				role: 'anything',
-				emailUpdateToken: 'emailUpdateToken',
-				pendingEmail: 'pendingEmail'
+				emailUpdateToken: emailUpdateToken,
+				pendingEmail: pendingEmail
 			});
 
 			// then
@@ -208,11 +213,11 @@ describe('User resource', () => {
 			expect(updateData.password).toEqual(undefined);
 			expect(updateData.passwordHash).not.toEqual(undefined);
 			expect(updateData.isVerified).toEqual(true);
-			expect(updateData.emailVerificationToken).toEqual('emailVerificationToken');
-			expect(updateData.passwordResetToken).toEqual('passwordResetToken');
+			expect(updateData.emailVerificationToken).toEqual(emailVerificationToken);
+			expect(updateData.passwordResetToken).toEqual(passwordResetToken);
 			expect(updateData.role).toEqual('anything');
-			expect(updateData.emailUpdateToken).toEqual('emailUpdateToken')
-			expect(updateData.pendingEmail).toEqual('pendingEmail')
+			expect(updateData.emailUpdateToken).toEqual(emailUpdateToken)
+			expect(updateData.pendingEmail).toEqual(pendingEmail)
 
 			// when
 			const getAfterUpdateResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`);
@@ -225,11 +230,11 @@ describe('User resource', () => {
 			expect(getAfterUpdateData.password).toEqual(undefined);
 			expect(getAfterUpdateData.passwordHash).not.toEqual(undefined);
 			expect(getAfterUpdateData.isVerified).toEqual(true);
-			expect(getAfterUpdateData.emailVerificationToken).toEqual('emailVerificationToken');
-			expect(getAfterUpdateData.passwordResetToken).toEqual('passwordResetToken');
+			expect(getAfterUpdateData.emailVerificationToken).toEqual(emailVerificationToken);
+			expect(getAfterUpdateData.passwordResetToken).toEqual(passwordResetToken);
 			expect(getAfterUpdateData.role).toEqual('anything');
-			expect(getAfterUpdateData.emailUpdateToken).toEqual('emailUpdateToken')
-			expect(getAfterUpdateData.pendingEmail).toEqual('pendingEmail')
+			expect(getAfterUpdateData.emailUpdateToken).toEqual(emailUpdateToken)
+			expect(getAfterUpdateData.pendingEmail).toEqual(pendingEmail)
 		} finally {
 			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);
 			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);

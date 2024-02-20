@@ -439,7 +439,7 @@ describe('Todo controller', () => {
                 description: 'should not throw when createdBy is uuid',
                 input: { body: { createdBy: uuidv4() } },
                 expectThrow: false
-            },
+            }
         ];
 
         testCases.forEach(({ description, input, expectThrow }) => {

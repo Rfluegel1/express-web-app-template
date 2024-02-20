@@ -6,6 +6,7 @@ import { NotFoundException } from '../../src/exceptions/NotFoundException';
 import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { UnauthorizedException } from '../../src/exceptions/UnauthorizedException';
+import { generateTemporaryUserEmail } from '../helpers';
 
 // setup
 jest.mock('../../src/users/userService', () => {
@@ -39,8 +40,70 @@ describe('User controller', () => {
 	};
 	const userController = new UserController();
 	describe('in regards to normal operation', () => {
+		beforeEach(() => {
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
+		})
+		afterEach(() => {
+			jest.clearAllMocks();
+			jest.restoreAllMocks();
+		})
+		it('updateUser should avoid unauthorized and return all fields when called by admin', async () => {
+			// given
+			let id = uuidv4();
+			const mockUser = { id: id, ...user };
+			const request = {
+				isAuthenticated: () => true,
+				user: { id: 'other', role: 'admin' },
+				params: { id: id },
+				body: {
+					email: 'email',
+					password: undefined,
+					isVerified: true,
+					emailVerificationToken: 'emailVerificationToken',
+					role: 'role',
+					passwordResetToken: 'passwordResetToken',
+					emailUpdateToken: 'emailUpdateToken',
+					pendingEmail: 'pendingEmail'
+				}
+			};
+			const response = {
+				status: jest.fn(function() {
+					return this;
+				}),
+				send: jest.fn()
+			};
+
+			(userController.userService.updateUser as jest.Mock).mockImplementation(
+				(sentId, email, passwordHash, isVerified, emailVerificationToken, role, passwordResetToken, emailUpdateToken, pendingEmail) => {
+					if (
+						sentId === id
+						&& email === 'email'
+						&& passwordHash === undefined
+						&& emailVerificationToken === 'emailVerificationToken'
+						&& isVerified && role === 'role'
+						&& passwordResetToken === 'passwordResetToken'
+						&& emailUpdateToken === 'emailUpdateToken'
+						&& pendingEmail === 'pendingEmail'
+					) {
+						return mockUser;
+					} else {
+						return null;
+					}
+				}
+			);
+
+			// when
+			await userController.updateUser(request as any, response as any, jest.fn());
+
+			// then
+			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
+			expect(response.send).toHaveBeenCalledWith(mockUser);
+			expect(userController.validateRequest).toHaveBeenCalled();
+		});
+
 		it('createUser responds with data that is returned from the UserService', async () => {
 			// given
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
 			const id = uuidv4();
 			const mockUser = { id: id, email: 'email', password: 'password', isVerified: false };
 			const request = {
@@ -66,9 +129,11 @@ describe('User controller', () => {
 			// then
 			expect(response.send).toHaveBeenCalledWith({ id: id, email: 'email', isVerified: false });
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
+			expect(userController.validateRequest).toHaveBeenCalled();
 		});
 		it('getUser responds with data that is returned from the UserService', async () => {
 			// given
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
 			const request = {
@@ -101,9 +166,11 @@ describe('User controller', () => {
 				email: mockUser.email,
 				isVerified: mockUser.isVerified
 			});
+			expect(userController.validateRequest).toHaveBeenCalled();
 		});
 		it('getUserByEmail responds with data that is returned from the UserService', async () => {
 			// given
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
 			const request = {
@@ -136,9 +203,12 @@ describe('User controller', () => {
 				email: mockUser.email,
 				isVerified: mockUser.isVerified
 			});
+			expect(userController.validateRequest).toHaveBeenCalled();
 		});
 		it('deleteUser should call service and respond with NO_CONTENT', async () => {
 			// given
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
+
 			let id: string = uuidv4();
 			const request = {
 				isAuthenticated: () => true,
@@ -157,6 +227,7 @@ describe('User controller', () => {
 			// then
 			expect(userController.userService.deleteUser).toHaveBeenCalledWith(id);
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
+			expect(userController.validateRequest).toHaveBeenCalled();
 		});
 	});
 	describe('in regards to error handling', () => {
@@ -430,58 +501,6 @@ describe('User controller', () => {
 			// then
 			expect(next).toHaveBeenCalledWith(expect.any(UnauthorizedException));
 		});
-		it('updateUser should avoid unauthorized and return all fields when called by admin', async () => {
-			// given
-			let id = uuidv4();
-			const mockUser = { id: id, ...user };
-			const request = {
-				isAuthenticated: () => true,
-				user: { id: 'other', role: 'admin' },
-				params: { id: id },
-				body: {
-					email: 'email',
-					password: undefined,
-					isVerified: true,
-					emailVerificationToken: 'emailVerificationToken',
-					role: 'role',
-					passwordResetToken: 'passwordResetToken',
-					emailUpdateToken: 'emailUpdateToken',
-					pendingEmail: 'pendingEmail'
-				}
-			};
-			const response = {
-				status: jest.fn(function() {
-					return this;
-				}),
-				send: jest.fn()
-			};
-
-			(userController.userService.updateUser as jest.Mock).mockImplementation(
-				(sentId, email, passwordHash, isVerified, emailVerificationToken, role, passwordResetToken, emailUpdateToken, pendingEmail) => {
-					if (
-						sentId === id
-						&& email === 'email'
-						&& passwordHash === undefined
-						&& emailVerificationToken === 'emailVerificationToken'
-						&& isVerified && role === 'role'
-						&& passwordResetToken === 'passwordResetToken'
-						&& emailUpdateToken === 'emailUpdateToken'
-						&& pendingEmail === 'pendingEmail'
-					) {
-						return mockUser;
-					} else {
-						return null;
-					}
-				}
-			);
-
-			// when
-			await userController.updateUser(request as any, response as any, jest.fn());
-
-			// then
-			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
-			expect(response.send).toHaveBeenCalledWith(mockUser);
-		});
 		it('getUser should avoid unauthorized and return all fields when called by admin', async () => {
 			// given
 			let id: string = uuidv4();
@@ -571,6 +590,131 @@ describe('User controller', () => {
 			// then
 			expect(userController.userService.deleteUser).toHaveBeenCalledWith(id);
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
+		});
+	});
+
+	describe('validateRequest method in todoController', () => {
+		const next = jest.fn();
+
+		const testCases = [
+			{
+				description: 'should throw when id is not uuid',
+				input: { params: { id: 'notUuid' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when id is uuid',
+				input: { params: { id: uuidv4() } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when email is not email',
+				input: { body: { email: 'notValidEmail' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when email is email',
+				input: { body: { email: generateTemporaryUserEmail() } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when pendingEmail is not email',
+				input: { body: { pendingEmail: 'notValidEmail' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when pendingEmail is email',
+				input: { body: { pendingEmail: generateTemporaryUserEmail() } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when password is not string',
+				input: { body: { password: 123 } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when password is string',
+				input: { body: { password: 'password' } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when password does not match confirm password',
+				input: { body: { password: 'password', confirmPassword: 'password1' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when password matches confirm password',
+				input: { body: { password: 'password', confirmPassword: 'password' } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when isVerified is not a boolean',
+				input: { body: { isVerified: 25 } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when isVerified is a boolean',
+				input: { body: { isVerified: true } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when role is not a string',
+				input: { body: { role: true } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when role is a string',
+				input: { body: { role: 'admin' } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when passwordResetToken is not uuid',
+				input: { body: { passwordResetToken: 'notUuid' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when passwordResetToken is uuid',
+				input: { body: { passwordResetToken: uuidv4() } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when emailUpdateToken is not uuid',
+				input: { body: { emailUpdateToken: 'notUuid' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when emailUpdateToken is uuid',
+				input: { body: { emailUpdateToken: uuidv4() } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when emailVerificationToken is not uuid',
+				input: { body: { emailVerificationToken: 'notUuid' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when emailVerificationToken is uuid',
+				input: { body: { emailVerificationToken: uuidv4() } },
+				expectThrow: false
+			},
+
+		];
+
+		testCases.forEach(({ description, input, expectThrow }) => {
+			it(description, () => {
+				// when
+				userController.validateRequest(input as any, next);
+
+				// then
+				if (expectThrow) {
+					expect(next).toHaveBeenCalledWith(expect.any(BadRequestException));
+				} else {
+					expect(next).not.toHaveBeenCalledWith(expect.any(BadRequestException));
+				}
+
+				// cleanup
+				jest.clearAllMocks();
+			});
 		});
 	});
 });

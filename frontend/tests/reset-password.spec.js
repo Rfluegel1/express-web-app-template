@@ -13,6 +13,7 @@ test.describe('Password Reset page', () => {
 		const admin = wrapper(axios.create({ jar, withCredentials: true }));
 		await authenticateAsAdmin(admin);
 		let userId;
+		let passwordRestToken = '49a5211c-8cec-41bd-94d3-a79b7b2f3931';
 		try {
 			const email = await registerTemporaryUser(page);
 			await expect(
@@ -20,9 +21,9 @@ test.describe('Password Reset page', () => {
 			).toBeVisible();
 			const getResponse = await admin.get(`${process.env.BASE_URL}/api/users?email=${email}`)
 			userId = getResponse.data.id;
-			await admin.put(`${process.env.BASE_URL}/api/users/${userId}`, { passwordResetToken: '123' });
+			await admin.put(`${process.env.BASE_URL}/api/users/${userId}`, { passwordResetToken: passwordRestToken });
 
-			await page.goto('/reset-password?token=123');
+			await page.goto(`/reset-password?token=${passwordRestToken}`);
 			await page.fill('input[id="password"]', 'new-password');
 			await page.fill('input[id="confirmPassword"]', 'new-password');
 
