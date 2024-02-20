@@ -15,7 +15,9 @@ export default class UserController {
 		id: Joi.string().pattern(UUID_REG_EXP),
 		email: Joi.string().email(),
 		password: Joi.string(),
-		confirmPassword: Joi.ref('password'),
+		confirmPassword: Joi.string().valid(Joi.ref('password')).messages({
+			'any.only': '"confirmPassword" must match "password"',
+		}),
 		isVerified: Joi.boolean(),
 		role: Joi.string(),
 		pendingEmail: Joi.string().email(),
