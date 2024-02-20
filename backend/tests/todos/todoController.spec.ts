@@ -419,6 +419,11 @@ describe('Todo controller', () => {
     describe('validateRequest method in todoController', () => {
         const next = jest.fn();
 
+        let longTask = ''
+        for(let i = 0; i < 300; i++) {
+            longTask = longTask + 'a'
+        }
+
         const testCases = [
             {
                 description: 'should throw when id is not uuid',
@@ -438,6 +443,21 @@ describe('Todo controller', () => {
             {
                 description: 'should not throw when createdBy is uuid',
                 input: { body: { createdBy: uuidv4() } },
+                expectThrow: false
+            },
+            {
+                description: 'should throw when task is not string',
+                input: { body: { task: 1 } },
+                expectThrow: true
+            },
+            {
+                description: 'should throw when task is >255',
+                input: { body: { task: longTask } },
+                expectThrow: true
+            },
+            {
+                description: 'should not throw when task is string',
+                input: { body: { task: 'squash bugs' } },
                 expectThrow: false
             }
         ];

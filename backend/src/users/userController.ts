@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { UUID_REG_EXP } from '../contants';
 import { BadRequestException } from '../exceptions/BadRequestException';
 import { getLogger } from '../Logger';
 import UserService from './userService';
@@ -12,18 +11,18 @@ export default class UserController {
 	userService = new UserService();
 
 	validationSchema = Joi.object({
-		id: Joi.string().pattern(UUID_REG_EXP),
+		id: Joi.string().uuid(),
 		email: Joi.string().email(),
-		password: Joi.string(),
+		password: Joi.string().max(255),
 		confirmPassword: Joi.string().valid(Joi.ref('password')).messages({
 			'any.only': '"confirmPassword" must match "password"',
 		}),
 		isVerified: Joi.boolean(),
 		role: Joi.string(),
 		pendingEmail: Joi.string().email(),
-		passwordResetToken: Joi.string().pattern(UUID_REG_EXP),
-		emailUpdateToken: Joi.string().pattern(UUID_REG_EXP),
-		emailVerificationToken: Joi.string().pattern(UUID_REG_EXP),
+		passwordResetToken: Joi.string().uuid(),
+		emailUpdateToken: Joi.string().uuid(),
+		emailVerificationToken: Joi.string().uuid(),
 	});
 
 	validateRequest(request: Request, next: NextFunction) {

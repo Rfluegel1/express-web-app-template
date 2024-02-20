@@ -592,9 +592,12 @@ describe('User controller', () => {
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
 		});
 	});
-
 	describe('validateRequest method in todoController', () => {
 		const next = jest.fn();
+		let longPassword = ''
+		for(let i = 0; i < 300; i++) {
+			longPassword = longPassword + 'a'
+		}
 
 		const testCases = [
 			{
@@ -636,6 +639,11 @@ describe('User controller', () => {
 				description: 'should not throw when password is string',
 				input: { body: { password: 'password' } },
 				expectThrow: false
+			},
+			{
+				description: 'should throw when password is >255',
+				input: { body: { password: longPassword } },
+				expectThrow: true
 			},
 			{
 				description: 'should throw when password does not match confirm password',

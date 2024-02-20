@@ -11,10 +11,12 @@ export default class VerificationController {
 	verificationService = new VerificationService();
 
 	validationSchema = Joi.object({
-		token: Joi.any(),
+		token: Joi.string().uuid(),
 		email: Joi.string().email(),
-		password: Joi.string(),
-		confirmPassword: Joi.ref('password')
+		password: Joi.string().max(255),
+		confirmPassword: Joi.string().valid(Joi.ref('password')).messages({
+			'any.only': '"confirmPassword" must match "password"',
+		}),
 	});
 
 	validateRequest(request: Request, next: NextFunction) {

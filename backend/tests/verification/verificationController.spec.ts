@@ -241,6 +241,11 @@ describe('Verification controller', () => {
 	describe('validateRequest method in verificationController', () => {
 		const next = jest.fn();
 
+		let longPassword = ''
+		for(let i = 0; i < 300; i++) {
+			longPassword = longPassword + 'a'
+		}
+
 		const testCases = [
 			{
 				description: 'should throw when password and confirmPassword do not match',
@@ -260,6 +265,31 @@ describe('Verification controller', () => {
 			{
 				description: 'should not throw when email is valid',
 				input: { body: { email: generateTemporaryUserEmail() } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when password is not string',
+				input: { body: { password: 1 } },
+				expectThrow: true
+			},
+			{
+				description: 'should throw when password is >255',
+				input: { body: { password: longPassword } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when password is string',
+				input: { body: { password: 'password' } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when token is not uuid',
+				input: { query: { token: 'notAUUID' } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when token is uuid',
+				input: { query: { token: v4() } },
 				expectThrow: false
 			}
 		];

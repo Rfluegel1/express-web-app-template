@@ -1,6 +1,5 @@
 import {NextFunction, Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
-import {UUID_REG_EXP} from '../contants'
 import {BadRequestException} from '../exceptions/BadRequestException'
 import {getLogger} from '../Logger'
 import TodoService from './todoService'
@@ -13,9 +12,9 @@ export default class TodoController {
     todoService = new TodoService()
 
     validationSchema = Joi.object({
-        id: Joi.string().pattern(UUID_REG_EXP),
-        task: Joi.any(),
-        createdBy: Joi.string().pattern(UUID_REG_EXP),
+        id: Joi.string().uuid(),
+        task: Joi.string().max(255),
+        createdBy: Joi.string().uuid(),
     });
 
     validateRequest(request: Request, next: NextFunction) {
