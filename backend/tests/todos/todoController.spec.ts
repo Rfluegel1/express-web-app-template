@@ -38,7 +38,8 @@ describe('Todo controller', () => {
         const request = {
             isAuthenticated: () => true,
             body: {task: 'the task'},
-            user: {id: 'the createdBy'}
+            user: {id: 'the createdBy'},
+            headers: { 'x-forwarded-for': 'asd'}
         }
         const response = {
             status: jest.fn(function () {
@@ -248,7 +249,8 @@ describe('Todo controller', () => {
     ) => {
         const request = {
             isAuthenticated: () => false,
-            query: {createdBy: 'asd'}
+            query: {createdBy: 'asd'},
+            headers: { 'x-forwarded-for': 'asd'}
         }
         const response = {
             status: jest.fn(function () {
@@ -359,6 +361,7 @@ describe('Todo controller', () => {
             body: {task: 'the task'},
             user: {id: 'the createdBy'},
             isAuthenticated: () => true,
+            headers: { 'x-forwarded-for': 'asd'}
         }
         const response = {};
 
