@@ -189,7 +189,7 @@ describe('Todo resource', () => {
         }
         // then
         expect(getResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
-        expect(getResponse?.data.message).toEqual('Parameter id not of type UUID for id=\"id\" with value \"undefined\" fails to match the required pattern: /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i')
+        expect(getResponse?.data.message).toEqual('"id" with value "undefined" fails to match the required pattern: /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i')
 
         // cleanup
         await logOutUser(client)

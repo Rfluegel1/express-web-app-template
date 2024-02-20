@@ -2,21 +2,11 @@ import {BadRequestException} from '../../src/exceptions/BadRequestException'
 
 describe('custom bad request exception', () => {
     it('constructor sets message and name', async () => {
-        const id = '1234'
         // when
         const dummyFunction = () => {
-            throw new BadRequestException(id)
+            throw new BadRequestException('this is a long message')
         }
         // then
-        expect(dummyFunction).toThrow('Parameter id not of type UUID for id=1234')
-    })
-
-    it('constructor sets message and name', async () => {
-        // when
-        const dummyFunction = () => {
-            throw new BadRequestException()
-        }
-        // then
-        expect(dummyFunction).toThrow('Password and passwordConfirm do not match')
+        expect(dummyFunction).toThrow('this is a long message')
     })
 })

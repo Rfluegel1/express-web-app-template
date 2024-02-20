@@ -105,7 +105,7 @@ describe('User resource', () => {
 		}
 		// then
 		expect(postResponse?.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(postResponse?.data.message).toEqual('Parameter id not of type UUID for id=\"confirmPassword\" must be [ref:password]');
+		expect(postResponse?.data.message).toEqual('"confirmPassword" must be [ref:password]');
 	});
 
 	it('should throw error when email is already taken', async () => {
