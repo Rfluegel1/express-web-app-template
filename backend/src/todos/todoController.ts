@@ -29,7 +29,6 @@ export default class TodoController {
 
     async createTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received create todos request', {requestBody: request.body})
-        getLogger().info({clientIP: request.ip})
         if (!request.isAuthenticated()) {
             return next(new UnauthorizedException('create todo'))
         }

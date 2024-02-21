@@ -64,8 +64,9 @@ app.use((request, response, next) => {
         return response.status(200).send({})
     }
     const requestId: any = v4()
+    const clientIP = request.ip
     namespace.run(() => {
-        namespace.set('logger', logger.child({requestId}))
+        namespace.set('logger', logger.child({requestId, clientIP}))
         next()
     })
 })
