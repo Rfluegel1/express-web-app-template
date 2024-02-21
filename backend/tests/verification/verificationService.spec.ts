@@ -41,6 +41,8 @@ describe('Verification service', () => {
 	let verificationService = new VerificationService();
 	it('should send email verification email', async () => {
 		// given
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date(1970, 1, 1)); // Sets the mock date to February 1, 2024
 		const userId = v4();
 		const mockUser = new User('email', 'hash');
 		mockUser.id = userId;
@@ -56,7 +58,10 @@ describe('Verification service', () => {
 
 		// then
 		expect(verificationService.userRepository.updateUser)
-			.toHaveBeenCalledWith({ ...mockUser, emailVerificationToken: '1234' });
+			.toHaveBeenCalledWith({
+				...mockUser,
+				emailVerification: { token: '1234', expiration: '1970-02-01T07:00:00.000Z' }
+			});
 		expect(transporter.sendMail).toHaveBeenCalled();
 		expect(transporter.sendMail).toHaveBeenCalledWith({
 			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
@@ -91,7 +96,7 @@ describe('Verification service', () => {
 	it('should verify email verification token', async () => {
 		//given
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, token);
+		const mockUser = new User('email', 'hash', false, '', { token: token, expiration: '1971-02-01T07:00:00.000Z' });
 		(verificationService.userRepository.getUserByEmailVerificationToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;
@@ -105,8 +110,32 @@ describe('Verification service', () => {
 		expect(verificationService.userRepository.updateUser).toHaveBeenCalledWith({
 			...mockUser,
 			isVerified: true,
-			emailVerificationToken: ''
+			emailVerification: {token: '', expiration: ''}
 		});
+	});
+
+	it('should not verify email verification token if expired', async () => {
+		//given
+		verificationService.userRepository.updateUser = jest.fn()
+		let token = '1234';
+		const mockUser = new User('email', 'hash', false, '', { token: token, expiration: '1900-02-01T07:00:00.000Z' });
+		(verificationService.userRepository.getUserByEmailVerificationToken as jest.Mock).mockImplementation((sentId: string) => {
+			if (sentId === token) {
+				return mockUser;
+			}
+		});
+		let response;
+
+		// when
+		try {
+			response = await verificationService.verifyEmail(token);
+		} catch (e) {
+			response = e;
+		}
+
+		// then
+		expect(verificationService.userRepository.updateUser).not.toHaveBeenCalled();
+		expect(response).toEqual(new Error('Token has expired'));
 	});
 
 	it('should send password reset email', async () => {
@@ -155,26 +184,26 @@ describe('Verification service', () => {
 	});
 
 	it('should throw non not found error for password reset email', async () => {
-			// given
-			const userId = v4();
-			const mockUser = new User('email', 'hash');
-			mockUser.id = userId;
-			(v4 as jest.Mock).mockImplementation(() => '1234');
-			(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation(() => {
-				throw new Error('something');
-			});
-
-			let result;
-			try {
-				// when
-				await verificationService.requestPasswordReset('email');
-			} catch (e) {
-				result = e;
-			}
-
-			// then
-			expect(result).toEqual(new Error('something'));
+		// given
+		const userId = v4();
+		const mockUser = new User('email', 'hash');
+		mockUser.id = userId;
+		(v4 as jest.Mock).mockImplementation(() => '1234');
+		(verificationService.userRepository.getUserByEmail as jest.Mock).mockImplementation(() => {
+			throw new Error('something');
 		});
+
+		let result;
+		try {
+			// when
+			await verificationService.requestPasswordReset('email');
+		} catch (e) {
+			result = e;
+		}
+
+		// then
+		expect(result).toEqual(new Error('something'));
+	});
 
 	it('should not send password reset email if user email is from expresswebapptemplate.com', async () => {
 		// given
@@ -198,7 +227,7 @@ describe('Verification service', () => {
 	it('should verify password reset token', async () => {
 		//given
 		let token = '1234';
-		const mockUser = new User('email', 'hash', true, '', 'user', token);
+		const mockUser = new User('email', 'hash', true, '', { token: '', expiration: '' }, 'user', token);
 		(verificationService.userRepository.getUserByPasswordResetToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;
@@ -269,7 +298,7 @@ describe('Verification service', () => {
 	it('should verify email update token', async () => {
 		//given
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, '', 'user', '', token, 'newEmail');
+		const mockUser = new User('email', 'hash', false, '', { token: '', expiration: '' }, 'user', '', token, 'newEmail');
 		(verificationService.userRepository.getUserByEmailUpdateToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;

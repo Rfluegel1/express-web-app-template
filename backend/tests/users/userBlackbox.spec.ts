@@ -160,9 +160,10 @@ describe('User resource', () => {
 		const password = 'password';
 		const updatedPassword = 'newPassword';
 		const emailVerificationToken = v4();
+		const emailVerificationExpiration = '2022-01-01T00:00:00.000Z';
 		const passwordResetToken = v4();
 		const emailUpdateToken = v4();
-		const pendingEmail = generateTemporaryUserEmail()
+		const pendingEmail = generateTemporaryUserEmail();
 
 		await authenticateAsAdmin(client);
 		try {
@@ -186,11 +187,12 @@ describe('User resource', () => {
 			expect(getData.password).toEqual(undefined);
 			expect(getData.passwordHash).not.toEqual(undefined);
 			expect(getData.isVerified).toEqual(false);
-			expect(getData.emailVerificationToken).not.toEqual(undefined);
-			expect(getData.passwordResetToken).toBeNull()
+			expect(getData.emailVerification.token).not.toEqual(undefined);
+			expect(getData.emailVerification.expiration).not.toEqual(undefined);
+			expect(getData.passwordResetToken).toBeNull();
 			expect(getData.role).toEqual('user');
-			expect(getData.emailUpdateToken).toBeNull()
-			expect(getData.pendingEmail).toBeNull()
+			expect(getData.emailUpdateToken).toBeNull();
+			expect(getData.pendingEmail).toBeNull();
 
 			// when
 			const updateResponse = await client.put(`${process.env.BASE_URL}/api/users/${id}`, {
@@ -198,7 +200,7 @@ describe('User resource', () => {
 				password: updatedPassword,
 				confirmPassword: updatedPassword,
 				isVerified: true,
-				emailVerificationToken: emailVerificationToken,
+				emailVerification: { token: emailVerificationToken, expiration: emailVerificationExpiration },
 				passwordResetToken: passwordResetToken,
 				role: 'anything',
 				emailUpdateToken: emailUpdateToken,
@@ -213,11 +215,12 @@ describe('User resource', () => {
 			expect(updateData.password).toEqual(undefined);
 			expect(updateData.passwordHash).not.toEqual(undefined);
 			expect(updateData.isVerified).toEqual(true);
-			expect(updateData.emailVerificationToken).toEqual(emailVerificationToken);
+			expect(updateData.emailVerification.token).toEqual(emailVerificationToken);
+			expect(updateData.emailVerification.expiration).toEqual(emailVerificationExpiration);
 			expect(updateData.passwordResetToken).toEqual(passwordResetToken);
 			expect(updateData.role).toEqual('anything');
-			expect(updateData.emailUpdateToken).toEqual(emailUpdateToken)
-			expect(updateData.pendingEmail).toEqual(pendingEmail)
+			expect(updateData.emailUpdateToken).toEqual(emailUpdateToken);
+			expect(updateData.pendingEmail).toEqual(pendingEmail);
 
 			// when
 			const getAfterUpdateResponse = await client.get(`${process.env.BASE_URL}/api/users/${id}`);
@@ -230,15 +233,16 @@ describe('User resource', () => {
 			expect(getAfterUpdateData.password).toEqual(undefined);
 			expect(getAfterUpdateData.passwordHash).not.toEqual(undefined);
 			expect(getAfterUpdateData.isVerified).toEqual(true);
-			expect(getAfterUpdateData.emailVerificationToken).toEqual(emailVerificationToken);
+			expect(getAfterUpdateData.emailVerification.token).toEqual(emailVerificationToken);
+			expect(getAfterUpdateData.emailVerification.expiration).toEqual(emailVerificationExpiration);
 			expect(getAfterUpdateData.passwordResetToken).toEqual(passwordResetToken);
 			expect(getAfterUpdateData.role).toEqual('anything');
-			expect(getAfterUpdateData.emailUpdateToken).toEqual(emailUpdateToken)
-			expect(getAfterUpdateData.pendingEmail).toEqual(pendingEmail)
+			expect(getAfterUpdateData.emailUpdateToken).toEqual(emailUpdateToken);
+			expect(getAfterUpdateData.pendingEmail).toEqual(pendingEmail);
 		} finally {
 			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);
 			expect(deleteResponse.status).toEqual(StatusCodes.NO_CONTENT);
-			await logOutUser(client)
+			await logOutUser(client);
 		}
 	});
 });

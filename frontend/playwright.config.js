@@ -5,7 +5,7 @@ dotenv.config({ path: `.env.${process.env.NODE_ENV || 'development'}` });
 
 const config = {
 	webServer: isStaging ? undefined : {
-		command: 'npm run build && cd ../backend && npm run backend',
+		command: 'sh -c "npm run build && cd ../backend && npm run backend > playwright_test_server.log 2>&1"',
 		port: 8090
 	},
 	use: {

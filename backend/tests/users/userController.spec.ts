@@ -41,12 +41,13 @@ describe('User controller', () => {
 	const userController = new UserController();
 	describe('in regards to normal operation', () => {
 		beforeEach(() => {
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
-		})
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
+			});
+		});
 		afterEach(() => {
 			jest.clearAllMocks();
 			jest.restoreAllMocks();
-		})
+		});
 		it('updateUser should avoid unauthorized and return all fields when called by admin', async () => {
 			// given
 			let id = uuidv4();
@@ -59,7 +60,7 @@ describe('User controller', () => {
 					email: 'email',
 					password: undefined,
 					isVerified: true,
-					emailVerificationToken: 'emailVerificationToken',
+					emailVerification: {token: 'emailVerificationToken', expiration: 'emailVerificationExpiration'},
 					role: 'role',
 					passwordResetToken: 'passwordResetToken',
 					emailUpdateToken: 'emailUpdateToken',
@@ -74,12 +75,13 @@ describe('User controller', () => {
 			};
 
 			(userController.userService.updateUser as jest.Mock).mockImplementation(
-				(sentId, email, passwordHash, isVerified, emailVerificationToken, role, passwordResetToken, emailUpdateToken, pendingEmail) => {
+				(sentId, email, passwordHash, isVerified, emailVerification, role, passwordResetToken, emailUpdateToken, pendingEmail) => {
 					if (
 						sentId === id
 						&& email === 'email'
 						&& passwordHash === undefined
-						&& emailVerificationToken === 'emailVerificationToken'
+						&& emailVerification.token === 'emailVerificationToken'
+						&& emailVerification.expiration === 'emailVerificationExpiration'
 						&& isVerified && role === 'role'
 						&& passwordResetToken === 'passwordResetToken'
 						&& emailUpdateToken === 'emailUpdateToken'
@@ -103,7 +105,8 @@ describe('User controller', () => {
 
 		it('createUser responds with data that is returned from the UserService', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
+			});
 			const id = uuidv4();
 			const mockUser = { id: id, email: 'email', password: 'password', isVerified: false };
 			const request = {
@@ -133,7 +136,8 @@ describe('User controller', () => {
 		});
 		it('getUser responds with data that is returned from the UserService', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
+			});
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
 			const request = {
@@ -170,7 +174,8 @@ describe('User controller', () => {
 		});
 		it('getUserByEmail responds with data that is returned from the UserService', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
+			});
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
 			const request = {
@@ -207,7 +212,8 @@ describe('User controller', () => {
 		});
 		it('deleteUser should call service and respond with NO_CONTENT', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {});
+			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
+			});
 
 			let id: string = uuidv4();
 			const request = {
@@ -256,7 +262,7 @@ describe('User controller', () => {
 			const request = {
 				isAuthenticated: () => true,
 				body: { password: 'password', confirmPassword: 'password' },
-				user: { id: id, role: 'admin'},
+				user: { id: id, role: 'admin' },
 				params: { id: id }
 			};
 			const response = {};
@@ -340,7 +346,7 @@ describe('User controller', () => {
 			// given
 			const request = {
 				isAuthenticated: () => true,
-				user: { id: 'undefined', role: 'admin'},
+				user: { id: 'undefined', role: 'admin' },
 				params: { id: 'undefined' },
 				body: {
 					task: 'the user',
@@ -594,9 +600,9 @@ describe('User controller', () => {
 	});
 	describe('validateRequest method in todoController', () => {
 		const next = jest.fn();
-		let longPassword = ''
-		for(let i = 0; i < 300; i++) {
-			longPassword = longPassword + 'a'
+		let longPassword = '';
+		for (let i = 0; i < 300; i++) {
+			longPassword = longPassword + 'a';
 		}
 
 		const testCases = [
@@ -697,14 +703,24 @@ describe('User controller', () => {
 			},
 			{
 				description: 'should throw when emailVerificationToken is not uuid',
-				input: { body: { emailVerificationToken: 'notUuid' } },
+				input: { body: { emailVerification: { token: 'notUuid' } } },
 				expectThrow: true
 			},
 			{
 				description: 'should not throw when emailVerificationToken is uuid',
-				input: { body: { emailVerificationToken: uuidv4() } },
+				input: { body: { emailVerification: { token: uuidv4() } } },
 				expectThrow: false
 			},
+			{
+				description: 'should throw when emailVerificationExpiration is not date',
+				input: { body: { emailVerification: { expiration: 'notDate' } } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when emailVerificationExpiration is date',
+				input: { body: { emailVerification: { expiration: new Date().toISOString() } } },
+				expectThrow: false
+			}
 
 		];
 

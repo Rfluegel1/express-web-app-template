@@ -8,6 +8,7 @@ export default class User {
 	passwordHash: string;
 	isVerified: boolean | undefined;
 	emailVerificationToken: string;
+	emailVerification: { token: string; expiration: string };
 	role: string;
 	passwordResetToken: string;
 	emailUpdateToken: string;
@@ -18,15 +19,16 @@ export default class User {
 		passwordHash: string = '',
 		isVerified: boolean = false,
 		emailVerificationToken: string = '',
+		emailVerification: { token: string; expiration: string } = { token: '', expiration: '' },
 		role: string = 'user',
 		passwordResetToken: string = '',
-		updateEmailToken: string = '',
-		pendingEmail: string = ''
-	) {
+		updateEmailToken: string = ''
+		, pendingEmail: string = '') {
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.isVerified = isVerified;
 		this.emailVerificationToken = emailVerificationToken;
+		this.emailVerification = emailVerification;
 		this.role = role;
 		this.passwordResetToken = passwordResetToken;
 		this.emailUpdateToken = updateEmailToken;
@@ -39,7 +41,10 @@ export default class User {
 			email: queryResult?.email,
 			passwordHash: queryResult?.passwordhash,
 			isVerified: queryResult?.isverified,
-			emailVerificationToken: queryResult?.emailverificationtoken,
+			emailVerification: {
+				token: queryResult?.emailverification?.token,
+				expiration: queryResult?.emailverification?.expiration
+			},
 			role: queryResult?.role,
 			passwordResetToken: queryResult?.passwordresettoken,
 			emailUpdateToken: queryResult?.emailupdatetoken,
@@ -56,7 +61,7 @@ export default class User {
 		email: string | undefined,
 		passwordHash: string | undefined,
 		isVerified: boolean | undefined,
-		emailVerificationToken: string | undefined,
+		emailVerification: { token: string; expiration: string } | undefined,
 		role: string | undefined,
 		passwordResetToken: string | undefined,
 		emailUpdateToken: string | undefined,
@@ -71,8 +76,11 @@ export default class User {
 		if (isVerified !== undefined) {
 			this.isVerified = isVerified;
 		}
-		if (emailVerificationToken !== undefined) {
-			this.emailVerificationToken = emailVerificationToken;
+		if (emailVerification?.token !== undefined) {
+			this.emailVerification.token = emailVerification.token;
+		}
+		if (emailVerification?.expiration !== undefined) {
+			this.emailVerification.expiration = emailVerification.expiration;
 		}
 		if (role !== undefined) {
 			this.role = role;

@@ -12,7 +12,9 @@ export default class VerificationService {
 	async sendVerificationEmail(userId: string) {
 		const user = await this.userRepository.getUser(userId);
 		const token = v4();
-		user.emailVerificationToken = token;
+		const expiration = new Date(Date.now() + 1000 * 60 * 60).toISOString();
+		user.emailVerification.token = token;
+		user.emailVerification.expiration = expiration;
 		await this.userRepository.updateUser(user);
 
 		const verificationUrl = `${process.env.BASE_URL}/api/verify-email?token=${token}`;
@@ -36,8 +38,12 @@ export default class VerificationService {
 
 	async verifyEmail(token: string) {
 		const user = await this.userRepository.getUserByEmailVerificationToken(token);
+		if (user.emailVerification.expiration < new Date().toISOString()) {
+			throw new Error('Token has expired');
+		}
 		user.isVerified = true;
-		user.emailVerificationToken = '';
+		user.emailVerification.token= '';
+		user.emailVerification.expiration= '';
 		await this.userRepository.updateUser(user);
 	}
 

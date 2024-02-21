@@ -22,7 +22,10 @@ export default class UserController {
 		pendingEmail: Joi.string().email(),
 		passwordResetToken: Joi.string().uuid(),
 		emailUpdateToken: Joi.string().uuid(),
-		emailVerificationToken: Joi.string().uuid(),
+		emailVerification: Joi.object({
+			token: Joi.string().uuid(),
+			expiration: Joi.date().iso(),
+		}),
 	});
 
 	validateRequest(request: Request, next: NextFunction) {
@@ -45,7 +48,7 @@ export default class UserController {
 		const id: string = request.params.id;
 		const email: string = request.body.email;
 		const password: string = request.body.password;
-		const emailVerificationToken: string = request.body.emailVerificationToken;
+		const emailVerification: { token: string, expiration:string } = request.body.emailVerification;
 		const isVerified: boolean = request.body.isVerified;
 		const role: string = request.body.role;
 		const passwordResetToken: string = request.body.passwordResetToken;
@@ -58,7 +61,7 @@ export default class UserController {
 				email,
 				password,
 				isVerified,
-				emailVerificationToken,
+				emailVerification,
 				role,
 				passwordResetToken,
 				emailUpdateToken,

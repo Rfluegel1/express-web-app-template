@@ -109,7 +109,7 @@ describe('Verification resource', () => {
 
 			// then
 			expect(getResponse.status).toEqual(StatusCodes.OK);
-			emailVerificationToken = getResponse.data.emailVerificationToken;
+			emailVerificationToken = getResponse.data.emailVerification.token;
 
 			// when
 			const verifyResponse = await client.get(`${process.env.BASE_URL}/api/verify-email?token=${emailVerificationToken}`);
