@@ -40,7 +40,7 @@ jest.mock('../../src/Logger', () => ({
 describe('Verification service', () => {
 	let verificationService = new VerificationService();
 	jest.useFakeTimers();
-	jest.setSystemTime(new Date(1970, 1, 1)); // Sets the mock date to February 1, 2024
+	jest.setSystemTime(Date.UTC(1970, 1, 1));
 	it('should send email verification email', async () => {
 		// given
 		const userId = v4();
@@ -60,7 +60,7 @@ describe('Verification service', () => {
 		expect(verificationService.userRepository.updateUser)
 			.toHaveBeenCalledWith({
 				...mockUser,
-				emailVerification: { token: '1234', expiration: '1970-02-01T07:00:00.000Z' }
+				emailVerification: { token: '1234', expiration: '1970-02-01T01:00:00.000Z' }
 			});
 		expect(transporter.sendMail).toHaveBeenCalled();
 		expect(transporter.sendMail).toHaveBeenCalledWith({
@@ -155,7 +155,7 @@ describe('Verification service', () => {
 
 		// then
 		expect(verificationService.userRepository.updateUser)
-			.toHaveBeenCalledWith({ ...mockUser, passwordReset: { token: '1234', expiration: '1970-02-01T07:00:00.000Z' } });
+			.toHaveBeenCalledWith({ ...mockUser, passwordReset: { token: '1234', expiration: '1970-02-01T01:00:00.000Z' } });
 		expect(transporter.sendMail).toHaveBeenCalled();
 		expect(transporter.sendMail).toHaveBeenCalledWith({
 			from: '"Express Web App Template" <noreply@expresswebapptemplate.com>',
@@ -294,7 +294,7 @@ describe('Verification service', () => {
 		expect(verificationService.userRepository.updateUser)
 			.toHaveBeenCalledWith({
 				...mockUser,
-				emailUpdate: { token: '1234', expiration: '1970-02-01T07:00:00.000Z' },
+				emailUpdate: { token: '1234', expiration: '1970-02-01T01:00:00.000Z' },
 				pendingEmail: 'newEmail'
 			});
 		expect(transporter.sendMail).toHaveBeenCalled();
