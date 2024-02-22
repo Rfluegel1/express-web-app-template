@@ -7,12 +7,9 @@ export default class User {
 	email: string;
 	passwordHash: string;
 	isVerified: boolean | undefined;
-	emailVerificationToken: string;
 	emailVerification: { token: string; expiration: string };
 	role: string;
-	passwordResetToken: string;
 	passwordReset: { token: string; expiration: string };
-	emailUpdateToken: string;
 	emailUpdate: { token: string; expiration: string };
 	pendingEmail: string;
 
@@ -20,23 +17,17 @@ export default class User {
 		email: string = '',
 		passwordHash: string = '',
 		isVerified: boolean = false,
-		emailVerificationToken: string = '',
 		emailVerification: { token: string; expiration: string } = { token: '', expiration: '' },
 		role: string = 'user',
-		passwordResetToken: string = '',
 		passwordReset: { token: string; expiration: string } = { token: '', expiration: '' },
-		updateEmailToken: string = '',
 		emailUpdate: { token: string; expiration: string } = { token: '', expiration: '' },
 		pendingEmail: string = '') {
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.isVerified = isVerified;
-		this.emailVerificationToken = emailVerificationToken;
 		this.emailVerification = emailVerification;
 		this.role = role;
-		this.passwordResetToken = passwordResetToken;
 		this.passwordReset = passwordReset;
-		this.emailUpdateToken = updateEmailToken;
 		this.emailUpdate = emailUpdate;
 		this.pendingEmail = pendingEmail;
 	}

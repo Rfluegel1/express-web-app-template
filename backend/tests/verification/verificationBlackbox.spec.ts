@@ -123,7 +123,7 @@ describe('Verification resource', () => {
 			// then
 			expect(getAfterVerification.status).toEqual(StatusCodes.OK);
 			expect(getAfterVerification.data.isVerified).toEqual(true);
-			expect(getAfterVerification.data.emailVerificationToken).toEqual('');
+			expect(getAfterVerification.data.emailVerification.token).toEqual('');
 		} finally {
 			// cleanup
 			await logOutUser(client);

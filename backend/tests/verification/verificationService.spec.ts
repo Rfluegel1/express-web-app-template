@@ -96,7 +96,7 @@ describe('Verification service', () => {
 	it('should verify email verification token', async () => {
 		//given
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, '', { token: token, expiration: '1971-02-01T07:00:00.000Z' });
+		const mockUser = new User('email', 'hash', false, { token: token, expiration: '1971-02-01T07:00:00.000Z' });
 		(verificationService.userRepository.getUserByEmailVerificationToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;
@@ -118,7 +118,7 @@ describe('Verification service', () => {
 		//given
 		verificationService.userRepository.updateUser = jest.fn();
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, '', { token: token, expiration: '1900-02-01T07:00:00.000Z' });
+		const mockUser = new User('email', 'hash', false, { token: token, expiration: '1900-02-01T07:00:00.000Z' });
 		(verificationService.userRepository.getUserByEmailVerificationToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;
@@ -227,7 +227,10 @@ describe('Verification service', () => {
 	it('should verify password reset token', async () => {
 		//given
 		let token = '1234';
-		const mockUser = new User('email', 'hash', true, '', undefined, 'user', '', {token:token, expiration:'1971-02-01T07:00:00.000Z'}, '', undefined, '');
+		const mockUser = new User('email', 'hash', true, undefined, 'user', {
+			token: token,
+			expiration: '1971-02-01T07:00:00.000Z'
+		}, undefined, '');
 		(verificationService.userRepository.getUserByPasswordResetToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;
@@ -249,7 +252,7 @@ describe('Verification service', () => {
 		//given
 		verificationService.userRepository.updateUser = jest.fn();
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, '', undefined, '', '', {
+		const mockUser = new User('email', 'hash', false, undefined, '', {
 			token: token,
 			expiration: '1900-02-01T07:00:00.000Z'
 		});
@@ -329,7 +332,10 @@ describe('Verification service', () => {
 	it('should verify email update token', async () => {
 		//given
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, '', undefined, 'user', '', undefined, '',  { token: token, expiration: '1971-02-01T07:00:00.000Z' }, 'newEmail');
+		const mockUser = new User('email', 'hash', false, undefined, 'user', undefined, {
+			token: token,
+			expiration: '1971-02-01T07:00:00.000Z'
+		}, 'newEmail');
 		(verificationService.userRepository.getUserByEmailUpdateToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;
@@ -353,7 +359,10 @@ describe('Verification service', () => {
 		//given
 		verificationService.userRepository.updateUser = jest.fn()
 		let token = '1234';
-		const mockUser = new User('email', 'hash', false, '', undefined, undefined, '', undefined, '', { token: token, expiration: '1900-02-01T07:00:00.000Z' });
+		const mockUser = new User('email', 'hash', false, undefined, undefined, undefined, {
+			token: token,
+			expiration: '1900-02-01T07:00:00.000Z'
+		});
 		(verificationService.userRepository.getUserByEmailUpdateToken as jest.Mock).mockImplementation((sentId: string) => {
 			if (sentId === token) {
 				return mockUser;

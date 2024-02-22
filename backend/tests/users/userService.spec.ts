@@ -159,13 +159,13 @@ describe('User service', () => {
 						 expected
 					 }) => {
 			//given
-			const existingUser = new User('old email', 'old passwordHash', false, '', {
+			const existingUser = new User('old email', 'old passwordHash', false, {
 				token: 'old emailVerificationToken',
 				expiration: 'old emailVerificationExpiration'
-			}, 'old role', '' ,{
+			}, 'old role', {
 				token: 'old passwordResetToken',
 				expiration: 'old passwordResetExpiration'
-			}, 'old emailUpdateToken',{
+			}, {
 				token: 'old emailUpdateToken',
 				expiration: 'old emailUpdateExpiration'
 			}, 'old pendingEmail');

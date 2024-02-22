@@ -257,7 +257,7 @@ describe('User repository', () => {
 	});
 	it('createUser inserts into userDataSource', async () => {
 		//given
-		const user = new User('the email', 'the passwordHash', false, 'token');
+		const user = new User('the email', 'the passwordHash', false);
 		// when
 		await repository.createUser(user);
 		// then
@@ -313,13 +313,13 @@ describe('User repository', () => {
 	it('updateUser updates users in userDataSource', async () => {
 		//given
 		repository.userDataSource.query = jest.fn();
-		const mockUser = new User('email', 'passwordHash', false, 'token', {
+		const mockUser = new User('email', 'passwordHash', false, {
 			token: 'emailVerificationToken',
 			expiration: 'emailVerificationExpiration'
-		}, 'role', 'passwordResetToken', {
+		}, 'role', {
 			token: 'passwordResetToken',
 			expiration: 'passwordResetExpiration'
-		}, 'emailUpdateToken', { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' }, 'pendingEmail');
+		}, { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' }, 'pendingEmail');
 		// when
 		await repository.updateUser(mockUser);
 		// then
