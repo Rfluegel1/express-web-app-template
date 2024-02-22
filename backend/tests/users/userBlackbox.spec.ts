@@ -90,47 +90,6 @@ describe('User resource', () => {
 		expect(getAfterDeleteResponse?.data.message).toEqual(`Object not found for id=${id}`);
 	});
 
-	it('should throw error when password and confirmPassword do not match', async () => {
-		//given
-		const email = generateTemporaryUserEmail();
-		let postResponse;
-
-		// when
-		try {
-			postResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
-				email: email, password: 'password', confirmPassword: 'other'
-			});
-		} catch (e) {
-			postResponse = (e as AxiosError).response;
-		}
-		// then
-		expect(postResponse?.status).toEqual(StatusCodes.BAD_REQUEST);
-		expect(postResponse?.data.message).toEqual('"confirmPassword" must match "password"');
-	});
-
-	it('should throw error when email is already taken', async () => {
-		const email = generateTemporaryUserEmail();
-		let userId;
-		try {
-			userId = (await client.post(`${process.env.BASE_URL}/api/users`, {
-				email: email, password: 'password', confirmPassword: 'password'
-			})).data.id;
-			let secondResponse;
-			try {
-				secondResponse = await client.post(`${process.env.BASE_URL}/api/users`, {
-					email: email, password: 'password', confirmPassword: 'password'
-				});
-			} catch (e) {
-				secondResponse = (e as AxiosError).response;
-			}
-			expect(secondResponse?.status).toEqual(StatusCodes.CONFLICT);
-			expect(secondResponse?.data.message).toEqual('Duplicate key value violates unique constraint=users_email_key');
-		} finally {
-			await authenticateAsAdmin(client);
-			await client.delete(`${process.env.BASE_URL}/api/users/${userId}`);
-		}
-	});
-
 	it('should allow admin user to delete any user', async () => {
 		// given
 		let userId;

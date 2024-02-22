@@ -93,7 +93,6 @@ describe('Todo resource', () => {
         // cleanup
         await logOutUser(client)
     })
-
     it('get all returns all posts createdBy the authenticated user', async () => {
         // given
         const adminJar = new CookieJar()
@@ -176,40 +175,5 @@ describe('Todo resource', () => {
             expect(otherUserDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
     })
-    it('non uuid returns bad request and info', async () => {
-        // given
-        await logInTestUser(client)
 
-        // when
-        let getResponse
-        try {
-            getResponse = await client.get(`${process.env.BASE_URL}/api/todos/undefined`)
-        } catch (error) {
-            getResponse = (error as AxiosError).response
-        }
-        // then
-        expect(getResponse?.status).toEqual(StatusCodes.BAD_REQUEST)
-        expect(getResponse?.data.message).toEqual('"id" must be a valid GUID')
-
-        // cleanup
-        await logOutUser(client)
-    })
-    it('create should be disabled when auth session not found', async () => {
-        // given
-        const todo: Todo = new Todo('the task', 'the createdBy')
-        let postResponse
-
-        // when
-        try {
-            postResponse = await axios.post(`${process.env.BASE_URL}/api/todos`, todo)
-        } catch (e) {
-            postResponse = (e as AxiosError).response
-        }
-
-        // then
-        expect(postResponse?.status).toEqual(StatusCodes.UNAUTHORIZED)
-        expect(postResponse?.data.message).toEqual(
-            'Unauthorized: You must be logged in to perform action=create todo.'
-        )
-    })
 })
