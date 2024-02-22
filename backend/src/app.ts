@@ -1,14 +1,10 @@
-import express, {Express, Request, Response} from 'express'
+import express, {Express} from 'express'
 import healthCheckRoutes from './healthCheck/healthCheckRoutes'
 import heartbeatRoutes from './heartbeat/heartbeatRoutes'
-import {StatusCodes} from 'http-status-codes'
 import {NotFoundException} from './exceptions/NotFoundException'
-import {BadRequestException} from './exceptions/BadRequestException'
 import path from 'path'
-import {DatabaseException} from './exceptions/DatabaseException'
 import {getLogger, logger} from './Logger'
 import {v4} from 'uuid'
-import UserController from './users/userController'
 
 import cls from 'cls-hooked'
 import todoRoutes from './todos/todoRoutes'
@@ -28,7 +24,7 @@ const app: Express = express()
 
 import PgSession from 'connect-pg-simple';
 import verificationRoutes from './verification/verificationRoutes'
-import { DuplicateRowException } from './exceptions/DuplicateRowException';
+import { determineAndSendError } from './determineAndSendError';
 
 const pgSession = PgSession(session)
 
@@ -133,43 +129,6 @@ app.use((request, response, next) => {
     next(error)
 })
 
-// next is needed to be properly bound with node
-app.use((function (error: any, request: Request, response: Response, next: any) {
-    let errorWithStatus = {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-        status: StatusCodes.INTERNAL_SERVER_ERROR
-    }
-    if (error.message === 'Path not found') {
-        errorWithStatus.status = StatusCodes.NOT_FOUND
-        getLogger().error(errorWithStatus)
-        return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
-    }
-    if (error instanceof NotFoundException) {
-        errorWithStatus.status = StatusCodes.NOT_FOUND
-        getLogger().error(errorWithStatus)
-        return response.status(StatusCodes.NOT_FOUND).send({message: error.message})
-    }
-    if (error instanceof BadRequestException) {
-        errorWithStatus.status = StatusCodes.BAD_REQUEST
-        getLogger().error(errorWithStatus)
-        return response.status(StatusCodes.BAD_REQUEST).send({message: error.message})
-    }
-    if (error instanceof DatabaseException) {
-        getLogger().error(errorWithStatus)
-        return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: error.message})
-    }
-    if (error instanceof DuplicateRowException) {
-        getLogger().error(errorWithStatus)
-        return response.status(StatusCodes.CONFLICT).send({message: error.message})
-    }
-    if (error instanceof UnauthorizedException) {
-        getLogger().error(errorWithStatus)
-        return response.status(StatusCodes.UNAUTHORIZED).send({message: error.message})
-    }
-    getLogger().error(errorWithStatus)
-    return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({message: 'Generic Internal Server Error'})
-}).bind(UserController))
+app.use(determineAndSendError())
 
 export default app
