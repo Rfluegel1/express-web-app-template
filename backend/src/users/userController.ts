@@ -20,8 +20,14 @@ export default class UserController {
 		isVerified: Joi.boolean(),
 		role: Joi.string(),
 		pendingEmail: Joi.string().email(),
-		passwordResetToken: Joi.string().uuid(),
-		emailUpdateToken: Joi.string().uuid(),
+		passwordReset: Joi.object({
+			token: Joi.string().uuid(),
+			expiration: Joi.date().iso(),
+		}),
+		emailUpdate: Joi.object({
+			token: Joi.string().uuid(),
+			expiration: Joi.date().iso(),
+		}),
 		emailVerification: Joi.object({
 			token: Joi.string().uuid(),
 			expiration: Joi.date().iso(),
@@ -51,8 +57,8 @@ export default class UserController {
 		const emailVerification: { token: string, expiration:string } = request.body.emailVerification;
 		const isVerified: boolean = request.body.isVerified;
 		const role: string = request.body.role;
-		const passwordResetToken: string = request.body.passwordResetToken;
-		const emailUpdateToken: string = request.body.emailUpdateToken;
+		const passwordReset: { token: string, expiration:string } = request.body.passwordReset;
+		const emailUpdate: { token: string, expiration:string } = request.body.emailUpdate;
 		const pendingEmail: string = request.body.pendingEmail;
 		this.validateRequest(request, next);
 		try {
@@ -63,8 +69,8 @@ export default class UserController {
 				isVerified,
 				emailVerification,
 				role,
-				passwordResetToken,
-				emailUpdateToken,
+				passwordReset,
+				emailUpdate,
 				pendingEmail
 			);
 			getLogger().info('Sending update user request', { status: StatusCodes.OK });

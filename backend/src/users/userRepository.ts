@@ -71,7 +71,7 @@ export default class UserRepository {
 	async getUserByPasswordResetToken(token: string) {
 		const result = await this.executeWithCatch(async () => {
 			const queryResult = await this.userDataSource.query(
-				'SELECT * FROM users WHERE passwordResetToken=$1', [token]
+				"SELECT * FROM users WHERE passwordReset->>'token'=$1", [token]
 			);
 			if (queryResult.length === 0) {
 				return null;
@@ -88,7 +88,7 @@ export default class UserRepository {
 	async getUserByEmailUpdateToken(token: string) {
 		const result = await this.executeWithCatch(async () => {
 			const queryResult = await this.userDataSource.query(
-				'SELECT * FROM users WHERE emailUpdateToken=$1', [token]
+				"SELECT * FROM users WHERE emailUpdate->>'token'=$1", [token]
 			);
 			if (queryResult.length === 0) {
 				return null;
@@ -125,8 +125,8 @@ export default class UserRepository {
 	async updateUser(user: User): Promise<void> {
 		await this.executeWithCatch(async () => {
 			await this.userDataSource.query(
-				'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerification=$4, role=$5, passwordResetToken=$6, emailUpdateToken=$7, pendingEmail=$8 WHERE id=$9',
-				[user.email, user.passwordHash, user.isVerified, JSON.stringify(user.emailVerification), user.role, user.passwordResetToken, user.emailUpdateToken, user.pendingEmail, user.id]
+				'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerification=$4, role=$5, passwordReset=$6, emailUpdate=$7, pendingEmail=$8 WHERE id=$9',
+				[user.email, user.passwordHash, user.isVerified, JSON.stringify(user.emailVerification), user.role, JSON.stringify(user.passwordReset), JSON.stringify(user.emailUpdate), user.pendingEmail, user.id]
 			);
 		});
 	}

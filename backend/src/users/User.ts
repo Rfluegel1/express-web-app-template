@@ -11,7 +11,9 @@ export default class User {
 	emailVerification: { token: string; expiration: string };
 	role: string;
 	passwordResetToken: string;
+	passwordReset: { token: string; expiration: string };
 	emailUpdateToken: string;
+	emailUpdate: { token: string; expiration: string };
 	pendingEmail: string;
 
 	constructor(
@@ -22,8 +24,10 @@ export default class User {
 		emailVerification: { token: string; expiration: string } = { token: '', expiration: '' },
 		role: string = 'user',
 		passwordResetToken: string = '',
-		updateEmailToken: string = ''
-		, pendingEmail: string = '') {
+		passwordReset: { token: string; expiration: string } = { token: '', expiration: '' },
+		updateEmailToken: string = '',
+		emailUpdate: { token: string; expiration: string } = { token: '', expiration: '' },
+		pendingEmail: string = '') {
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.isVerified = isVerified;
@@ -31,7 +35,9 @@ export default class User {
 		this.emailVerification = emailVerification;
 		this.role = role;
 		this.passwordResetToken = passwordResetToken;
+		this.passwordReset = passwordReset;
 		this.emailUpdateToken = updateEmailToken;
+		this.emailUpdate = emailUpdate;
 		this.pendingEmail = pendingEmail;
 	}
 
@@ -46,9 +52,15 @@ export default class User {
 				expiration: queryResult?.emailverification?.expiration
 			},
 			role: queryResult?.role,
-			passwordResetToken: queryResult?.passwordresettoken,
-			emailUpdateToken: queryResult?.emailupdatetoken,
-			pendingEmail: queryResult?.pendingemail,
+			emailUpdate: {
+				token: queryResult?.emailupdate?.token,
+				expiration: queryResult?.emailupdate?.expiration
+			},
+			passwordReset: {
+				token: queryResult?.passwordreset?.token,
+				expiration: queryResult?.passwordreset?.expiration
+			},
+			pendingEmail: queryResult?.pendingemail
 		};
 		return plainToClass(User, intermediate);
 	}
@@ -63,8 +75,8 @@ export default class User {
 		isVerified: boolean | undefined,
 		emailVerification: { token: string; expiration: string } | undefined,
 		role: string | undefined,
-		passwordResetToken: string | undefined,
-		emailUpdateToken: string | undefined,
+		passwordReset: { token: string; expiration: string } | undefined,
+		emailUpdate: { token: string; expiration: string } | undefined,
 		pendingEmail: string | undefined
 	) {
 		if (email !== undefined) {
@@ -82,14 +94,20 @@ export default class User {
 		if (emailVerification?.expiration !== undefined) {
 			this.emailVerification.expiration = emailVerification.expiration;
 		}
+		if (emailUpdate?.token !== undefined) {
+			this.emailUpdate.token = emailUpdate.token;
+		}
+		if (emailUpdate?.expiration !== undefined) {
+			this.emailUpdate.expiration = emailUpdate.expiration;
+		}
+		if (passwordReset?.token !== undefined) {
+			this.passwordReset.token = passwordReset.token;
+		}
+		if (passwordReset?.expiration !== undefined) {
+			this.passwordReset.expiration = passwordReset.expiration;
+		}
 		if (role !== undefined) {
 			this.role = role;
-		}
-		if (passwordResetToken !== undefined) {
-			this.passwordResetToken = passwordResetToken;
-		}
-		if (emailUpdateToken !== undefined) {
-			this.emailUpdateToken = emailUpdateToken;
 		}
 		if (pendingEmail !== undefined) {
 			this.pendingEmail = pendingEmail;

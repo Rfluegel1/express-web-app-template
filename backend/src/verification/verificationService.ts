@@ -59,7 +59,8 @@ export default class VerificationService {
 			}
 			throw e
 		}
-		user.passwordResetToken = id;
+		user.passwordReset.token = id;
+		user.passwordReset.expiration = new Date(Date.now() + 1000 * 60 * 60).toISOString();
 		await this.userRepository.updateUser(user);
 
 		const verificationUrl = `${process.env.BASE_URL}/reset-password?token=${id}`;
@@ -82,19 +83,24 @@ export default class VerificationService {
 
 	async resetPassword(token: string, password: string) {
 		const user = await this.userRepository.getUserByPasswordResetToken(token);
+		if (user.passwordReset.expiration < new Date().toISOString()) {
+			throw new Error('Token has expired');
+		}
 		let passwordHash;
 		if (password) {
 			passwordHash = await bcrypt.hash(password, 10);
 		}
 		user.passwordHash = passwordHash;
-		user.passwordResetToken = '';
+		user.passwordReset.token = '';
+		user.passwordReset.expiration = '';
 		await this.userRepository.updateUser(user);
 	}
 
 	async requestEmailChange(userId: string, newEmail: string) {
 		const user = await this.userRepository.getUser(userId);
 		const token = v4();
-		user.emailUpdateToken = token;
+		user.emailUpdate.token = token;
+		user.emailUpdate.expiration = new Date(Date.now() + 1000 * 60 * 60).toISOString();
 		user.pendingEmail = newEmail;
 		await this.userRepository.updateUser(user);
 
@@ -119,10 +125,14 @@ export default class VerificationService {
 
 	async updateEmail(token: string) {
 		const user = await this.userRepository.getUserByEmailUpdateToken(token);
+		if (user.emailUpdate.expiration < new Date().toISOString()) {
+			throw new Error('Token has expired');
+		}
 		user.email = user.pendingEmail;
 		user.isVerified = true;
 		user.pendingEmail = '';
-		user.emailUpdateToken = '';
+		user.emailUpdate.token = '';
+		user.emailUpdate.expiration = '';
 		await this.userRepository.updateUser(user);
 	}
 }

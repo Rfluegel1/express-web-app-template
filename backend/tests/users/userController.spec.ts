@@ -60,10 +60,10 @@ describe('User controller', () => {
 					email: 'email',
 					password: undefined,
 					isVerified: true,
-					emailVerification: {token: 'emailVerificationToken', expiration: 'emailVerificationExpiration'},
+					emailVerification: { token: 'emailVerificationToken', expiration: 'emailVerificationExpiration' },
 					role: 'role',
-					passwordResetToken: 'passwordResetToken',
-					emailUpdateToken: 'emailUpdateToken',
+					passwordReset: { token: 'passwordResetToken', expiration: 'passwordResetExpiration' },
+					emailUpdate: { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' },
 					pendingEmail: 'pendingEmail'
 				}
 			};
@@ -75,7 +75,7 @@ describe('User controller', () => {
 			};
 
 			(userController.userService.updateUser as jest.Mock).mockImplementation(
-				(sentId, email, passwordHash, isVerified, emailVerification, role, passwordResetToken, emailUpdateToken, pendingEmail) => {
+				(sentId, email, passwordHash, isVerified, emailVerification, role, passwordReset, emailUpdate, pendingEmail) => {
 					if (
 						sentId === id
 						&& email === 'email'
@@ -83,8 +83,10 @@ describe('User controller', () => {
 						&& emailVerification.token === 'emailVerificationToken'
 						&& emailVerification.expiration === 'emailVerificationExpiration'
 						&& isVerified && role === 'role'
-						&& passwordResetToken === 'passwordResetToken'
-						&& emailUpdateToken === 'emailUpdateToken'
+						&& passwordReset.token === 'passwordResetToken'
+						&& passwordReset.expiration === 'passwordResetExpiration'
+						&& emailUpdate.token === 'emailUpdateToken'
+						&& emailUpdate.expiration === 'emailUpdateExpiration'
 						&& pendingEmail === 'pendingEmail'
 					) {
 						return mockUser;
@@ -683,22 +685,42 @@ describe('User controller', () => {
 			},
 			{
 				description: 'should throw when passwordResetToken is not uuid',
-				input: { body: { passwordResetToken: 'notUuid' } },
+				input: { body: { passwordReset: { token: 'notUuid' } } },
 				expectThrow: true
 			},
 			{
 				description: 'should not throw when passwordResetToken is uuid',
-				input: { body: { passwordResetToken: uuidv4() } },
+				input: { body: { passwordReset: { token: uuidv4() } } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when passwordResetToken is not date',
+				input: { body: { passwordReset: { expiration: 'notDate' } } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when passwordResetToken is date',
+				input: { body: { passwordReset: { expiration: new Date().toISOString() } } },
 				expectThrow: false
 			},
 			{
 				description: 'should throw when emailUpdateToken is not uuid',
-				input: { body: { emailUpdateToken: 'notUuid' } },
+				input: { body: { emailUpdate: { token: 'notUuid' } } },
 				expectThrow: true
 			},
 			{
 				description: 'should not throw when emailUpdateToken is uuid',
-				input: { body: { emailUpdateToken: uuidv4() } },
+				input: { body: { emailUpdate: { token: uuidv4() } } },
+				expectThrow: false
+			},
+			{
+				description: 'should throw when emailUpdateExpiration is not date',
+				input: { body: { emailUpdate: { expiration: 'notDate' } } },
+				expectThrow: true
+			},
+			{
+				description: 'should not throw when emailUpdateToken is uuid',
+				input: { body: { emailUpdate: { expiration: new Date().toISOString() } } },
 				expectThrow: false
 			},
 			{

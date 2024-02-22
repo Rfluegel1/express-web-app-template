@@ -6,9 +6,8 @@ export class AddEmailAndPasswordVerifications1708530962336 implements MigrationI
         await queryRunner.query(
           'ALTER TABLE users ' +
           'ADD COLUMN emailVerification JSON'
-          // +
-          // ', ADD COLUMN passwordReset JSON, ' +
-          // 'ADD COLUMN emailUpdate JSON'
+          + ', ADD COLUMN passwordReset JSON, ' +
+          'ADD COLUMN emailUpdate JSON'
         )
     }
 
@@ -16,9 +15,8 @@ export class AddEmailAndPasswordVerifications1708530962336 implements MigrationI
         await queryRunner.query(
           'ALTER TABLE users ' +
           'DROP COLUMN emailVerification'
-          // +
-          // ', DROP COLUMN passwordReset, ' +
-          // 'DROP COLUMN emailUpdate'
+          + ', DROP COLUMN passwordReset, ' +
+          'DROP COLUMN emailUpdate'
         )
     }
 

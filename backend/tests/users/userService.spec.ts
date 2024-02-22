@@ -92,8 +92,8 @@ describe('User service', () => {
 			isVerified: true,
 			emailVerification: { token: 'emailVerificationToken', expiration: 'emailVerificationExpiration' },
 			role: 'role',
-			passwordResetToken: 'passwordResetToken',
-			emailUpdateToken: 'emailUpdateToken',
+			passwordReset: {token: 'passwordResetToken', expiration: 'passwordResetExpiration' },
+			emailUpdate: {token: 'emailUpdateToken', expiration: 'emailUpdateExpiration'},
 			pendingEmail: 'pendingEmail'
 		};
 		(service.userRepository.getUser as jest.Mock).mockImplementation(jest.fn(() => {
@@ -105,7 +105,7 @@ describe('User service', () => {
 		let result: User = await service.updateUser(id, 'email', 'password', true, {
 			token: 'emailVerificationToken',
 			expiration: 'emailVerificationExpiration'
-		}, 'role', 'passwordResetToken', 'emailUpdateToken', 'pendingEmail');
+		}, 'role', {token: 'passwordResetToken', expiration: 'passwordResetExpiration' }, {token: 'emailUpdateToken', expiration: 'emailUpdateExpiration'}, 'pendingEmail');
 		// then
 		expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expectedUser));
 		expect(result.email).toEqual('email');
@@ -115,30 +115,32 @@ describe('User service', () => {
 		expect(result.emailVerification.token).toEqual('emailVerificationToken');
 		expect(result.emailVerification.expiration).toEqual('emailVerificationExpiration');
 		expect(result.role).toEqual('role');
-		expect(result.passwordResetToken).toEqual('passwordResetToken');
-		expect(result.emailUpdateToken).toEqual('emailUpdateToken');
+		expect(result.emailUpdate.token).toEqual('emailUpdateToken');
+		expect(result.emailUpdate.expiration).toEqual('emailUpdateExpiration');
+		expect(result.passwordReset.token).toEqual('passwordResetToken');
+		expect(result.passwordReset.expiration).toEqual('passwordResetExpiration');
 		expect(result.pendingEmail).toEqual('pendingEmail');
 	});
 	it.each`
-    email          | password      | isVerified    | emailVerificationToken         | emailVerificationExpiration          | role          | passwordResetToken          | emailUpdateToken          | pendingEmail          | expected
-    ${undefined}   | ${undefined}  | ${undefined}  | ${undefined}                   | ${undefined}                         | ${undefined}  | ${undefined}                | ${undefined}              | ${undefined}          | ${{
+    email          | password      | isVerified    | emailVerificationToken         | emailVerificationExpiration          | role          | passwordResetToken     | passwordResetExpiration     | emailUpdateToken     | emailUpdateExpiration     | pendingEmail          | expected
+    ${undefined}   | ${undefined}  | ${undefined}  | ${undefined}                   | ${undefined}                         | ${undefined}  | ${undefined}           | ${undefined}                    | ${undefined}         | ${undefined}                    | ${undefined}          | ${{
 		email: 'old email',
 		passwordHash: 'old passwordHash',
 		isVerified: false,
 		emailVerification: { token: 'old emailVerificationToken', expiration: 'old emailVerificationExpiration' },
 		role: 'old role',
-		passwordResetToken: 'old passwordResetToken',
-		emailUpdateToken: 'old emailUpdateToken',
+		emailUpdate: { token: 'old emailUpdateToken', expiration: 'old emailUpdateExpiration' },
+		passwordReset: { token: 'old passwordResetToken', expiration: 'old passwordResetExpiration' },
 		pendingEmail: 'old pendingEmail'
 	}}
-    ${'new email'} | ${'password'} | ${true}       | ${'new emailVerificationToken'}| ${'new emailVerificationExpiration'} | ${'new role'} | ${'new passwordResetToken'} | ${'new emailUpdateToken'} | ${'new pendingEmail'} | ${{
+    ${'new email'} | ${'password'} | ${true}       | ${'new emailVerificationToken'}| ${'new emailVerificationExpiration'} | ${'new role'} | ${'new passwordResetToken'} | ${'new passwordResetExpiration'}|  ${'new emailUpdateToken'} | ${'new emailUpdateExpiration'}| ${'new pendingEmail'} | ${{
 		email: 'new email',
 		passwordHash: 'passwordHash',
 		isVerified: true,
 		emailVerification: { token: 'new emailVerificationToken', expiration: 'new emailVerificationExpiration' },
 		role: 'new role',
-		passwordResetToken: 'new passwordResetToken',
-		emailUpdateToken: 'new emailUpdateToken',
+		emailUpdate: { token: 'new emailUpdateToken', expiration: 'new emailUpdateExpiration' },
+		passwordReset: { token: 'new passwordResetToken', expiration: 'new passwordResetExpiration' },
 		pendingEmail: 'new pendingEmail'
 	}}
     `('updateUser only sets defined fields on updated User',
@@ -150,7 +152,9 @@ describe('User service', () => {
 						 emailVerificationExpiration,
 						 role,
 						 passwordResetToken,
+						 passwordResetExpiration,
 						 emailUpdateToken,
+						 emailUpdateExpiration,
 						 pendingEmail,
 						 expected
 					 }) => {
@@ -158,7 +162,13 @@ describe('User service', () => {
 			const existingUser = new User('old email', 'old passwordHash', false, '', {
 				token: 'old emailVerificationToken',
 				expiration: 'old emailVerificationExpiration'
-			}, 'old role', 'old passwordResetToken', 'old emailUpdateToken', 'old pendingEmail');
+			}, 'old role', '' ,{
+				token: 'old passwordResetToken',
+				expiration: 'old passwordResetExpiration'
+			}, 'old emailUpdateToken',{
+				token: 'old emailUpdateToken',
+				expiration: 'old emailUpdateExpiration'
+			}, 'old pendingEmail');
 			(service.userRepository.getUser as jest.Mock).mockImplementation((sentId: string) => {
 				if (sentId === existingUser.id) {
 					return existingUser;
@@ -168,7 +178,13 @@ describe('User service', () => {
 			let result: User = await service.updateUser(existingUser.id, email, password, isVerified, {
 				token: emailVerificationToken,
 				expiration: emailVerificationExpiration
-			}, role, passwordResetToken, emailUpdateToken, pendingEmail);
+			}, role,  {
+				token: passwordResetToken,
+				expiration: passwordResetExpiration
+			}, {
+				token: emailUpdateToken,
+				expiration: emailUpdateExpiration
+			}, pendingEmail);
 			// then
 			expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expected));
 			expect(result.email).toEqual(expected.email);
@@ -178,8 +194,10 @@ describe('User service', () => {
 			expect(result.emailVerification.token).toEqual(expected.emailVerification.token);
 			expect(result.emailVerification.expiration).toEqual(expected.emailVerification.expiration);
 			expect(result.role).toEqual(expected.role);
-			expect(result.passwordResetToken).toEqual(expected.passwordResetToken);
-			expect(result.emailUpdateToken).toEqual(expected.emailUpdateToken);
+			expect(result.passwordReset.token).toEqual(expected.passwordReset.token);
+			expect(result.passwordReset.expiration).toEqual(expected.passwordReset.expiration);
+			expect(result.emailUpdate.token).toEqual(expected.emailUpdate.token);
+			expect(result.emailUpdate.expiration).toEqual(expected.emailUpdate.expiration);
 			expect(result.pendingEmail).toEqual(expected.pendingEmail);
 		});
 
@@ -192,8 +210,8 @@ describe('User service', () => {
 			isVerified: true,
 			emailVerification: { token: '', expiration: '' },
 			role: 'role',
-			passwordResetToken: 'passwordResetToken',
-			emailUpdateToken: 'emailUpdateToken',
+			passwordReset: { token: '', expiration: '' },
+			emailUpdate: { token: '', expiration: '' },
 			pendingEmail: 'pendingEmail'
 		};
 		(service.userRepository.getUser as jest.Mock).mockImplementation(jest.fn(() => {
@@ -202,7 +220,7 @@ describe('User service', () => {
 			return user;
 		}));
 		// when
-		await service.updateUser(id, 'email', 'password', true, undefined, 'role', 'passwordResetToken', 'emailUpdateToken', 'pendingEmail');
+		await service.updateUser(id, 'email', 'password', true, undefined, 'role', undefined,undefined, 'pendingEmail');
 		// then
 		expect(service.userRepository.updateUser).toHaveBeenCalledWith(expect.objectContaining(expectedUser));
 	});

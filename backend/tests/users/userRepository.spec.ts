@@ -63,7 +63,9 @@ describe('User repository', () => {
 					email: 'the email',
 					passwordhash: 'the passwordHash',
 					isverified: false,
-					emailverification: {token: 'emailVerificationToken', expiration: 'emailVerificationExpiration'}
+					emailverification: { token: 'emailVerificationToken', expiration: 'emailVerificationExpiration' },
+					emailupdate: { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' },
+					passwordreset: { token: 'passwordResetToken', expiration: 'passwordResetExpiration' }
 				}];
 			}
 		}));
@@ -77,6 +79,10 @@ describe('User repository', () => {
 		expect(actual.isVerified).toEqual(false);
 		expect(actual.emailVerification.token).toEqual('emailVerificationToken');
 		expect(actual.emailVerification.expiration).toEqual('emailVerificationExpiration');
+		expect(actual.emailUpdate.token).toEqual('emailUpdateToken');
+		expect(actual.emailUpdate.expiration).toEqual('emailUpdateExpiration');
+		expect(actual.passwordReset.token).toEqual('passwordResetToken');
+		expect(actual.passwordReset.expiration).toEqual('passwordResetExpiration');
 	});
 	it('getUser logs error and throws database exception', async () => {
 		// given
@@ -136,13 +142,13 @@ describe('User repository', () => {
 		//given
 		const id = uuidv4();
 		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
-			if (query === "SELECT * FROM users WHERE emailVerification->>'token'=$1" && parameters[0] === 'token') {
+			if (query === 'SELECT * FROM users WHERE emailVerification->>\'token\'=$1' && parameters[0] === 'token') {
 				return [{
 					id: id,
 					email: 'the email',
 					passwordhash: 'the passwordHash',
 					isverified: false,
-					emailverification: {token: 'token'}
+					emailverification: { token: 'token' }
 				}];
 			}
 		}));
@@ -175,14 +181,12 @@ describe('User repository', () => {
 		//given
 		const id = uuidv4();
 		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
-			if (query === 'SELECT * FROM users WHERE passwordResetToken=$1' && parameters[0] === 'token') {
+			if (query === 'SELECT * FROM users WHERE passwordReset->>\'token\'=$1' && parameters[0] === 'token') {
 				return [{
 					id: id,
 					email: 'the email',
 					passwordhash: 'the passwordHash',
 					isverified: false,
-					passwordresettoken: 'token',
-					emailupdatetoken: 'emailUpdateToken',
 					pendingemail: 'pendingEmail'
 				}];
 			}
@@ -195,8 +199,6 @@ describe('User repository', () => {
 		expect(actual.email).toEqual('the email');
 		expect(actual.passwordHash).toEqual('the passwordHash');
 		expect(actual.isVerified).toEqual(false);
-		expect(actual.passwordResetToken).toEqual('token');
-		expect(actual.emailUpdateToken).toEqual('emailUpdateToken');
 		expect(actual.pendingEmail).toEqual('pendingEmail');
 	});
 	it('getUserByPasswordResetToken logs error and throws database exception', async () => {
@@ -218,15 +220,13 @@ describe('User repository', () => {
 		//given
 		const id = uuidv4();
 		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
-			if (query === 'SELECT * FROM users WHERE emailUpdateToken=$1' && parameters[0] === 'token') {
+			if (query === 'SELECT * FROM users WHERE emailUpdate->>\'token\'=$1' && parameters[0] === 'token') {
 				return [{
 					id: id,
 					email: 'the email',
 					passwordhash: 'the passwordHash',
 					isverified: false,
-					passwordresettoken: 'token',
-					emailupdatetoken: 'emailUpdateToken',
-					pendingemail: 'pendingEmail',
+					pendingemail: 'pendingEmail'
 				}];
 			}
 		}));
@@ -238,8 +238,6 @@ describe('User repository', () => {
 		expect(actual.email).toEqual('the email');
 		expect(actual.passwordHash).toEqual('the passwordHash');
 		expect(actual.isVerified).toEqual(false);
-		expect(actual.passwordResetToken).toEqual('token');
-		expect(actual.emailUpdateToken).toEqual('emailUpdateToken');
 		expect(actual.pendingEmail).toEqual('pendingEmail');
 	});
 	it('getUserByEmailUpdateToken logs error and throws database exception', async () => {
@@ -315,13 +313,28 @@ describe('User repository', () => {
 	it('updateUser updates users in userDataSource', async () => {
 		//given
 		repository.userDataSource.query = jest.fn();
-		const mockUser = new User('email', 'passwordHash', false, 'token', { token: 'token', expiration: 'expiration' }, 'role', 'passwordResetToken', 'emailUpdateToken', 'pendingEmail');
+		const mockUser = new User('email', 'passwordHash', false, 'token', {
+			token: 'emailVerificationToken',
+			expiration: 'emailVerificationExpiration'
+		}, 'role', 'passwordResetToken', {
+			token: 'passwordResetToken',
+			expiration: 'passwordResetExpiration'
+		}, 'emailUpdateToken', { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' }, 'pendingEmail');
 		// when
 		await repository.updateUser(mockUser);
 		// then
 		expect(repository.userDataSource.query).toHaveBeenCalledWith(
-			'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerification=$4, role=$5, passwordResetToken=$6, emailUpdateToken=$7, pendingEmail=$8 WHERE id=$9',
-			['email', 'passwordHash', false, JSON.stringify({ token: 'token', expiration: 'expiration' }), 'role', 'passwordResetToken', 'emailUpdateToken', 'pendingEmail', mockUser.id]
+			'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerification=$4, role=$5, passwordReset=$6, emailUpdate=$7, pendingEmail=$8 WHERE id=$9',
+			['email', 'passwordHash', false, JSON.stringify({
+				token: 'emailVerificationToken',
+				expiration: 'emailVerificationExpiration'
+			}), 'role', JSON.stringify({
+				token: 'passwordResetToken',
+				expiration: 'passwordResetExpiration'
+			}), JSON.stringify({
+				token: 'emailUpdateToken',
+				expiration: 'emailUpdateExpiration'
+			}), 'pendingEmail', mockUser.id]
 		);
 	});
 	it('updateUser logs error and throws database exception', async () => {

@@ -162,7 +162,9 @@ describe('User resource', () => {
 		const emailVerificationToken = v4();
 		const emailVerificationExpiration = '2022-01-01T00:00:00.000Z';
 		const passwordResetToken = v4();
+		const passwordResetExpiration = '2024-01-01T00:00:00.000Z';
 		const emailUpdateToken = v4();
+		const emailUpdateExpiration = '2023-01-01T00:00:00.000Z';
 		const pendingEmail = generateTemporaryUserEmail();
 
 		await authenticateAsAdmin(client);
@@ -189,9 +191,11 @@ describe('User resource', () => {
 			expect(getData.isVerified).toEqual(false);
 			expect(getData.emailVerification.token).not.toEqual(undefined);
 			expect(getData.emailVerification.expiration).not.toEqual(undefined);
-			expect(getData.passwordResetToken).toBeNull();
+			expect(getData.passwordReset.token).toEqual(undefined);
+			expect(getData.passwordReset.expiration).toEqual(undefined);
 			expect(getData.role).toEqual('user');
-			expect(getData.emailUpdateToken).toBeNull();
+			expect(getData.emailUpdate.token).toEqual(undefined);
+			expect(getData.emailUpdate.expiration).toEqual(undefined);
 			expect(getData.pendingEmail).toBeNull();
 
 			// when
@@ -201,9 +205,9 @@ describe('User resource', () => {
 				confirmPassword: updatedPassword,
 				isVerified: true,
 				emailVerification: { token: emailVerificationToken, expiration: emailVerificationExpiration },
-				passwordResetToken: passwordResetToken,
+				passwordReset: { token: passwordResetToken, expiration: passwordResetExpiration },
 				role: 'anything',
-				emailUpdateToken: emailUpdateToken,
+				emailUpdate: { token: emailUpdateToken, expiration: emailUpdateExpiration },
 				pendingEmail: pendingEmail
 			});
 
@@ -217,9 +221,11 @@ describe('User resource', () => {
 			expect(updateData.isVerified).toEqual(true);
 			expect(updateData.emailVerification.token).toEqual(emailVerificationToken);
 			expect(updateData.emailVerification.expiration).toEqual(emailVerificationExpiration);
-			expect(updateData.passwordResetToken).toEqual(passwordResetToken);
+			expect(updateData.passwordReset.token).toEqual(passwordResetToken);
+			expect(updateData.passwordReset.expiration).toEqual(passwordResetExpiration);
 			expect(updateData.role).toEqual('anything');
-			expect(updateData.emailUpdateToken).toEqual(emailUpdateToken);
+			expect(updateData.emailUpdate.token).toEqual(emailUpdateToken);
+			expect(updateData.emailUpdate.expiration).toEqual(emailUpdateExpiration);
 			expect(updateData.pendingEmail).toEqual(pendingEmail);
 
 			// when
@@ -235,9 +241,11 @@ describe('User resource', () => {
 			expect(getAfterUpdateData.isVerified).toEqual(true);
 			expect(getAfterUpdateData.emailVerification.token).toEqual(emailVerificationToken);
 			expect(getAfterUpdateData.emailVerification.expiration).toEqual(emailVerificationExpiration);
-			expect(getAfterUpdateData.passwordResetToken).toEqual(passwordResetToken);
+			expect(getAfterUpdateData.passwordReset.token).toEqual(passwordResetToken);
+			expect(getAfterUpdateData.passwordReset.expiration).toEqual(passwordResetExpiration);
 			expect(getAfterUpdateData.role).toEqual('anything');
-			expect(getAfterUpdateData.emailUpdateToken).toEqual(emailUpdateToken);
+			expect(getAfterUpdateData.emailUpdate.token).toEqual(emailUpdateToken);
+			expect(getAfterUpdateData.emailUpdate.expiration).toEqual(emailUpdateExpiration);
 			expect(getAfterUpdateData.pendingEmail).toEqual(pendingEmail);
 		} finally {
 			const deleteResponse = await client.delete(`${process.env.BASE_URL}/api/users/${id}`);

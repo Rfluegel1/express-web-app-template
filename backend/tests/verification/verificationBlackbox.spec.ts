@@ -34,7 +34,7 @@ describe('Verification resource', () => {
 
 			// then
 			expect(getBeforeResponse.status).toEqual(StatusCodes.OK);
-			expect(getBeforeResponse.data.passwordResetToken).toBeNull();
+			expect(getBeforeResponse.data.passwordReset.token).toEqual(undefined);
 			expect(getBeforeResponse.data.passwordHash).not.toBeNull();
 			passwordHash = getBeforeResponse.data.passwordHash;
 
@@ -51,8 +51,8 @@ describe('Verification resource', () => {
 
 			// then
 			expect(getResponse.status).toEqual(StatusCodes.OK);
-			expect(getResponse.data.passwordResetToken).toMatch(UUID_REG_EXP);
-			passwordResetToken = getResponse.data.passwordResetToken;
+			expect(getResponse.data.passwordReset.token).toMatch(UUID_REG_EXP);
+			passwordResetToken = getResponse.data.passwordReset.token;
 
 			// when
 			const resetResponse = await client.put(`${process.env.BASE_URL}/api/reset-password?token=${passwordResetToken}`, {
@@ -70,7 +70,7 @@ describe('Verification resource', () => {
 			expect(getAfterVerification.status).toEqual(StatusCodes.OK);
 			expect(getAfterVerification.data.passwordHash).not.toBeNull();
 			expect(getAfterVerification.data.passwordHash).not.toEqual(passwordHash);
-			expect(getAfterVerification.data.passwordResetToken).toEqual('');
+			expect(getAfterVerification.data.passwordReset.token).toEqual('');
 		} finally {
 			// cleanup
 			await logOutUser(client);
@@ -150,7 +150,7 @@ describe('Verification resource', () => {
 
 			// then
 			expect(getBeforeVerification.status).toEqual(StatusCodes.OK);
-			expect(getBeforeVerification.data.emailUpdateToken).toEqual(undefined);
+			expect(getBeforeVerification.data.emailUpdate).toEqual(undefined);
 
 			// when
 			const newEmail = generateTemporaryUserEmail();
@@ -166,11 +166,11 @@ describe('Verification resource', () => {
 
 			// then
 			expect(getResponse.status).toEqual(StatusCodes.OK);
-			expect(getResponse.data.emailUpdateToken).toMatch(UUID_REG_EXP);
+			expect(getResponse.data.emailUpdate.token).toMatch(UUID_REG_EXP);
 			expect(getResponse.data.pendingEmail).toEqual(newEmail);
 			expect(getResponse.data.email).toEqual(originalEmail);
 			expect(getResponse.data.isVerified).toEqual(false);
-			emailUpdateToken = getResponse.data.emailUpdateToken;
+			emailUpdateToken = getResponse.data.emailUpdate.token;
 
 			// when
 			const verifyResponse = await client.get(`${process.env.BASE_URL}/api/update-email?token=${emailUpdateToken}`);
@@ -184,7 +184,7 @@ describe('Verification resource', () => {
 			// then
 			expect(getAfterVerification.status).toEqual(StatusCodes.OK);
 			expect(getAfterVerification.data.isVerified).toEqual(true);
-			expect(getAfterVerification.data.emailUpdateToken).toEqual('');
+			expect(getAfterVerification.data.emailUpdate.token).toEqual('');
 			expect(getAfterVerification.data.pendingEmail).toEqual('');
 			expect(getAfterVerification.data.email).toEqual(newEmail);
 		} finally {

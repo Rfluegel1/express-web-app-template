@@ -6,9 +6,8 @@ export class DropEmailAndPasswordTokens1708530946294 implements MigrationInterfa
         await queryRunner.query(
           'ALTER TABLE users ' +
           'DROP COLUMN emailVerificationToken'
-          // +
-          // ', DROP COLUMN passwordResetToken , ' +
-          // 'DROP COLUMN emailUpdateToken'
+          + ', DROP COLUMN passwordResetToken , ' +
+          'DROP COLUMN emailUpdateToken'
         )
     }
 
@@ -16,9 +15,8 @@ export class DropEmailAndPasswordTokens1708530946294 implements MigrationInterfa
         await queryRunner.query(
           'ALTER TABLE users ' +
           'ADD COLUMN emailVerificationToken varchar'
-          // +
-          // ', ADD COLUMN passwordResetToken varchar, ' +
-          // 'ADD COLUMN emailUpdateToken varchar'
+          + ', ADD COLUMN passwordResetToken varchar, ' +
+          'ADD COLUMN emailUpdateToken varchar'
         )
     }
 
