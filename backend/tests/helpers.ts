@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance } from 'axios';
 import {StatusCodes} from 'http-status-codes'
 import { CookieJar } from 'tough-cookie';
 import { wrapper } from 'axios-cookiejar-support';
+import { v4 } from 'uuid';
 
 async function ensureTestUser(client: AxiosInstance, email: string, password: string) {
     try {
@@ -57,5 +58,5 @@ export async function authenticateAsAdmin(client: AxiosInstance) {
 }
 
 export function generateTemporaryUserEmail() {
-    return `test${Math.floor(Math.random() * 10000)}@expresswebapptemplate.com`
+    return `test${v4()}@expresswebapptemplate.com`
 }

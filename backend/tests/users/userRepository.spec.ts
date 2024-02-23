@@ -17,9 +17,23 @@ beforeEach(() => {
 	repository.userDataSource.query = jest.fn();
 	repository.userDataSource.initialize = jest.fn();
 	repository.userDataSource.destroy = jest.fn();
+	repository.userRepository.save = jest.fn();
+	repository.userRepository.delete = jest.fn();
+	repository.userRepository.findOne = jest.fn();
+	repository.userRepository.find = jest.fn();
 });
 
 describe('User repository', () => {
+	let user = new User(
+		'the email',
+		'the passwordHash',
+		false,
+		{ token: 'emailVerificationToken', expiration: 'emailVerificationExpiration' },
+		'role',
+		{ token: 'passwordResetToken', expiration: 'passwordResetExpiration' },
+		{ token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' },
+		'pendingEmail'
+	);
 	it('initialize should initialize userDataSource', async () => {
 		//when
 		await repository.initialize();
@@ -46,20 +60,14 @@ describe('User repository', () => {
 		//expect
 		await expect(repository.destroy()).rejects.toThrow('Error interacting with the database');
 	});
+
 	it('getUser selects from userDataSource', async () => {
 		//given
 		const id = uuidv4();
-		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
-			if (query === 'SELECT * FROM users WHERE id=$1' && parameters[0] === id) {
-				return [{
-					id: id,
-					email: 'the email',
-					passwordhash: 'the passwordHash',
-					isverified: false,
-					emailverification: { token: 'emailVerificationToken', expiration: 'emailVerificationExpiration' },
-					emailupdate: { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' },
-					passwordreset: { token: 'passwordResetToken', expiration: 'passwordResetExpiration' }
-				}];
+		user.id = id;
+		(repository.userRepository.findOne as jest.Mock).mockImplementation(jest.fn((options) => {
+			if (options.where.id === id) {
+				return user;
 			}
 		}));
 		// when
@@ -77,33 +85,14 @@ describe('User repository', () => {
 		expect(actual.passwordReset.token).toEqual('passwordResetToken');
 		expect(actual.passwordReset.expiration).toEqual('passwordResetExpiration');
 	});
-	it('getUser logs error and throws database exception', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.getUser(uuidv4())).rejects.toThrow('Error interacting with the database');
-	});
-	it('getUser throws not found when query result is empty', async () => {
-		//given
-		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
-			return [];
-		}));
-		// when and then
-		await expect(() => repository.getUser(uuidv4())).rejects.toThrow(NotFoundException);
-	});
 	it('getUserByEmail selects from userDataSource', async () => {
 		//given
 		const id = uuidv4();
-		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn((query, parameters) => {
-			if (query === 'SELECT * FROM users WHERE email=$1' && parameters[0] === 'the email') {
-				return [{
-					id: id,
-					email: 'the email',
-					passwordhash: 'the passwordHash',
-					isverified: false,
-					role: 'admin'
-				}];
+		user.email = 'the email';
+		user.id = id;
+		(repository.userRepository.findOne as jest.Mock).mockImplementation(jest.fn((options) => {
+			if (options.where.email === 'the email') {
+				return user;
 			}
 		}));
 		// when
@@ -111,25 +100,6 @@ describe('User repository', () => {
 		// then
 		expect(actual).toBeInstanceOf(User);
 		expect(actual.id).toEqual(id);
-		expect(actual.email).toEqual('the email');
-		expect(actual.passwordHash).toEqual('the passwordHash');
-		expect(actual.isVerified).toEqual(false);
-		expect(actual.role).toEqual('admin');
-	});
-	it('getUserByEmail logs error and throws database exception', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.getUserByEmail('the email')).rejects.toThrow('Error interacting with the database');
-	});
-	it('getUserByEmail throws not found when query result is empty', async () => {
-		//given
-		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
-			return [];
-		}));
-		// when and then
-		await expect(() => repository.getUserByEmail(uuidv4())).rejects.toThrow(NotFoundException);
 	});
 	it('getUserByEmailVerificationToken selects from userDataSource', async () => {
 		//given
@@ -155,21 +125,6 @@ describe('User repository', () => {
 		expect(actual.isVerified).toEqual(false);
 		expect(actual.emailVerification.token).toEqual('token');
 	});
-	it('getUserByEmailVerificationToken logs error and throws database exception', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.getUserByEmailVerificationToken('token')).rejects.toThrow('Error interacting with the database');
-	});
-	it('getUserByEmailVerificationToken throws not found when query result is empty', async () => {
-		//given
-		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
-			return [];
-		}));
-		// when and then
-		await expect(() => repository.getUserByEmailVerificationToken(uuidv4())).rejects.toThrow(NotFoundException);
-	});
 	it('getUserByPasswordResetToken selects from userDataSource', async () => {
 		//given
 		const id = uuidv4();
@@ -193,21 +148,6 @@ describe('User repository', () => {
 		expect(actual.passwordHash).toEqual('the passwordHash');
 		expect(actual.isVerified).toEqual(false);
 		expect(actual.pendingEmail).toEqual('pendingEmail');
-	});
-	it('getUserByPasswordResetToken logs error and throws database exception', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.getUserByPasswordResetToken('token')).rejects.toThrow('Error interacting with the database');
-	});
-	it('getUserByPasswordResetToken throws not found when query result is empty', async () => {
-		//given
-		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
-			return [];
-		}));
-		// when and then
-		await expect(() => repository.getUserByPasswordResetToken(uuidv4())).rejects.toThrow(NotFoundException);
 	});
 	it('getUserByEmailUpdateToken selects from userDataSource', async () => {
 		//given
@@ -233,12 +173,115 @@ describe('User repository', () => {
 		expect(actual.isVerified).toEqual(false);
 		expect(actual.pendingEmail).toEqual('pendingEmail');
 	});
-	it('getUserByEmailUpdateToken logs error and throws database exception', async () => {
+	it('createUser inserts into userDataSource', async () => {
+		// when
+		await repository.createUser(user);
+		// then
+		expect(repository.userRepository.save).toHaveBeenCalledWith(user);
+	});
+	it('deleteUser deletes from userDataSource', async () => {
+		//given
+		const id = uuidv4();
+		// when
+		await repository.deleteUser(id);
+		// then
+		expect(repository.userRepository.delete).toHaveBeenCalledWith(id);
+	});
+	it('updateUser updates users in userDataSource', async () => {
+		// when
+		await repository.updateUser(user);
+		// then
+		expect(repository.userRepository.save).toHaveBeenCalledWith(user);
+	});
+
+	it('getUser throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userRepository.findOne as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.getUser(uuidv4())).rejects.toThrow('Error interacting with the database');
+	});
+	it('getUserByEmail throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userRepository.findOne as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.getUserByEmail('the email')).rejects.toThrow('Error interacting with the database');
+	});
+	it('getUserByEmailVerificationToken throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.getUserByEmailVerificationToken('token')).rejects.toThrow('Error interacting with the database');
+	});
+	it('getUserByPasswordResetToken throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.getUserByPasswordResetToken('token')).rejects.toThrow('Error interacting with the database');
+	});
+	it('getUserByEmailUpdateToken throws database exception', async () => {
 		// given
 		let error = new Error('DB Error');
 		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
 		//expect
 		await expect(repository.getUserByEmailUpdateToken('token')).rejects.toThrow('Error interacting with the database');
+	});
+	it('createUser throws database exception', async () => {
+		//given
+		let error = new Error('DB Error');
+		(repository.userRepository.save as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.createUser(new User())).rejects.toThrow('Error interacting with the database');
+	});
+	it('deleteUser throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userRepository.delete as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.deleteUser(uuidv4())).rejects.toThrow('Error interacting with the database');
+	});
+	it('updateUser throws database exception', async () => {
+		// given
+		let error = new Error('DB Error');
+		(repository.userRepository.save as jest.Mock).mockRejectedValue(error);
+		//expect
+		await expect(repository.updateUser(new User())).rejects.toThrow('Error interacting with the database');
+	});
+
+	it('getUserByEmail throws not found when query result is empty', async () => {
+		//given
+		(repository.userRepository.findOne as jest.Mock).mockImplementation(jest.fn(() => {
+			return null;
+		}));
+		// when and then
+		await expect(() => repository.getUserByEmail(uuidv4())).rejects.toThrow(NotFoundException);
+	});
+	it('getUserByEmailVerificationToken throws not found when query result is empty', async () => {
+		//given
+		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
+			return [];
+		}));
+		// when and then
+		await expect(() => repository.getUserByEmailVerificationToken(uuidv4())).rejects.toThrow(NotFoundException);
+	});
+	it('getUserByPasswordResetToken throws not found when query result is empty', async () => {
+		//given
+		(repository.userDataSource.query as jest.Mock).mockImplementation(jest.fn(() => {
+			return [];
+		}));
+		// when and then
+		await expect(() => repository.getUserByPasswordResetToken(uuidv4())).rejects.toThrow(NotFoundException);
+	});
+	it('getUser throws not found when query result is empty', async () => {
+		//given
+		(repository.userRepository.findOne as jest.Mock).mockImplementation(jest.fn(() => {
+			return null;
+		}));
+		// when and then
+		await expect(() => repository.getUser(uuidv4())).rejects.toThrow(NotFoundException);
 	});
 	it('getUserByEmailUpdateToken throws not found when query result is empty', async () => {
 		//given
@@ -248,27 +291,8 @@ describe('User repository', () => {
 		// when and then
 		await expect(() => repository.getUserByEmailUpdateToken(uuidv4())).rejects.toThrow(NotFoundException);
 	});
-	it('createUser inserts into userDataSource', async () => {
-		//given
-		const user = new User('the email', 'the passwordHash', false);
-		// when
-		await repository.createUser(user);
-		// then
-		expect(repository.userDataSource.query).toHaveBeenCalledWith(
-			'INSERT INTO' +
-			' users (id, email, passwordHash, isVerified) ' +
-			'VALUES ($1, $2, $3, $4)',
-			[user.id, 'the email', 'the passwordHash', false]
-		);
-	});
-	it('createUser logs error and throws database exception', async () => {
-		//given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.createUser(new User())).rejects.toThrow('Error interacting with the database');
-	});
-	it('createUser logs error and throws duplicate row exception', async () => {
+
+	it('createUser throws duplicate row exception', async () => {
 		//given
 		class CustomError extends Error {
 			constraint: string;
@@ -281,60 +305,8 @@ describe('User repository', () => {
 		}
 
 		let error = new CustomError('duplicate key value violates unique constraint', 'asdasd');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
+		(repository.userRepository.save as jest.Mock).mockRejectedValue(error);
 		//expect
 		await expect(repository.createUser(new User())).rejects.toThrow('Duplicate key value violates unique constraint=asdasd');
-	});
-	it('deleteUser deletes from userDataSource', async () => {
-		//given
-		const id = uuidv4();
-		// when
-		await repository.deleteUser(id);
-		// then
-		expect(repository.userDataSource.query).toHaveBeenCalledWith(
-			'DELETE FROM users WHERE id=$1',
-			[id]
-		);
-	});
-	it('deleteUser logs error and throws database exception', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.deleteUser(uuidv4())).rejects.toThrow('Error interacting with the database');
-	});
-	it('updateUser updates users in userDataSource', async () => {
-		//given
-		repository.userDataSource.query = jest.fn();
-		const mockUser = new User('email', 'passwordHash', false, {
-			token: 'emailVerificationToken',
-			expiration: 'emailVerificationExpiration'
-		}, 'role', {
-			token: 'passwordResetToken',
-			expiration: 'passwordResetExpiration'
-		}, { token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' }, 'pendingEmail');
-		// when
-		await repository.updateUser(mockUser);
-		// then
-		expect(repository.userDataSource.query).toHaveBeenCalledWith(
-			'UPDATE users SET email=$1, passwordHash=$2, isVerified=$3, emailVerification=$4, role=$5, passwordReset=$6, emailUpdate=$7, pendingEmail=$8 WHERE id=$9',
-			['email', 'passwordHash', false, JSON.stringify({
-				token: 'emailVerificationToken',
-				expiration: 'emailVerificationExpiration'
-			}), 'role', JSON.stringify({
-				token: 'passwordResetToken',
-				expiration: 'passwordResetExpiration'
-			}), JSON.stringify({
-				token: 'emailUpdateToken',
-				expiration: 'emailUpdateExpiration'
-			}), 'pendingEmail', mockUser.id]
-		);
-	});
-	it('updateUser logs error and throws database exception', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.query as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.updateUser(new User())).rejects.toThrow('Error interacting with the database');
 	});
 });

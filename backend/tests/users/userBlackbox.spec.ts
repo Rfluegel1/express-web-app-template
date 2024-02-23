@@ -150,12 +150,12 @@ describe('User resource', () => {
 			expect(getData.isVerified).toEqual(false);
 			expect(getData.emailVerification.token).not.toEqual(undefined);
 			expect(getData.emailVerification.expiration).not.toEqual(undefined);
-			expect(getData.passwordReset.token).toEqual(undefined);
-			expect(getData.passwordReset.expiration).toEqual(undefined);
+			expect(getData.passwordReset.token).toEqual('');
+			expect(getData.passwordReset.expiration).toEqual('');
 			expect(getData.role).toEqual('user');
-			expect(getData.emailUpdate.token).toEqual(undefined);
-			expect(getData.emailUpdate.expiration).toEqual(undefined);
-			expect(getData.pendingEmail).toBeNull();
+			expect(getData.emailUpdate.token).toEqual('');
+			expect(getData.emailUpdate.expiration).toEqual('');
+			expect(getData.pendingEmail).toEqual('');
 
 			// when
 			const updateResponse = await client.put(`${process.env.BASE_URL}/api/users/${id}`, {

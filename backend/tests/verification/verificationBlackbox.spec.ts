@@ -34,7 +34,7 @@ describe('Verification resource', () => {
 
 			// then
 			expect(getBeforeResponse.status).toEqual(StatusCodes.OK);
-			expect(getBeforeResponse.data.passwordReset.token).toEqual(undefined);
+			expect(getBeforeResponse.data.passwordReset.token).toEqual('');
 			expect(getBeforeResponse.data.passwordHash).not.toBeNull();
 			passwordHash = getBeforeResponse.data.passwordHash;
 

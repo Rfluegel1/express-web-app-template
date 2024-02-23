@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import Todo from './todos/Todo';
+import User from './users/User';
 
 export const dataSource: DataSource = new DataSource({
 	'type': 'postgres',
@@ -11,7 +12,8 @@ export const dataSource: DataSource = new DataSource({
 	'synchronize': process.env.DB_SYNCHRONIZE === 'true',
 	'entities': [
 		'src/entity/**/*.ts',
-		Todo
+		Todo,
+		User
 	],
 	migrations: [
 		'src/migrations/*.ts'

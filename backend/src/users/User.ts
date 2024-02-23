@@ -1,16 +1,35 @@
 import { v4 as uuidv4 } from 'uuid';
 import { plainToClass } from 'class-transformer';
 import bcrypt from 'bcrypt';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+@Entity('users')
 export default class User {
+	@PrimaryGeneratedColumn('uuid')
 	id: string = uuidv4();
+
+	@Column({ type: 'varchar', nullable: false, unique: true })
 	email: string;
+
+	@Column({ type: 'varchar', nullable: false, name: 'passwordhash' })
 	passwordHash: string;
+
+	@Column({ type: 'boolean', name: 'isverified', default: false, nullable: true })
 	isVerified: boolean | undefined;
+
+	@Column({ type: 'json', nullable: true, name: 'emailverification' })
 	emailVerification: { token: string; expiration: string };
+
+	@Column({ type: 'varchar', default: 'user' })
 	role: string;
+
+	@Column({ type: 'json', name: 'passwordreset', nullable: true })
 	passwordReset: { token: string; expiration: string };
+
+	@Column({ type: 'json', name: 'emailupdate', nullable: true })
 	emailUpdate: { token: string; expiration: string };
+
+	@Column({ type: 'varchar', name: 'pendingemail', nullable: true })
 	pendingEmail: string;
 
 	constructor(
