@@ -1,16 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { plainToClass } from 'class-transformer';
 
 @Entity('todos')
 export default class Todo {
     @PrimaryGeneratedColumn('uuid')
     id: string = uuidv4();
 
-    @Column({ type: 'text' })
+    @Column({ type: 'varchar' })
     task: string;
 
-    @Column({ type: 'text' })
+    @Column({ type: 'varchar', name:'createdby'})
     createdBy: string;
 
     constructor(task: string = '', createdBy: string = '') {
