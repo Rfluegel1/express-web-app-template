@@ -175,5 +175,4 @@ describe('Todo resource', () => {
             expect(otherUserDeleteResponse.status).toEqual(StatusCodes.NO_CONTENT)
         }
     })
-
 })

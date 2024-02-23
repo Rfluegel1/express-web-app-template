@@ -1,31 +1,29 @@
-import {v4 as uuidv4} from 'uuid'
-import {plainToClass} from 'class-transformer'
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import { plainToClass } from 'class-transformer';
 
+@Entity('todos')
 export default class Todo {
-    id: string = uuidv4()
-    task: string
-    createdBy: string
+    @PrimaryGeneratedColumn('uuid')
+    id: string = uuidv4();
+
+    @Column({ type: 'text' })
+    task: string;
+
+    @Column({ type: 'text' })
+    createdBy: string;
 
     constructor(task: string = '', createdBy: string = '') {
-        this.task = task
-        this.createdBy = createdBy
+        this.task = task;
+        this.createdBy = createdBy;
     }
 
     updateDefinedFields(task: string, createdBy: string): void {
         if (task !== undefined) {
-            this.task = task
+            this.task = task;
         }
         if (createdBy !== undefined) {
-            this.createdBy = createdBy
+            this.createdBy = createdBy;
         }
-    }
-
-    todoMapper(queryResult: any): Todo {
-        const intermediate = {
-            id: queryResult?.id,
-            task: queryResult?.task,
-            createdBy: queryResult?.createdby,
-        }
-        return plainToClass(Todo, intermediate)
     }
 }

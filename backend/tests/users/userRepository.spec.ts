@@ -4,13 +4,6 @@ import { NotFoundException } from '../../src/exceptions/NotFoundException';
 import User from '../../src/users/User';
 
 // setup
-jest.mock('typeorm', () => ({
-	DataSource: jest.fn().mockImplementation(() => ({
-		query: jest.fn(),
-		initialize: jest.fn(),
-		destroy: jest.fn()
-	}))
-}));
 jest.mock('../../src/Logger', () => ({
 	getLogger: jest.fn(() => {
 		return {

@@ -5,13 +5,9 @@ import {DataSource} from 'typeorm'
 import {DatabaseException} from '../exceptions/DatabaseException'
 import {getLogger} from '../Logger'
 
-interface QueryResult {
-    id: string;
-    task: string;
-    createdby: string;
-}
 export default class TodoRepository {
     todoDataSource: DataSource = dataSource
+    todoRepository = dataSource.getRepository(Todo)
 
     async initialize(): Promise<void> {
         await this.executeWithCatch(() => this.todoDataSource.initialize())
@@ -23,59 +19,35 @@ export default class TodoRepository {
 
     async createTodo(todo: Todo): Promise<void> {
         await this.executeWithCatch(async () => {
-            await this.todoDataSource.query(
-                'INSERT INTO ' +
-                'todos (id, task, createdBy) ' +
-                'VALUES ($1, $2, $3)',
-                [todo.id, todo.task, todo.createdBy]
-            )
+            await this.todoRepository.save(todo)
         })
     }
 
     async deleteTodo(id: string): Promise<void> {
         await this.executeWithCatch(async () => {
-            await this.todoDataSource.query(
-                'DELETE FROM todos WHERE id=$1',
-                [id]
-            )
+            await this.todoRepository.delete(id);
         })
     }
 
     async getTodo(id: string): Promise<Todo> {
-        const result = await this.executeWithCatch(async () => {
-            const queryResult = await this.todoDataSource.query(
-                'SELECT * FROM todos WHERE id=$1', [id]
-            )
-            if (queryResult.length === 0) {
-                return null
-            }
-            return new Todo().todoMapper(queryResult[0])
+        const todo = await this.executeWithCatch(async () => {
+            return await this.todoRepository.findOne({ where: { id: id } });
         })
-
-        if (result === null) {
-            throw new NotFoundException(id)
+        if (!todo) {
+            throw new NotFoundException(id);
         }
-        return result
+        return todo
     }
 
     async getTodosByCreatedBy(createdBy: string): Promise<Todo[]> {
         return this.executeWithCatch(async () => {
-            const queryResults = await this.todoDataSource.query(
-                'SELECT * FROM todos WHERE createdBy=$1',
-                [createdBy]
-            )
-            return queryResults.map((queryResult: QueryResult) => {
-                return new Todo().todoMapper(queryResult)
-            })
+            return await this.todoRepository.find({ where: { createdBy: createdBy } });
         })
     }
 
     async updateTodo(todo: Todo): Promise<void> {
         await this.executeWithCatch(async () => {
-            await this.todoDataSource.query(
-                'UPDATE todos SET task=$1, createdBy=$2 WHERE id=$3',
-                [todo.task, todo.createdBy, todo.id]
-            )
+            await this.todoRepository.save(todo);
         })
     }
 
