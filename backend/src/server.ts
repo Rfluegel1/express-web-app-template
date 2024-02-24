@@ -1,3 +1,5 @@
+import DataSourceService from './DataSourceService';
+
 const env = process.env.NODE_ENV || 'development'
 require('dotenv').config({path: `.env.${env}`})
 
@@ -9,10 +11,10 @@ import UserRepository from './users/userRepository'
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8090
 
-let userRepository: UserRepository = new UserRepository()
+let dataSourceService = new DataSourceService()
 const logger = getLogger()
 
-userRepository.initialize()
+dataSourceService.initialize()
     .then(() => {
         httpServer.listen(PORT, () => {
             logger.info(`The server is running on port ${PORT}`)
@@ -26,7 +28,7 @@ userRepository.initialize()
 const gracefulShutdown = () => {
     logger.info('Shutting down gracefully...')
     httpServer.close(async () => {
-        await userRepository.destroy()
+        await dataSourceService.destroy()
         logger.info('Closed all connections')
         process.exit(0)
     })

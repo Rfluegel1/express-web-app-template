@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import axios from 'axios';
-import { dataSource } from '../src/postDataSource';
+import { dataSource } from '../src/dataSource';
 import { StatusCodes } from 'http-status-codes';
 
 if (process.env.NODE_ENV === 'test') {

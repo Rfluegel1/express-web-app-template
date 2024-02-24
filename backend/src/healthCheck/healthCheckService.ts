@@ -1,6 +1,4 @@
-import {dataSource} from '../postDataSource'
-import axios from 'axios'
-import {StatusCodes} from 'http-status-codes'
+import {dataSource} from '../dataSource'
 import {getLogger} from '../Logger'
 
 export default class HealthCheckService {

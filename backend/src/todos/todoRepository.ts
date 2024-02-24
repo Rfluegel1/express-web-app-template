@@ -1,21 +1,11 @@
 import Todo from './Todo'
 import {NotFoundException} from '../exceptions/NotFoundException'
-import {dataSource} from '../postDataSource'
-import {DataSource} from 'typeorm'
+import {dataSource} from '../dataSource'
 import {DatabaseException} from '../exceptions/DatabaseException'
 import {getLogger} from '../Logger'
 
 export default class TodoRepository {
-    todoDataSource: DataSource = dataSource
     todoRepository = dataSource.getRepository(Todo)
-
-    async initialize(): Promise<void> {
-        await this.executeWithCatch(() => this.todoDataSource.initialize())
-    }
-
-    async destroy(): Promise<void> {
-        await this.executeWithCatch(() => this.todoDataSource.destroy())
-    }
 
     async createTodo(todo: Todo): Promise<void> {
         await this.executeWithCatch(async () => {

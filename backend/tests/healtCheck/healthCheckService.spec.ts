@@ -1,7 +1,5 @@
 import HealthCheckService from '../../src/healthCheck/healthCheckService'
-import axios from 'axios'
-import {dataSource} from '../../src/postDataSource'
-import {StatusCodes} from 'http-status-codes'
+import {dataSource} from '../../src/dataSource'
 
 // setup
 jest.mock('../../src/Logger', () => ({

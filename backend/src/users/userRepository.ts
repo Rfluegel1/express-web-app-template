@@ -1,6 +1,6 @@
 import User from './User';
 import { NotFoundException } from '../exceptions/NotFoundException';
-import { dataSource } from '../postDataSource';
+import { dataSource } from '../dataSource';
 import { DataSource } from 'typeorm';
 import { DatabaseException } from '../exceptions/DatabaseException';
 import { getLogger } from '../Logger';
@@ -9,14 +9,6 @@ import { DuplicateRowException } from '../exceptions/DuplicateRowException';
 export default class UserRepository {
 	userDataSource: DataSource = dataSource;
 	userRepository = dataSource.getRepository(User);
-
-	async initialize(): Promise<void> {
-		await this.executeWithCatch(() => this.userDataSource.initialize());
-	}
-
-	async destroy(): Promise<void> {
-		await this.executeWithCatch(() => this.userDataSource.destroy());
-	}
 
 	async getUser(id: string): Promise<User> {
 		const user = await this.executeWithCatch(async () => {

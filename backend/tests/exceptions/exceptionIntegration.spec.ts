@@ -1,7 +1,7 @@
 import axios, {AxiosError} from 'axios'
 import {v4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
-import {dataSource} from '../../src/postDataSource'
+import {dataSource} from '../../src/dataSource'
 import {logInTestUser} from '../helpers'
 import {CookieJar} from 'tough-cookie'
 import {wrapper} from 'axios-cookiejar-support'

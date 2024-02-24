@@ -15,8 +15,6 @@ jest.mock('../../src/Logger', () => ({
 const repository = new UserRepository();
 beforeEach(() => {
 	repository.userDataSource.query = jest.fn();
-	repository.userDataSource.initialize = jest.fn();
-	repository.userDataSource.destroy = jest.fn();
 	repository.userRepository.save = jest.fn();
 	repository.userRepository.delete = jest.fn();
 	repository.userRepository.findOne = jest.fn();
@@ -34,32 +32,6 @@ describe('User repository', () => {
 		{ token: 'emailUpdateToken', expiration: 'emailUpdateExpiration' },
 		'pendingEmail'
 	);
-	it('initialize should initialize userDataSource', async () => {
-		//when
-		await repository.initialize();
-		//then
-		expect(repository.userDataSource.initialize).toHaveBeenCalled();
-	});
-	it('initialize should log actual error and throw db error', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.initialize as jest.Mock).mockRejectedValue(error);
-		// expect
-		await expect(repository.initialize()).rejects.toThrow('Error interacting with the database');
-	});
-	it('destroy should destroy userDataSource', async () => {
-		//when
-		await repository.destroy();
-		//then
-		expect(repository.userDataSource.destroy).toHaveBeenCalled();
-	});
-	it('destroy should log actual error and throws db error', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.userDataSource.destroy as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.destroy()).rejects.toThrow('Error interacting with the database');
-	});
 
 	it('getUser selects from userDataSource', async () => {
 		//given

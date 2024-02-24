@@ -14,8 +14,6 @@ jest.mock('../../src/Logger', () => ({
 
 const repository = new TodoRepository();
 beforeEach(() => {
-	repository.todoDataSource.initialize = jest.fn();
-	repository.todoDataSource.destroy = jest.fn();
 	repository.todoRepository.save = jest.fn();
 	repository.todoRepository.delete = jest.fn();
 	repository.todoRepository.findOne = jest.fn();
@@ -23,32 +21,6 @@ beforeEach(() => {
 });
 
 describe('Todo repository', () => {
-	it('initialize should initialize todoDataSource', async () => {
-		//when
-		await repository.initialize();
-		//then
-		expect(repository.todoDataSource.initialize).toHaveBeenCalled();
-	});
-	it('initialize should log actual error and throw db error', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.todoDataSource.initialize as jest.Mock).mockRejectedValue(error);
-		// expect
-		await expect(repository.initialize()).rejects.toThrow('Error interacting with the database');
-	});
-	it('destroy should destroy todoDataSource', async () => {
-		//when
-		await repository.destroy();
-		//then
-		expect(repository.todoDataSource.destroy).toHaveBeenCalled();
-	});
-	it('destroy should log actual error and throws db error', async () => {
-		// given
-		let error = new Error('DB Error');
-		(repository.todoDataSource.destroy as jest.Mock).mockRejectedValue(error);
-		//expect
-		await expect(repository.destroy()).rejects.toThrow('Error interacting with the database');
-	});
 
 	it('createTodo inserts into todoRepository', async () => {
 		//given
