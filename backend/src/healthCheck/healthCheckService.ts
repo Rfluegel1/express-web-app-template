@@ -1,5 +1,5 @@
-import {dataSource} from '../dataSource'
 import {getLogger} from '../Logger'
+import DataSourceService from '../DataSourceService';
 
 export default class HealthCheckService {
     async healthcheck() {
@@ -13,7 +13,7 @@ export default class HealthCheckService {
             }
         }
         try {
-            await dataSource.query('SELECT 1')
+            await DataSourceService.getInstance().getDataSource().query('SELECT 1')
         } catch (error: any) {
             getLogger().error('Healthcheck for datasource failed!', error)
             response.result = 'failure'

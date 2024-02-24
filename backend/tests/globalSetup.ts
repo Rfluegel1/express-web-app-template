@@ -2,8 +2,9 @@ import { spawn } from 'child_process';
 import * as path from 'path';
 import * as fs from 'fs';
 import axios from 'axios';
-import { dataSource } from '../src/dataSource';
 import { StatusCodes } from 'http-status-codes';
+import globalTeardown from './globalTeardown';
+import DataSourceService from '../src/DataSourceService';
 
 if (process.env.NODE_ENV === 'test') {
 	process.env.NODE_ENV = 'development';
@@ -40,18 +41,16 @@ export default async () => {
 			});
 		} catch (error: any) {
 			if (error.response.status !== StatusCodes.CONFLICT) {
+				await globalTeardown();
 				throw error;
 			}
 		}
-		dataSource.setOptions({ database: process.env.DB_DATABASE });
-		dataSource.setOptions({ password: process.env.DB_PASSWORD });
-		dataSource.setOptions({ username: process.env.DB_USERNAME });
-		await dataSource.initialize();
-		await dataSource.query(
+		await DataSourceService.getInstance().initialize();
+		await DataSourceService.getInstance().getDataSource().query(
 			'UPDATE users SET isVerified=$1, role=$2 where email=$3',
 			[true, 'admin', process.env.ADMIN_EMAIL]
 		);
-		await dataSource.destroy();
+		await DataSourceService.getInstance().destroy();
 
 	}
 

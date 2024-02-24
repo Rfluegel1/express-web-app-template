@@ -1,25 +1,64 @@
 import { DataSource } from 'typeorm';
-import { dataSource } from './dataSource';
 import { getLogger } from './Logger';
 import { DatabaseException } from './exceptions/DatabaseException';
+import Todo from './todos/Todo';
+import User from './users/User';
 
 export default class DataSourceService {
-	dataSource: DataSource = dataSource
+
+	static instance: DataSourceService;
+	private dataSource: DataSource;
+
+	private constructor() {
+		this.dataSource = this.createDataSource();
+	}
+
+	static getInstance(): DataSourceService {
+		if (!DataSourceService.instance) {
+			DataSourceService.instance = new DataSourceService();
+		}
+		return DataSourceService.instance;
+	}
+
+	getDataSource(): DataSource {
+		return this.dataSource;
+	}
+
+	private createDataSource() {
+		return new DataSource({
+			type: 'postgres',
+			host: process.env.DB_HOSTNAME,
+			port: 5432,
+			username: process.env.DB_USERNAME,
+			password: process.env.DB_PASSWORD,
+			database: process.env.DB_DATABASE,
+			synchronize: false,
+			entities: [
+				'src/entity/**/*.ts',
+				Todo,
+				User
+			],
+			migrations: [
+				'src/migrations/*.ts'
+			],
+			migrationsRun: true
+		});
+	}
 
 	async initialize(): Promise<void> {
-		await this.executeWithCatch(() => this.dataSource.initialize())
+		await this.executeWithCatch(() => this.dataSource.initialize());
 	}
 
 	async destroy(): Promise<void> {
-		await this.executeWithCatch(() => this.dataSource.destroy())
+		await this.executeWithCatch(() => this.dataSource.destroy());
 	}
 
-	async executeWithCatch(action: () => Promise<any>): Promise<any> {
+	private async executeWithCatch(action: () => Promise<any>): Promise<any> {
 		try {
-			return await action()
+			return await action();
 		} catch (error) {
-			getLogger().error(error)
-			throw new DatabaseException()
+			getLogger().error(error);
+			throw new DatabaseException();
 		}
 	}
 }

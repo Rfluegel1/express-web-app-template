@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { generateTemporaryUserEmail } from './helpers/generateTemporaryUserEmail.js';
 import { logInTestUser } from './helpers/logInTestUser.js';
+import { registerTemporaryUser } from './helpers/registerTemporaryUser.js';
 
 test.describe('Email change page', () => {
 	test('should route to login if not logged in', async ({ page }) => {
@@ -12,18 +13,19 @@ test.describe('Email change page', () => {
 	});
 
 	test('should call to email change for logged in user', async ({ page }) => {
-		const email = generateTemporaryUserEmail()
+		const email = await registerTemporaryUser(page)
+		const newEmail = generateTemporaryUserEmail()
 		const requestPromise = page.waitForRequest('**/request-email-change');
-		await logInTestUser(page);
+		await logInTestUser(page, email, 'password12');
 
 		// when
 		await page.goto('/email-change');
-		await page.fill('input[type="email"]', email);
+		await page.fill('input[type="email"]', newEmail);
 		await page.click('button[type="submit"]');
 
 		// then
 		const request = await requestPromise;
-		await page.waitForSelector(`text="Request sent to ${email} with further instructions"`);
+		await page.waitForSelector(`text="Request sent to ${newEmail} with further instructions"`);
 		await expect(request.url()).toMatch(/\/request-email-change$/);
 		await expect(page.locator('input[type=email]')).toHaveValue('');
 

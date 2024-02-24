@@ -1,11 +1,11 @@
 import Todo from './Todo'
 import {NotFoundException} from '../exceptions/NotFoundException'
-import {dataSource} from '../dataSource'
 import {DatabaseException} from '../exceptions/DatabaseException'
 import {getLogger} from '../Logger'
+import DataSourceService from '../DataSourceService';
 
 export default class TodoRepository {
-    todoRepository = dataSource.getRepository(Todo)
+    todoRepository = DataSourceService.getInstance().getDataSource().getRepository(Todo)
 
     async createTodo(todo: Todo): Promise<void> {
         await this.executeWithCatch(async () => {

@@ -19,7 +19,7 @@ test('should have link to login page', async ({ page }) => {
 
 test('should display mismatched password and passwordConfirm error', async ({ page }) => {
 	// when
-	await registerTemporaryUser(page, undefined, 'password12', 'password123');
+	await registerTemporaryUser(page, undefined, 'password12', 'password123', false);
 
 	// then
 	await expect(page.locator('text="Password and Confirm Password do not match"')).toBeVisible();
@@ -76,7 +76,7 @@ test('user creation error displays message to client', async ({ page }) => {
 		await page.goto('/register');
 
 		// when
-		await registerTemporaryUser(page, email);
+		await registerTemporaryUser(page, email, 'password12', 'password12', false);
 
 		// then
 		await expect(

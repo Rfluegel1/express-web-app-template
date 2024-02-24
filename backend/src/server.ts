@@ -6,12 +6,11 @@ require('dotenv').config({path: `.env.${env}`})
 import {getLogger} from './Logger'
 import http from 'http'
 import app from './app'
-import UserRepository from './users/userRepository'
 
 const httpServer = http.createServer(app)
 const PORT: any = process.env.PORT ?? 8090
 
-let dataSourceService = new DataSourceService()
+let dataSourceService = DataSourceService.getInstance()
 const logger = getLogger()
 
 dataSourceService.initialize()

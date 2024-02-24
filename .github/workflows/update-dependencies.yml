@@ -19,9 +19,9 @@ jobs:
       postgres:
         image: postgres:latest
         env:
-          POSTGRES_USER: 'reidfluegel'
-          POSTGRES_PASSWORD: 'asd'
-          POSTGRES_DB: 'post'
+          POSTGRES_USER: 'postgres'
+          POSTGRES_PASSWORD: 'password'
+          POSTGRES_DB: 'postgres'
         ports:
           - 5432:5432
         options: >-
