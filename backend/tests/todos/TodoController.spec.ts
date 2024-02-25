@@ -6,6 +6,8 @@ import { NotFoundException } from '../../src/exceptions/NotFoundException';
 import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { UnauthorizedException } from '../../src/exceptions/UnauthorizedException';
+import * as constantsModule from '../../src/constants';
+import { validateRequest } from '../../src/constants';
 
 // setup
 jest.mock('../../src/todos/todoService', () => {
@@ -31,10 +33,17 @@ jest.mock('../../src/Logger', () => ({
 describe('Todo controller', () => {
 	const todoController = new TodoController();
 	describe('in regards to normal operation', () => {
+		beforeEach(() => {
+			jest.spyOn(constantsModule, 'validateRequest').mockImplementation(() => true);
+		});
+
+		afterEach(() => {
+			jest.clearAllMocks();
+			jest.restoreAllMocks();
+		});
+
 		it('createTodo responds with data that is returned from the TodoService', async () => {
 			// given
-			jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
-			});
 			const mockTodo = { id: uuidv4(), task: 'the task', createdBy: 'the createdBy' };
 			const request = {
 				isAuthenticated: () => true,
@@ -61,16 +70,10 @@ describe('Todo controller', () => {
 			// then
 			expect(response.send).toHaveBeenCalledWith({ message: mockTodo });
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
-			expect(todoController.validateRequest).toHaveBeenCalled();
-
-			// cleanup
-			jest.clearAllMocks();
-			jest.restoreAllMocks();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('updateTodo responds with data that is returned from the TodoService', async () => {
 			// given
-			jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
-			});
 			let id = uuidv4();
 			const mockTodo = { id: id, task: 'the task', createdBy: 'the createdBy' };
 			const request = {
@@ -113,16 +116,10 @@ describe('Todo controller', () => {
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 			expect(response.send).toHaveBeenCalledWith({ message: mockTodo });
-			expect(todoController.validateRequest).toHaveBeenCalled();
-
-			// cleanup
-			jest.clearAllMocks();
-			jest.restoreAllMocks();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('getTodo responds with data that is returned from the TodoService', async () => {
 			// given
-			jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
-			});
 			let id: string = uuidv4();
 			const mockTodo = { id: id, task: 'the task', createdBy: 'the createdBy' };
 			const request = {
@@ -151,16 +148,10 @@ describe('Todo controller', () => {
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 			expect(response.send).toHaveBeenCalledWith({ message: mockTodo });
-			expect(todoController.validateRequest).toHaveBeenCalled();
-
-			// cleanup
-			jest.clearAllMocks();
-			jest.restoreAllMocks();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('deleteTodo should call service and respond with NO_CONTENT', async () => {
 			// given
-			jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
-			});
 			let id: string = uuidv4();
 			const mockTodo = { id: id, task: 'the task', createdBy: 'the createdBy' };
 			const request = {
@@ -188,16 +179,10 @@ describe('Todo controller', () => {
 			// then
 			expect(todoController.todoService.deleteTodo).toHaveBeenCalledWith(id);
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
-			expect(todoController.validateRequest).toHaveBeenCalled();
-
-			// cleanup
-			jest.clearAllMocks();
-			jest.restoreAllMocks();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('getTodosByCreatedBy responds with data that is returned from the TodoService', async () => {
 			// given
-			jest.spyOn(todoController, 'validateRequest').mockImplementation(() => {
-			});
 			let id: string = uuidv4();
 			let id2: string = uuidv4();
 			const mockTodo = { id: id, task: 'the task', createdBy: 'the createdBy' };
@@ -230,11 +215,7 @@ describe('Todo controller', () => {
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 			expect(response.send).toHaveBeenCalledWith({ message: [mockTodo, mockTodo2] });
-			expect(todoController.validateRequest).toHaveBeenCalled();
-
-			// cleanup
-			jest.clearAllMocks();
-			jest.restoreAllMocks();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 	});
 
@@ -471,7 +452,7 @@ describe('Todo controller', () => {
 		testCases.forEach(({ description, input, expectThrow }) => {
 			it(description, () => {
 				// when
-				todoController.validateRequest(input as any, next);
+				validateRequest(input as any, next, todoController.validationSchema);
 
 				// then
 				if (expectThrow) {

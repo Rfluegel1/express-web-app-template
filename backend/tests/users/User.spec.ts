@@ -1,4 +1,4 @@
-import { UUID_REG_EXP } from '../../src/contants';
+import { UUID_REG_EXP } from '../../src/constants';
 import User from '../../src/users/User';
 import bcrypt from 'bcrypt';
 

@@ -1,6 +1,6 @@
 import Todo from '../../src/todos/Todo'
 import {StatusCodes} from 'http-status-codes'
-import {UUID_REG_EXP} from '../../src/contants'
+import {UUID_REG_EXP} from '../../src/constants'
 import axios, {AxiosError} from 'axios'
 import {wrapper} from 'axios-cookiejar-support'
 import {CookieJar} from 'tough-cookie'

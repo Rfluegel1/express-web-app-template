@@ -1,12 +1,12 @@
 import {NextFunction, Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
-import {BadRequestException} from '../exceptions/BadRequestException'
 import {getLogger} from '../Logger'
 import TodoService from './TodoService'
 import Todo from './Todo'
 import {UnauthorizedException} from '../exceptions/UnauthorizedException'
 import User from '../users/User'
 import Joi from 'joi';
+import { validateRequest } from '../constants';
 
 export default class TodoController {
     todoService = new TodoService()
@@ -17,16 +17,6 @@ export default class TodoController {
         createdBy: Joi.string().uuid(),
     });
 
-    validateRequest(request: Request, next: NextFunction) {
-        let bodyValidations = this.validationSchema.validate(request.body);
-        let queryValidations = this.validationSchema.validate(request.query);
-        let paramsValidation = this.validationSchema.validate(request.params);
-        let error = bodyValidations.error || queryValidations.error || paramsValidation.error;
-        if (error) {
-            next(new BadRequestException(error.message));
-        }
-    }
-
     async createTodo(request: Request, response: Response, next: NextFunction) {
         getLogger().info('Received create todos request', {requestBody: request.body})
         if (!request.isAuthenticated()) {
@@ -34,7 +24,7 @@ export default class TodoController {
         }
         let task: string = request.body.task
         let createdBy: string = (request.user as User).id
-        this.validateRequest(request, next)
+        validateRequest(request, next, this.validationSchema)
         try {
             const todo: Todo = await this.todoService.createTodo(task, createdBy)
             getLogger().info('Sending create todos response', {status: StatusCodes.CREATED})
@@ -52,7 +42,7 @@ export default class TodoController {
             return next(new UnauthorizedException('delete todo'))
         }
         let id: string = request.params.id
-        this.validateRequest(request, next)
+        validateRequest(request, next, this.validationSchema)
         try {
             const todo = await this.todoService.getTodo(id)
             if (todo.createdBy !== (request.user as User).id) {
@@ -74,7 +64,7 @@ export default class TodoController {
 
         let id: string = request.params.id
         let todo: Todo
-        this.validateRequest(request, next)
+        validateRequest(request, next, this.validationSchema)
         try {
             todo = await this.todoService.getTodo(id)
             if (todo.createdBy !== (request.user as User).id) {
@@ -95,7 +85,7 @@ export default class TodoController {
             return next(new UnauthorizedException('get todos by created by'))
         }
         let createdBy: any = (request.user as User).id
-        this.validateRequest(request, next)
+        validateRequest(request, next, this.validationSchema)
         try {
             const todos: Todo[] = await this.todoService.getTodosByCreatedBy(createdBy)
             getLogger().info('Sending get all todos request', {status: StatusCodes.OK})
@@ -115,7 +105,7 @@ export default class TodoController {
         const id: string = request.params.id
         const task: string = request.body.task
         const createdBy: string = request.body.createdBy
-        this.validateRequest(request, next)
+        validateRequest(request, next, this.validationSchema)
         try {
             let todo = await this.todoService.getTodo(id)
             if (todo.createdBy !== (request.user as User).id) {

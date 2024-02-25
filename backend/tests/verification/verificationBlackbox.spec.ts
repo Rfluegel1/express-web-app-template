@@ -3,7 +3,7 @@ import { wrapper } from 'axios-cookiejar-support';
 import axios from 'axios';
 import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 import { StatusCodes } from 'http-status-codes';
-import { UUID_REG_EXP } from '../../src/contants';
+import { UUID_REG_EXP } from '../../src/constants';
 
 const jar = new CookieJar();
 const client = wrapper(axios.create({ jar, withCredentials: true }));

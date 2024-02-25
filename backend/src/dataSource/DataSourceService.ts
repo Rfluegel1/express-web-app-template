@@ -7,7 +7,7 @@ import User from '../users/User';
 export default class DataSourceService {
 
 	static instance: DataSourceService;
-	private dataSource: DataSource;
+	readonly dataSource: DataSource;
 
 	private constructor() {
 		this.dataSource = this.createDataSource();
