@@ -2,7 +2,7 @@ import HealthCheckController from '../../src/healthCheck/HealthCheckController'
 import {StatusCodes} from 'http-status-codes'
 
 // setup
-jest.mock('../../src/healthCheck/healthCheckService', () => {
+jest.mock('../../src/healthCheck/HealthCheckService', () => {
     return jest.fn().mockImplementation(() => {
         return {
             healthcheck: jest.fn(),

@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { transporter } from '../../src/nodemailerConfig';
 import { NotFoundException } from '../../src/exceptions/NotFoundException';
 
-jest.mock('../../src/users/userRepository', () => {
+jest.mock('../../src/users/UserRepository', () => {
 	return jest.fn().mockImplementation(() => {
 		return {
 			createUser: jest.fn(),

@@ -7,7 +7,7 @@ import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { v4 } from 'uuid';
 import { generateTemporaryUserEmail } from '../helpers';
 
-jest.mock('../../src/verification/verificationService', () => {
+jest.mock('../../src/verification/VerificationService', () => {
 	return jest.fn().mockImplementation(() => {
 		return {
 			sendVerificationEmail: jest.fn(),

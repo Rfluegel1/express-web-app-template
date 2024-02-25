@@ -4,7 +4,7 @@ import { UUID_REG_EXP } from '../../src/constants';
 import User from '../../src/users/User';
 
 // setup
-jest.mock('../../src/users/userRepository', () => {
+jest.mock('../../src/users/UserRepository', () => {
 	return jest.fn().mockImplementation(() => {
 		return {
 			createUser: jest.fn(),
@@ -18,7 +18,7 @@ jest.mock('../../src/users/userRepository', () => {
 jest.mock('bcrypt', () => ({
 	hash: jest.fn().mockResolvedValue('passwordHash')
 }));
-jest.mock('../../src/verification/verificationService', () => {
+jest.mock('../../src/verification/VerificationService', () => {
 	return jest.fn().mockImplementation(() => {
 		return {
 			sendVerificationEmail: jest.fn()

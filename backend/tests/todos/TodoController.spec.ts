@@ -10,7 +10,7 @@ import * as constantsModule from '../../src/constants';
 import { validateRequest } from '../../src/constants';
 
 // setup
-jest.mock('../../src/todos/todoService', () => {
+jest.mock('../../src/todos/TodoService', () => {
 	return jest.fn().mockImplementation(() => {
 		return {
 			createTodo: jest.fn(),

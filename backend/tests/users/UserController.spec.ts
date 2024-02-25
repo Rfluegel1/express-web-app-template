@@ -9,7 +9,7 @@ import { UnauthorizedException } from '../../src/exceptions/UnauthorizedExceptio
 import { generateTemporaryUserEmail } from '../helpers';
 
 // setup
-jest.mock('../../src/users/userService', () => {
+jest.mock('../../src/users/UserService', () => {
 	return jest.fn().mockImplementation(() => {
 		return {
 			createUser: jest.fn(),

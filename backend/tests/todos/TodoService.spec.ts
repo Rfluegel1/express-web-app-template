@@ -4,7 +4,7 @@ import {UUID_REG_EXP} from '../../src/constants'
 import Todo from '../../src/todos/Todo'
 
 // setup
-jest.mock('../../src/todos/todoRepository', () => {
+jest.mock('../../src/todos/TodoRepository', () => {
     return jest.fn().mockImplementation(() => {
         return {
             createTodo: jest.fn(),
