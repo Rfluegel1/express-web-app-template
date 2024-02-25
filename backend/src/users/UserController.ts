@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestException } from '../exceptions/BadRequestException';
 import { getLogger } from '../Logger';
 import UserService from './UserService';
 import User from './User';
 import { UnauthorizedException } from '../exceptions/UnauthorizedException';
 import Joi from 'joi';
+import { validateRequest } from '../constants';
 
 export default class UserController {
 	userService = new UserService();
@@ -34,15 +34,6 @@ export default class UserController {
 		}),
 	});
 
-	validateRequest(request: Request, next: NextFunction) {
-		let bodyValidations = this.validationSchema.validate(request.body);
-		let queryValidations = this.validationSchema.validate(request.query);
-		let paramsValidation = this.validationSchema.validate(request.params);
-		let error = bodyValidations.error || queryValidations.error || paramsValidation.error;
-		if (error) {
-			next(new BadRequestException(error.message));
-		}
-	}
 	async updateUser(request: Request, response: Response, next: NextFunction) {
 		getLogger().info(
 			'Received update users request',
@@ -60,7 +51,7 @@ export default class UserController {
 		const passwordReset: { token: string, expiration:string } = request.body.passwordReset;
 		const emailUpdate: { token: string, expiration:string } = request.body.emailUpdate;
 		const pendingEmail: string = request.body.pendingEmail;
-		this.validateRequest(request, next);
+		validateRequest(request, next, this.validationSchema);
 		try {
 			let user: User = await this.userService.updateUser(
 				id,
@@ -84,7 +75,7 @@ export default class UserController {
 		let email: string = request.body.email;
 		getLogger().info('Received create users request', { requestBody: { email: email } });
 		let password: string = request.body.password;
-		this.validateRequest(request, next);
+		validateRequest(request, next, this.validationSchema);
 		try {
 			const user: User = await this.userService.createUser(email, password);
 			getLogger().info('Sending create users response', { status: StatusCodes.CREATED });
@@ -102,7 +93,7 @@ export default class UserController {
 		if (!request.isAuthenticated() || (request.user as User).id !== id && (request.user as User).role !== 'admin') {
 			return next(new UnauthorizedException('delete user'));
 		}
-		this.validateRequest(request, next);
+		validateRequest(request, next, this.validationSchema);
 		try {
 			await this.userService.deleteUser(id);
 			getLogger().info('Sending delete users response', { status: StatusCodes.NO_CONTENT });
@@ -120,7 +111,7 @@ export default class UserController {
 			return next(new UnauthorizedException('get user'));
 		}
 		let user: User;
-		this.validateRequest(request, next);
+		validateRequest(request, next, this.validationSchema);
 		try {
 			user = await this.userService.getUser(id);
 			getLogger().info('Sending get users response', { status: StatusCodes.OK });
@@ -140,7 +131,7 @@ export default class UserController {
 			return next(new UnauthorizedException('get user by email'));
 		}
 		let user: User;
-		this.validateRequest(request, next);
+		validateRequest(request, next, this.validationSchema);
 		try {
 			user = await this.userService.getUserByEmail(email);
 			getLogger().info('Sending get users response', { status: StatusCodes.OK });

@@ -6,6 +6,8 @@ import { UnauthorizedException } from '../../src/exceptions/UnauthorizedExceptio
 import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { v4 } from 'uuid';
 import { generateTemporaryUserEmail } from '../helpers';
+import * as constantsModule from '../../src/constants';
+import { validateRequest } from '../../src/constants';
 
 jest.mock('../../src/verification/VerificationService', () => {
 	return jest.fn().mockImplementation(() => {
@@ -106,20 +108,20 @@ describe('Verification controller', () => {
 		successTestCases.forEach(({ name, setup, request, expectedStatus }) => {
 			it(`${name} should respond with ${expectedStatus} when service is successful`, async () => {
 				// Given
+				jest.spyOn(constantsModule, 'validateRequest').mockImplementation(() => true);
+
 				setup();
 				const res = mockResponse();
-				jest.spyOn(verificationController, 'validateRequest').mockImplementation(() => {
-				});
 
 				// When
 				await verificationController[name](request as any, res as any, nextFunction);
 
 				// Then
 				expect(res.status).toHaveBeenCalledWith(expectedStatus);
-				expect(verificationController.validateRequest).toHaveBeenCalled();
-				jest.clearAllMocks();
+				expect(constantsModule.validateRequest).toHaveBeenCalled();
 
-				// Cleanup
+				// cleanup
+				jest.clearAllMocks();
 				jest.restoreAllMocks();
 			});
 		});
@@ -169,8 +171,6 @@ describe('Verification controller', () => {
 			{
 				name: 'resetPassword',
 				setup: (controller: VerificationController) => {
-					jest.spyOn(controller, 'validateRequest').mockImplementation(() => {
-					});
 					jest.spyOn(controller.verificationService, 'resetPassword').mockImplementation(() => {
 						throw new DatabaseException();
 					});
@@ -241,9 +241,9 @@ describe('Verification controller', () => {
 	describe('validateRequest method in verificationController', () => {
 		const next = jest.fn();
 
-		let longPassword = ''
-		for(let i = 0; i < 300; i++) {
-			longPassword = longPassword + 'a'
+		let longPassword = '';
+		for (let i = 0; i < 300; i++) {
+			longPassword = longPassword + 'a';
 		}
 
 		const testCases = [
@@ -297,7 +297,7 @@ describe('Verification controller', () => {
 		testCases.forEach(({ description, input, expectThrow }) => {
 			it(description, () => {
 				// when
-				verificationController.validateRequest(input as any, next);
+				validateRequest(input as any, next, verificationController.validationSchema);
 
 				// then
 				if (expectThrow) {

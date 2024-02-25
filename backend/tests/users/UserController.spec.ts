@@ -7,6 +7,8 @@ import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { UnauthorizedException } from '../../src/exceptions/UnauthorizedException';
 import { generateTemporaryUserEmail } from '../helpers';
+import * as constantsModule from '../../src/constants';
+import { validateRequest } from '../../src/constants';
 
 // setup
 jest.mock('../../src/users/UserService', () => {
@@ -41,9 +43,9 @@ describe('User controller', () => {
 	const userController = new UserController();
 	describe('in regards to normal operation', () => {
 		beforeEach(() => {
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
-			});
+			jest.spyOn(constantsModule, 'validateRequest').mockImplementation(() => true);
 		});
+
 		afterEach(() => {
 			jest.clearAllMocks();
 			jest.restoreAllMocks();
@@ -102,13 +104,12 @@ describe('User controller', () => {
 			// then
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
 			expect(response.send).toHaveBeenCalledWith(mockUser);
-			expect(userController.validateRequest).toHaveBeenCalled();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 
 		it('createUser responds with data that is returned from the UserService', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
-			});
+
 			const id = uuidv4();
 			const mockUser = { id: id, email: 'email', password: 'password', isVerified: false };
 			const request = {
@@ -134,12 +135,11 @@ describe('User controller', () => {
 			// then
 			expect(response.send).toHaveBeenCalledWith({ id: id, email: 'email', isVerified: false });
 			expect(response.status).toHaveBeenCalledWith(StatusCodes.CREATED);
-			expect(userController.validateRequest).toHaveBeenCalled();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('getUser responds with data that is returned from the UserService', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
-			});
+
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
 			const request = {
@@ -172,12 +172,11 @@ describe('User controller', () => {
 				email: mockUser.email,
 				isVerified: mockUser.isVerified
 			});
-			expect(userController.validateRequest).toHaveBeenCalled();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('getUserByEmail responds with data that is returned from the UserService', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
-			});
+
 			let id: string = uuidv4();
 			const mockUser = { id: id, ...user };
 			const request = {
@@ -210,12 +209,11 @@ describe('User controller', () => {
 				email: mockUser.email,
 				isVerified: mockUser.isVerified
 			});
-			expect(userController.validateRequest).toHaveBeenCalled();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 		it('deleteUser should call service and respond with NO_CONTENT', async () => {
 			// given
-			jest.spyOn(userController, 'validateRequest').mockImplementation(() => {
-			});
+
 
 			let id: string = uuidv4();
 			const request = {
@@ -235,7 +233,7 @@ describe('User controller', () => {
 			// then
 			expect(userController.userService.deleteUser).toHaveBeenCalledWith(id);
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
-			expect(userController.validateRequest).toHaveBeenCalled();
+			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
 	});
 	describe('in regards to error handling', () => {
@@ -749,7 +747,7 @@ describe('User controller', () => {
 		testCases.forEach(({ description, input, expectThrow }) => {
 			it(description, () => {
 				// when
-				userController.validateRequest(input as any, next);
+				validateRequest(input as any, next, userController.validationSchema);
 
 				// then
 				if (expectThrow) {
