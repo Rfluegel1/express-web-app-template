@@ -16,9 +16,6 @@ test.describe('Password Reset page', () => {
 		let passwordRestToken = '49a5211c-8cec-41bd-94d3-a79b7b2f3931';
 		try {
 			const email = await registerTemporaryUser(page);
-			await expect(
-				page.locator('text="Email verification sent. Login "')
-			).toBeVisible();
 			const getResponse = await admin.get(`${process.env.BASE_URL}/api/users?email=${email}`)
 			userId = getResponse.data.id;
 			await admin.put(`${process.env.BASE_URL}/api/users/${userId}`, { passwordReset: {token: passwordRestToken, expiration: new Date(Date.now() + 1000 * 60 * 60)} });

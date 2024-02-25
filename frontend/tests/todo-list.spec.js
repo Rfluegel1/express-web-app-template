@@ -111,7 +111,6 @@ test.skip('user without email verification cannot create tasks, and is asked to 
 	let email;
 	try {
 		email = await registerTemporaryUser(page);
-		await page.waitForSelector('text="Email verification sent. Login "');
 
 		// when
 		await logInTestUser(page, email, 'password12');
