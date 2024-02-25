@@ -8,15 +8,17 @@ import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutU
 
 const jar = new CookieJar()
 const client = wrapper(axios.create({jar, withCredentials: true}))
+const adminJar = new CookieJar()
+const admin = wrapper(axios.create({jar: adminJar, withCredentials: true}))
 
 jest.setTimeout(30000 * 2)
 
 describe('Todo resource', () => {
     it('is created, fetched, updated, and deleted', async () => {
         // given
-        await authenticateAsAdmin(client)
+        await logInTestUser(client)
         const userId: string = (
-            await client.get(`${process.env.BASE_URL}/api/users?email=${process.env.ADMIN_EMAIL}`)
+          await client.get(`${process.env.BASE_URL}/api/users?email=cypressdefault@gmail.com`)
         ).data.id
 
         // given
@@ -95,8 +97,6 @@ describe('Todo resource', () => {
     })
     it('get all returns all posts createdBy the authenticated user', async () => {
         // given
-        const adminJar = new CookieJar()
-        const admin = wrapper(axios.create({jar: adminJar, withCredentials: true}))
         await authenticateAsAdmin(admin)
 
         const userId: string = (
