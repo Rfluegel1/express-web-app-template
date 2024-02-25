@@ -1,4 +1,4 @@
-import HeartbeatController from '../../src/heartbeat/heartbeatController'
+import HeartbeatController from '../../src/heartbeat/HeartbeatController'
 
 jest.mock('../../src/Logger', () => ({
     getLogger: jest.fn(() => {

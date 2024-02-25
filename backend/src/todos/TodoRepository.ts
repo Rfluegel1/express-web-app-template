@@ -2,7 +2,7 @@ import Todo from './Todo'
 import {NotFoundException} from '../exceptions/NotFoundException'
 import {DatabaseException} from '../exceptions/DatabaseException'
 import {getLogger} from '../Logger'
-import DataSourceService from '../DataSourceService';
+import DataSourceService from '../dataSource/DataSourceService';
 
 export default class TodoRepository {
     todoRepository = DataSourceService.getInstance().getDataSource().getRepository(Todo)

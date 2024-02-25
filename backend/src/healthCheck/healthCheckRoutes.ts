@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import HealthCheckController from './healthCheckController'
+import HealthCheckController from './HealthCheckController'
 
 
 const router: Router = Router()

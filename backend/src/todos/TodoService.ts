@@ -1,5 +1,5 @@
 import Todo from './Todo'
-import TodoRepository from './todoRepository'
+import TodoRepository from './TodoRepository'
 
 
 export default class TodoService {

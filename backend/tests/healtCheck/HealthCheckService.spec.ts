@@ -1,5 +1,5 @@
-import HealthCheckService from '../../src/healthCheck/healthCheckService';
-import DataSourceService from '../../src/DataSourceService';
+import HealthCheckService from '../../src/healthCheck/HealthCheckService';
+import DataSourceService from '../../src/dataSource/DataSourceService';
 
 // setup
 jest.mock('../../src/Logger', () => ({

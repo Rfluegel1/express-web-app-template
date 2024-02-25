@@ -1,4 +1,4 @@
-import VerificationController from '../../src/verification/verificationController';
+import VerificationController from '../../src/verification/VerificationController';
 import { StatusCodes } from 'http-status-codes';
 import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { NextFunction } from 'express';

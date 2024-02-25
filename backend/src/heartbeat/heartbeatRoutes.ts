@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import HeartbeatController from './heartbeatController'
+import HeartbeatController from './HeartbeatController'
 
 
 const router: Router = Router()

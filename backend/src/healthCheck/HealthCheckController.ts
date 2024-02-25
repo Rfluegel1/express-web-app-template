@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
-import HealthCheckService from './healthCheckService'
+import HealthCheckService from './HealthCheckService'
 import {getLogger} from '../Logger'
 
 export default class HealthCheckController {

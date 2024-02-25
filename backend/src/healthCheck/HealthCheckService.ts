@@ -1,5 +1,5 @@
 import {getLogger} from '../Logger'
-import DataSourceService from '../DataSourceService';
+import DataSourceService from '../dataSource/DataSourceService';
 
 export default class HealthCheckService {
     async healthcheck() {

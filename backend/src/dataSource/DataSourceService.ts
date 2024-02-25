@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
-import { getLogger } from './Logger';
-import { DatabaseException } from './exceptions/DatabaseException';
-import Todo from './todos/Todo';
-import User from './users/User';
+import { getLogger } from '../Logger';
+import { DatabaseException } from '../exceptions/DatabaseException';
+import Todo from '../todos/Todo';
+import User from '../users/User';
 
 export default class DataSourceService {
 

@@ -1,4 +1,4 @@
-import HealthCheckController from '../../src/healthCheck/healthCheckController'
+import HealthCheckController from '../../src/healthCheck/HealthCheckController'
 import {StatusCodes} from 'http-status-codes'
 
 // setup

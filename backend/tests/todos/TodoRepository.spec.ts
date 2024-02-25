@@ -1,4 +1,4 @@
-import TodoRepository from '../../src/todos/todoRepository';
+import TodoRepository from '../../src/todos/TodoRepository';
 import { v4 as uuidv4 } from 'uuid';
 import Todo from '../../src/todos/Todo';
 import { NotFoundException } from '../../src/exceptions/NotFoundException';

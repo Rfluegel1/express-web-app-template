@@ -1,4 +1,4 @@
-import UserController from '../../../backend/src/users/userController';
+import UserController from '../../src/users/UserController';
 import { v4 as uuidv4 } from 'uuid';
 import { StatusCodes } from 'http-status-codes';
 import { NextFunction } from 'express';

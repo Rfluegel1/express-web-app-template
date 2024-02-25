@@ -1,5 +1,5 @@
 import User from '../../src/users/User';
-import VerificationService from '../../src/verification/verificationService';
+import VerificationService from '../../src/verification/VerificationService';
 import { v4 } from 'uuid';
 import { transporter } from '../../src/nodemailerConfig';
 import { NotFoundException } from '../../src/exceptions/NotFoundException';

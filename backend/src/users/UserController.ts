@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestException } from '../exceptions/BadRequestException';
 import { getLogger } from '../Logger';
-import UserService from './userService';
+import UserService from './UserService';
 import User from './User';
 import { UnauthorizedException } from '../exceptions/UnauthorizedException';
 import Joi from 'joi';

@@ -1,4 +1,4 @@
-import TodoController from '../../../backend/src/todos/todoController'
+import TodoController from '../../src/todos/TodoController'
 import {v4 as uuidv4} from 'uuid'
 import {StatusCodes} from 'http-status-codes'
 import {NextFunction} from 'express'

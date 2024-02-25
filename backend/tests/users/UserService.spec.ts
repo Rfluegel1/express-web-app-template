@@ -1,4 +1,4 @@
-import UserService from '../../src/users/userService';
+import UserService from '../../src/users/UserService';
 import { v4 as uuidv4 } from 'uuid';
 import { UUID_REG_EXP } from '../../src/contants';
 import User from '../../src/users/User';

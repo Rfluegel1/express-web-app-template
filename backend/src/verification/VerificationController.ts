@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import VerificationService from './verificationService';
+import VerificationService from './VerificationService';
 import { getLogger } from '../Logger';
 import User from '../users/User';
 import { StatusCodes } from 'http-status-codes';

@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import { StatusCodes } from 'http-status-codes';
 import globalTeardown from './globalTeardown';
-import DataSourceService from '../src/DataSourceService';
+import DataSourceService from '../src/dataSource/DataSourceService';
 
 if (process.env.NODE_ENV === 'test') {
 	process.env.NODE_ENV = 'development';
@@ -51,7 +51,6 @@ export default async () => {
 			[true, 'admin', process.env.ADMIN_EMAIL]
 		);
 		await DataSourceService.getInstance().destroy();
-
 	}
 
 	await startBackend();

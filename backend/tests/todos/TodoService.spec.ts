@@ -1,4 +1,4 @@
-import TodoService from '../../src/todos/todoService'
+import TodoService from '../../src/todos/TodoService'
 import {v4 as uuidv4} from 'uuid'
 import {UUID_REG_EXP} from '../../src/contants'
 import Todo from '../../src/todos/Todo'

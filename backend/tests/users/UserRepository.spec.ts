@@ -1,4 +1,4 @@
-import UserRepository from '../../src/users/userRepository';
+import UserRepository from '../../src/users/UserRepository';
 import { v4 as uuidv4 } from 'uuid';
 import { NotFoundException } from '../../src/exceptions/NotFoundException';
 import User from '../../src/users/User';

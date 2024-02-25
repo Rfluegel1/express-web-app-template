@@ -4,7 +4,7 @@ import {StatusCodes} from 'http-status-codes'
 import {logInTestUser} from '../helpers'
 import {CookieJar} from 'tough-cookie'
 import {wrapper} from 'axios-cookiejar-support'
-import DataSourceService from '../../src/DataSourceService';
+import DataSourceService from '../../src/dataSource/DataSourceService';
 
 const jar = new CookieJar()
 const client = wrapper(axios.create({jar, withCredentials: true}))

@@ -4,7 +4,7 @@ import { DataSource } from 'typeorm';
 import { DatabaseException } from '../exceptions/DatabaseException';
 import { getLogger } from '../Logger';
 import { DuplicateRowException } from '../exceptions/DuplicateRowException';
-import DataSourceService from '../DataSourceService';
+import DataSourceService from '../dataSource/DataSourceService';
 
 export default class UserRepository {
 	userDataSource: DataSource = DataSourceService.getInstance().getDataSource();

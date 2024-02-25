@@ -1,5 +1,5 @@
 import express from 'express'
-import VerificationController from './verificationController';
+import VerificationController from './VerificationController';
 
 const router = express.Router()
 

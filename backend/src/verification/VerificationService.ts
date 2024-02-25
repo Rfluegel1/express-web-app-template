@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { transporter } from '../nodemailerConfig';
-import UserRepository from '../users/userRepository';
+import UserRepository from '../users/UserRepository';
 import { getLogger } from '../Logger';
 import bcrypt from 'bcrypt';
 import User from '../users/User';

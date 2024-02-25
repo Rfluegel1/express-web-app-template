@@ -1,7 +1,7 @@
 import User from './User'
-import UserRepository from './userRepository'
+import UserRepository from './UserRepository'
 import bcrypt from 'bcrypt'
-import VerificationService from '../verification/verificationService';
+import VerificationService from '../verification/VerificationService';
 
 
 export default class UserService {
