@@ -10,5 +10,5 @@ module.exports = {
     transform: {
         '^.+\\.jsx?$': 'babel-jest', '^.+\\.tsx?$': 'ts-jest'
     },
-    setupFilesAfterEnv: isStaging ? ['./tests/jest.stagingSetup.ts'] : undefined
+    setupFilesAfterEnv: isStaging ? ['./tests/jest.stagingSetup'] : undefined
 };
