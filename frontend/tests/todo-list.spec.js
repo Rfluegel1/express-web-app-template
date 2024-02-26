@@ -22,13 +22,19 @@ test('should display only todo records made by user', async ({ page }) => {
 
 	try {
 		await logInTestUserWithClient(client);
-		firstTodoId = (await client.post(`${process.env.BASE_URL}/api/todos`, { task: 'squash bugs' })).data.message.id;
-		secondTodoId = (await client.post(`${process.env.BASE_URL}/api/todos`, { task: 'sanitize' })).data.message.id;
+		firstTodoId = (await client.post(
+			`${process.env.BASE_URL}/api/todos`, { task: 'squash bugs' }
+		)).data.message.id;
+		secondTodoId = (await client.post(
+			`${process.env.BASE_URL}/api/todos`, { task: 'sanitize' }
+		)).data.message.id;
 
 		const email = generateTemporaryUserEmail();
 		const password = 'password';
 		userId = await logInTestUserWithClient(otherClient, email, password);
-		otherTodoId = (await otherClient.post(`${process.env.BASE_URL}/api/todos`, { task: 'watch grass grow' })).data.message.id;
+		otherTodoId = (await otherClient.post(
+			`${process.env.BASE_URL}/api/todos`, { task: 'watch grass grow' }
+		)).data.message.id;
 
 		// when
 		await logInTestUser(page);

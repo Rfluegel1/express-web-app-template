@@ -18,7 +18,9 @@ test.describe('Password Reset page', () => {
 			const email = await registerTemporaryUser(page);
 			const getResponse = await admin.get(`${process.env.BASE_URL}/api/users?email=${email}`)
 			userId = getResponse.data.id;
-			await admin.put(`${process.env.BASE_URL}/api/users/${userId}`, { passwordReset: {token: passwordRestToken, expiration: new Date(Date.now() + 1000 * 60 * 60)} });
+			await admin.put(`${process.env.BASE_URL}/api/users/${userId}`,
+				{ passwordReset: {token: passwordRestToken, expiration: new Date(Date.now() + 1000 * 60 * 60)} }
+			);
 
 			await page.goto(`/reset-password?token=${passwordRestToken}`);
 			await page.fill('input[id="password"]', 'new-password');

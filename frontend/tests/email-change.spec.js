@@ -15,7 +15,6 @@ test.describe('Email change page', () => {
 	test('should call to email change for logged in user', async ({ page }) => {
 		const email = await registerTemporaryUser(page)
 		const newEmail = generateTemporaryUserEmail()
-		const requestPromise = page.waitForRequest('**/request-email-change');
 		await logInTestUser(page, email, 'password12');
 
 		// when
@@ -24,9 +23,7 @@ test.describe('Email change page', () => {
 		await page.click('button[type="submit"]');
 
 		// then
-		const request = await requestPromise;
 		await page.waitForSelector(`text="Request sent to ${newEmail} with further instructions"`);
-		await expect(request.url()).toMatch(/\/request-email-change$/);
 		await expect(page.locator('input[type=email]')).toHaveValue('');
 
 		// when

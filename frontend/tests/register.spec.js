@@ -36,9 +36,7 @@ test('should register a new user', async ({ page }) => {
 		email = await registerTemporaryUser(page);
 
 		// then
-		await expect(
-			page.locator('text="Email verification sent. Login "')
-		).toBeVisible();
+		await expect(page.locator('text="Email verification sent. Login "')).toBeVisible();
 
 		// when
 		await page.click('a[href="/login"]');
