@@ -110,7 +110,7 @@ test('should allow tasks to be created and deleted', async ({ page }) => {
 	}
 });
 
-test.skip('user without email verification cannot create tasks, and is asked to verify', async ({
+test('user without email verification cannot create tasks, and is asked to verify', async ({
 																																														 page
 																																													 }) => {
 	// given

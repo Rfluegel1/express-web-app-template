@@ -14,7 +14,6 @@
 
 	async function handleSubmit() {
 		try {
-			console.log('token', token)
 			await axios.put(`/api/reset-password?token=${token}`,
 				{ password: password, confirmPassword: confirmPassword }
 			);

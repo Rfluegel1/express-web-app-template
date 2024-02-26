@@ -1,5 +1,4 @@
 <script>
-
 	import axios from 'axios';
 
 	let email = '';
@@ -13,10 +12,6 @@
 			error = 'Password and Confirm Password do not match';
 			return;
 		}
-	// 	if (password.length < 8) {
-	// 		error = 'Password length must be >=8 characters';
-	// 		return;
-	// 	}
 		try {
 			await axios.post('api/users/', {email: email, password: password, confirmPassword: confirmPassword})
 			registered = true;

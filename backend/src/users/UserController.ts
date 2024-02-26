@@ -142,4 +142,11 @@ export default class UserController {
 			next(error);
 		}
 	}
+
+	async isVerified(request: Request, response: Response, next: NextFunction) {
+		getLogger().info('Received isVerified request')
+		const userId = (request.user as User).id
+		const user = await this.userService.getUser(userId)
+		return response.status(StatusCodes.OK).send({isVerified: user.isVerified})
+	}
 }

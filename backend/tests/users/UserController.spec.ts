@@ -235,6 +235,33 @@ describe('User controller', () => {
 			expect(response.sendStatus).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
 			expect(constantsModule.validateRequest).toHaveBeenCalled();
 		});
+		it('isVerified should getUser from service and return OK and isVerified', async () => {
+			// given
+			let id: string = uuidv4();
+			const mockUser = { id: id, ...user };
+			let request = {
+				user: { id: id }
+			};
+			const response = {
+				status: jest.fn(function() {
+					return this;
+				}), send: jest.fn()
+			};
+			(userController.userService.getUser as jest.Mock).mockImplementation((sentId) => {
+				if (id === sentId) {
+					return mockUser;
+				} else {
+					return null;
+				}
+			});
+
+			// when
+			await userController.isVerified(request as any, response as any, jest.fn());
+
+			// then
+			expect(response.send).toHaveBeenCalledWith({ isVerified: user.isVerified });
+			expect(response.status).toHaveBeenCalledWith(StatusCodes.OK);
+		});
 	});
 	describe('in regards to error handling', () => {
 		it('createUser should next error that is returned from the UserService', async () => {
