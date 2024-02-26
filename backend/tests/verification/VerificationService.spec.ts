@@ -30,7 +30,7 @@ jest.mock('bcrypt', () => ({
 	hash: jest.fn().mockResolvedValue('passwordHash')
 }));
 
-jest.mock('../../src/Logger', () => ({
+jest.mock('../../src/logger', () => ({
 	getLogger: jest.fn().mockReturnValue({
 		info: jest.fn(),
 		error: jest.fn()

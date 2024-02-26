@@ -4,7 +4,7 @@ import { NotFoundException } from '../../src/exceptions/NotFoundException';
 import User from '../../src/users/User';
 
 // setup
-jest.mock('../../src/Logger', () => ({
+jest.mock('../../src/logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			error: jest.fn()

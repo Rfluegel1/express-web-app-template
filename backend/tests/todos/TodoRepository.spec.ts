@@ -4,7 +4,7 @@ import Todo from '../../src/todos/Todo';
 import { NotFoundException } from '../../src/exceptions/NotFoundException';
 
 // setup
-jest.mock('../../src/Logger', () => ({
+jest.mock('../../src/logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			error: jest.fn()

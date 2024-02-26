@@ -2,7 +2,7 @@ import HealthCheckService from '../../src/healthCheck/HealthCheckService';
 import DataSourceService from '../../src/dataSource/DataSourceService';
 
 // setup
-jest.mock('../../src/Logger', () => ({
+jest.mock('../../src/logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			error: jest.fn()

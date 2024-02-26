@@ -22,7 +22,7 @@ jest.mock('../../src/todos/TodoService', () => {
 	});
 });
 
-jest.mock('../../src/Logger', () => ({
+jest.mock('../../src/logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			info: jest.fn()

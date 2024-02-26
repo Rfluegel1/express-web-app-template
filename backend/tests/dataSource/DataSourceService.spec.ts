@@ -1,6 +1,6 @@
 import DataSourceService from '../../src/dataSource/DataSourceService';
 
-jest.mock('../../src/Logger', () => ({
+jest.mock('../../src/logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			error: jest.fn()

@@ -6,7 +6,7 @@ import { DatabaseException } from '../src/exceptions/DatabaseException';
 import { DuplicateRowException } from '../src/exceptions/DuplicateRowException';
 import { UnauthorizedException } from '../src/exceptions/UnauthorizedException';
 
-jest.mock('../src/Logger', () => ({
+jest.mock('../src/logger', () => ({
 	getLogger: jest.fn(() => {
 		return {
 			error: jest.fn()
