@@ -1,6 +1,6 @@
 import UserService from '../../src/users/UserService';
 import { v4 as uuidv4 } from 'uuid';
-import { UUID_REG_EXP } from '../../src/constants';
+import { UUID_REG_EXP } from '../../src/utils';
 import User from '../../src/users/User';
 
 // setup

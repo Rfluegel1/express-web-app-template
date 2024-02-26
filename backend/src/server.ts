@@ -3,7 +3,7 @@ import DataSourceService from './dataSource/DataSourceService';
 const env = process.env.NODE_ENV || 'development'
 require('dotenv').config({path: `.env.${env}`})
 
-import {getLogger} from './Logger'
+import {getLogger} from './logger'
 import http from 'http'
 import app from './app'
 

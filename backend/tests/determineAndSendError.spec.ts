@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { determineAndSendError } from '../src/determineAndSendError';
+import { determineAndSendError } from '../src/utils';
 import { NotFoundException } from '../src/exceptions/NotFoundException';
 import { BadRequestException } from '../src/exceptions/BadRequestException';
 import { DatabaseException } from '../src/exceptions/DatabaseException';
 import { DuplicateRowException } from '../src/exceptions/DuplicateRowException';
-import { UnauthorizedException } from '../src/exceptions/UnauthorizedException'; // Adjust import paths as needed
+import { UnauthorizedException } from '../src/exceptions/UnauthorizedException';
 
 jest.mock('../src/Logger', () => ({
 	getLogger: jest.fn(() => {

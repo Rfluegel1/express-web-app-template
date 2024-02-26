@@ -1,7 +1,7 @@
 import Todo from './Todo'
 import {NotFoundException} from '../exceptions/NotFoundException'
 import {DatabaseException} from '../exceptions/DatabaseException'
-import {getLogger} from '../Logger'
+import {getLogger} from '../logger'
 import DataSourceService from '../dataSource/DataSourceService';
 
 export default class TodoRepository {

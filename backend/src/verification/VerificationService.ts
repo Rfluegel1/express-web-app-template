@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { transporter } from '../nodemailerConfig';
 import UserRepository from '../users/UserRepository';
-import { getLogger } from '../Logger';
+import { getLogger } from '../logger';
 import bcrypt from 'bcrypt';
 import User from '../users/User';
 import { NotFoundException } from '../exceptions/NotFoundException';

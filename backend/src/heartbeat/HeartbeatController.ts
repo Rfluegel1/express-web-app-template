@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
-import {getLogger} from '../Logger'
+import {getLogger} from '../logger'
 
 export default class HeartbeatController {
     heartbeat(request: Request, response: Response): Response<string> {

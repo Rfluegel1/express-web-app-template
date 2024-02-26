@@ -1,5 +1,5 @@
 import Todo from '../../src/todos/Todo'
-import {UUID_REG_EXP} from '../../src/constants'
+import {UUID_REG_EXP} from '../../src/utils'
 
 describe('Post object', () => {
     it('default constructor sets default values', () => {

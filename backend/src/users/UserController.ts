@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { getLogger } from '../Logger';
+import { getLogger } from '../logger';
 import UserService from './UserService';
 import User from './User';
 import { UnauthorizedException } from '../exceptions/UnauthorizedException';
 import Joi from 'joi';
-import { validateRequest } from '../constants';
+import { validateRequest } from '../utils';
 
 export default class UserController {
 	userService = new UserService();

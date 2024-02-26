@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import axios from 'axios';
-import { UUID_REG_EXP } from '../../src/constants';
+import { UUID_REG_EXP } from '../../src/utils';
 import { AxiosError } from 'axios';
 import { authenticateAsAdmin, generateTemporaryUserEmail, logInTestUser, logOutUser } from '../helpers';
 import { CookieJar } from 'tough-cookie';

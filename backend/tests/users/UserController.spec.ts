@@ -7,8 +7,8 @@ import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { UnauthorizedException } from '../../src/exceptions/UnauthorizedException';
 import { generateTemporaryUserEmail } from '../helpers';
-import * as constantsModule from '../../src/constants';
-import { validateRequest } from '../../src/constants';
+import * as constantsModule from '../../src/utils';
+import { validateRequest } from '../../src/utils';
 
 // setup
 jest.mock('../../src/users/UserService', () => {

@@ -1,12 +1,12 @@
 import {NextFunction, Request, Response} from 'express'
 import {StatusCodes} from 'http-status-codes'
-import {getLogger} from '../Logger'
+import {getLogger} from '../logger'
 import TodoService from './TodoService'
 import Todo from './Todo'
 import {UnauthorizedException} from '../exceptions/UnauthorizedException'
 import User from '../users/User'
 import Joi from 'joi';
-import { validateRequest } from '../constants';
+import { validateRequest } from '../utils';
 
 export default class TodoController {
     todoService = new TodoService()

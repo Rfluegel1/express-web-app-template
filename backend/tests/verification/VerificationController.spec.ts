@@ -6,8 +6,8 @@ import { UnauthorizedException } from '../../src/exceptions/UnauthorizedExceptio
 import { BadRequestException } from '../../src/exceptions/BadRequestException';
 import { v4 } from 'uuid';
 import { generateTemporaryUserEmail } from '../helpers';
-import * as constantsModule from '../../src/constants';
-import { validateRequest } from '../../src/constants';
+import * as constantsModule from '../../src/utils';
+import { validateRequest } from '../../src/utils';
 
 jest.mock('../../src/verification/VerificationService', () => {
 	return jest.fn().mockImplementation(() => {

@@ -1,4 +1,4 @@
-import {getLogger} from '../Logger'
+import {getLogger} from '../logger'
 import DataSourceService from '../dataSource/DataSourceService';
 
 export default class HealthCheckService {

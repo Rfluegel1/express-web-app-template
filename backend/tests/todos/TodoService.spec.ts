@@ -1,6 +1,6 @@
 import TodoService from '../../src/todos/TodoService'
 import {v4 as uuidv4} from 'uuid'
-import {UUID_REG_EXP} from '../../src/constants'
+import {UUID_REG_EXP} from '../../src/utils'
 import Todo from '../../src/todos/Todo'
 
 // setup

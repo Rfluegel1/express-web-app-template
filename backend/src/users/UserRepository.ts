@@ -2,7 +2,7 @@ import User from './User';
 import { NotFoundException } from '../exceptions/NotFoundException';
 import { DataSource } from 'typeorm';
 import { DatabaseException } from '../exceptions/DatabaseException';
-import { getLogger } from '../Logger';
+import { getLogger } from '../logger';
 import { DuplicateRowException } from '../exceptions/DuplicateRowException';
 import DataSourceService from '../dataSource/DataSourceService';
 
