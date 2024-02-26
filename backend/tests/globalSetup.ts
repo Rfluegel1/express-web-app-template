@@ -53,8 +53,30 @@ export default async () => {
 		await DataSourceService.getInstance().destroy();
 	}
 
+	async function createVerifiedTestUser() {
+		try {
+			await axios.post(`${process.env.BASE_URL}/api/users`, {
+				email: 'cypressdefault@gmail.com',
+				password: process.env.TEST_USER_PASSWORD,
+				confirmPassword: process.env.TEST_USER_PASSWORD
+			});
+		} catch (error: any) {
+			if (error.response.status !== StatusCodes.CONFLICT) {
+				await globalTeardown();
+				throw error;
+			}
+		}
+		await DataSourceService.getInstance().initialize();
+		await DataSourceService.getInstance().getDataSource().query(
+			'UPDATE users SET isVerified=$1 where email=$2',
+			[true, 'cypressdefault@gmail.com']
+		);
+		await DataSourceService.getInstance().destroy();
+	}
+
 	await startBackend();
 	if (process.env.NODE_ENV === 'development') {
 		await createAdmin();
+		await createVerifiedTestUser()
 	}
 };
