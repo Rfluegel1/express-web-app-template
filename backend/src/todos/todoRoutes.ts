@@ -6,8 +6,20 @@ const router = express.Router();
 let todoController = new TodoController();
 /**
  * @swagger
+ * tags:
+ *   name: Todos
+ *   description: Todo management
+ *
+ * components:
+ *   securitySchemes:
+ *     cookieAuth:    # For cookies
+ *       type: apiKey
+ *       in: cookie
+ *       name: connect.sid
+ *
  * /api/todos:
  *   get:
+ *     tags: [Todos]
  *     summary: Returns a list of todos created by authenticated user.
  *     responses:
  *       200:
@@ -37,6 +49,7 @@ router.get('/todos', todoController.getTodosByCreatedBy.bind(todoController));
  * /api/todos/:id:
  *   get:
  *     summary: Returns a todo by id that is created by authenticated user.
+ *     tags: [Todos]
  *     parameters:
  *       - in: parameter
  *         name: id
@@ -71,6 +84,7 @@ router.get('/todos/:id', todoController.getTodo.bind(todoController));
  * /api/todos/:id:
  *   put:
  *     summary: Updates a todo by id that is created by authenticated user.
+ *     tags: [Todos]
  *     parameters:
  *       - in: parameter
  *         name: id
@@ -118,6 +132,7 @@ router.put('/todos/:id', todoController.updateTodo.bind(todoController));
  * /api/todos/:id:
  *   delete:
  *     summary: Deletes a todo by id that is created by authenticated user.
+ *     tags: [Todos]
  *     parameters:
  *       - in: parameter
  *         name: id
@@ -137,6 +152,7 @@ router.delete('/todos/:id', todoController.deleteTodo.bind(todoController));
  * /api/todos:
  *   post:
  *     summary: Creates a todo.
+ *     tags: [Todos]
  *     requestBody:
  *       required: true
  *       content:
@@ -166,6 +182,6 @@ router.delete('/todos/:id', todoController.deleteTodo.bind(todoController));
  *                   type: string
  *                   description: The name of the user who created the todo.
  */
-router.post('/todos', todoController.createTodo.bind(todoController));
+router.post('/api/todos', todoController.createTodo.bind(todoController));
 
 export = router
