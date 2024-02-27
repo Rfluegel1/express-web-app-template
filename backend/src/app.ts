@@ -12,6 +12,8 @@ import verificationRoutes from './verification/verificationRoutes';
 import { logger } from './logger';
 import { v4 } from 'uuid';
 import { determineAndSendError } from './utils';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 const app: Express = express();
 
@@ -19,6 +21,24 @@ const passportService = new PassportService();
 
 app.use(passportService.configureSessionStore());
 app.use(passportService.setAuthenticationStrategy());
+
+const swaggerDefinition = {
+	openapi: '3.0.0',
+	info: {
+		title: 'Express API with TypeScript',
+		version: '1.0.0',
+	},
+};
+
+const options = {
+	swaggerDefinition,
+	apis: ['./src/**/*.ts']
+};
+
+const swaggerSpec = swaggerJsdoc(options);
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
