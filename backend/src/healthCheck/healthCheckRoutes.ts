@@ -13,7 +13,7 @@ let healthCheckController: HealthCheckController = new HealthCheckController()
  *   description: HealthCheck management
  *
  * /api/health-check:
- *   post:
+ *   get:
  *     tags: [HealthCheck]
  *     summary: Checks for dependency status.
  *     responses:
