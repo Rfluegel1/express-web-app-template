@@ -3,16 +3,11 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
 		"build": "vite build && mkdir -p ../backend/build && cp -r build/* ../backend/build/",
-		"preview": "vite preview",
 		"test": "NODE_ENV=development playwright test",
 		"test:staging": "NODE_ENV=staging playwright test",
 		"test:debug": "NODE_ENV=development playwright test --debug",
-		"check": "svelte-kit sync && svelte-check --tsconfig jsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig jsconfig.json --watch",
-		"lint": "prettier --check my-app && eslint .",
-		"format": "prettier --write my-app"
+		"clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
