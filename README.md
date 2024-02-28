@@ -1,45 +1,37 @@
-# express-web-app-template
+# Express Web App Template
 
-This project is designed to be a starting point for a typescript web application with unit, integration, blackbox, e2e,
-and performance testing. There is also GitHub action files for continuous integration and deployment, and dependency
-updates.
+## Description
 
-```npm install```
+This project is designed to be a starting point for a TypeScript web application with comprehensive testing, including unit, integration, blackbox, e2e, and performance tests. The backend features user management and todo objects, while the frontend includes login, account updates, and a todo list. Additionally, this template includes GitHub action files for continuous integration and deployment, along with dependency updates.
 
-## Development environment commands
+## Technology Stack
 
-### Run front end
+- PostgreSQL
+- TypeScript
+- Express
+- Passport
+- TypeORM
+- Svelte Kit
+- Jest
+- Playwright
+- GitHub Actions
 
-``` npm run frontend ```
+## Prerequisites
 
-### Create static web pages for backend
+- Node.js
+- PostgreSQL
+- Fly.io (For deployment)
+- k6 (For performance testing)
 
-```npm run build```
+## Installation and Setup
 
-### Run backend
-
-```npm run backend```
-
-### Run backend and frontend
-
-```npm run fullstack```
-
-### Run database
-
-1. ```brew services start postgresql@14```
-
-### To create a new migration
-
-```npm run migrations:create --name=<name>```
-
-#### To roll back a bad migration
-
-```npm run migrations:revert```
-
-##### Install postgresql@14
-n 
-1. ```brew install postgresql@14```
-2. ```createdb post```
+1. Clone the repository.
+1. Install postgres with ```brew install postgresql@14```
+1. Start postgres with ```brew services start postgresql@14```
+2. Create a database with ```createdb postgres```
+2. Install dependencies in both the frontend and backend directories using `npm install`.
+3. To build the frontend, run `npm run build` in the frontend directory. This command creates static files necessary for the application.
+4. To start the backend application, navigate to the backend directory and run `npm run backend`. The application will be available on `http://localhost:8090`.
 
 note*:
 brew does not create a database folder for postgresql@14
@@ -50,50 +42,87 @@ These are the steps I had to complete on macOS to make brew play nicely
 1. navigate to /opt/homebrew/var (hint: run ```brew info postgresql@14``` to see where config location is)
 2. ``mkdir postgresql@14``
 
-### Run unit and blackbox tests
+## Usage
 
-```npm run test```
+Visiting `http://localhost:8090/` should redirect users to the login page. Relevant links and pages should all be accessible from the main interface.
 
-#### Run tests as they are in GitHub actions
+## Configuration
 
-```npm run test:github```
+Several environment variables need to be set up for the application to function correctly including
+1. SMTP_PASSWORD (for sending emails)
+2. PASSPORT_SECRET (for encrypting user tokens)
+3. ADMIN_EMAIL (for creating the first admin user)
+4. ADMIN_PASSWORD (for creating the first admin user)
+5. TEST_USER_PASSWORD (for creating the first test user)
+6. DB_USERNAME (for connecting to the database)
+7. DB_PASSWORD (for connecting to the database)
 
-note*: make sure port 8090 is available
+Set these up in a way that can be read by the application but not committed to the repository
 
-### Run performance tests
 
-1. ```brew install k6```
-2. ```k6 run tests/backend/postPerformance.ts```
+## Testing
 
-### Manually test backend responses
+- To run backend tests (unit and blackbox), execute `npm run test` in the backend directory.
+- To run frontend tests (e2e), execute `npm run test` in the frontend directory.
+- To run performance tests, install k6 with homebrew and execute `k6 run tests/backend/postPerformance.ts` in the backend directory.
+
+#### Manually test backend responses
 
 1. ```brew install insomnia```
 2. import from file ```insomnia-config.json```
 
-### Remove node modules and cache
+## Deployment
 
-```npm run clean```
+To deploy the application, Fly.io must be installed locally via Homebrew. Once installed, flyctl must be used from root directory.
 
-### Deploy to staging environment (Prefer GitHub action when possible)
+#### Deploy to staging environment (Prefer GitHub action when possible)
 
-#### First time
+##### First time
 
 1. ```brew install flyctl```
 2. ```flyctl login```
 
-#### Every time
+##### Every time
 
 1. ```npm run build```
 2. ```flylctl deploy```
 
-## Configure WebStorm
+## Additional Commands
 
-### To match formatter
+The `package.json` files in both the frontend and backend directories include various scripts for additional tasks, such as cleaning the filesystem and creating migrations.
+
+- backend 
+  1. To run the backend: ```npm run backend```
+  1. To run tests: ```npm run test```
+  1. To run tests against the staging environment: ```npm run test:staging```
+  1. To create a new migration: ```npm run migrations:create --name=<name>```
+  1. To roll back a bad migration: ```npm run migrations:revert```
+  1. To remove node modules, package-lock and cache in the filesystem: ```npm run clean```
+- frontend
+  1. To run the frontend: ```npm run frontend```
+  1. To run tests: ```npm run test```
+  1. To run tests interactively: ```npm run test:debug```
+  1. To run tests against the staging environment: ```npm run test:staging```
+  1. To remove node modules, package-lock and cache in the filesystem: ```npm run clean```
+
+## License
+
+This project is open source and available for everyone to use.
+
+## Contact Information
+
+Please leave comments on this repository with any questions.
+
+---
+
+# Configure WebStorm
+
+## To match formatter
 
 1. Preferences | Editor | Code Style | TypeScript | Punctuation
 2. From the drop-downs, select "Don't use", "always", "single", "always", and "keep"
 
-### To format on save
+## To format on save
 
 Record the macro
 
@@ -113,7 +142,7 @@ Assign Ctrl+S to "Format and Save"
 7. WebStorm will show a warning "The shortcut is already assigned to other actions. Do you want to remove other
    assignments?" Click "Remove" button
 
-### To run backend in debug mode
+## To run backend in debug mode
 
 1. Run | Edit Configurations...
 2. Create a new Node.js configuration
@@ -122,7 +151,7 @@ Assign Ctrl+S to "Format and Save"
 5. Set working directory to ~/workspaces/express-web-app-template
 6. Set Javascript file to src/backend/server.ts
 
-## GitHub actions
+# GitHub actions
 
 ### Continuous deployment
 
@@ -154,22 +183,21 @@ run k6 tests against the staging environment.
 
 Only manual triggers will run this job. This will deploy main code to staging.
 
-## Setting up new repository
+# Setting up new repository
 
-### 1. Replace express-web-app-template with new repository name
+ 1. Replace express-web-app-template with new repository name
+ 2. Set DataSource properties
+ 3. Setup new secrets
+(ex. ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```)
+ 4. Add application as source for log service
+ 5. Set GitHub Action's secrets (see .yml files)
 
-### 2. Set DataSource properties
+# Access Staging DB
+ 1. SSH into staging enviornment 
+```flyctl ssh console -a your-app-name```
+ 2. Install psql 
+```apt-get update && apt-get install postgresql-client```
+ 3. Connect to db 
+```psql -h your-db-host.fly.dev -p your-db-port -U your-db-user -d your-db-name```
 
-### 3. Setup new secrets
-
-```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```
-
-### 4. Add application as source for log service
-
-### 5. Set GitHub Action's secrets (see .yml files)
-
-## Accessing Stating DB
-### 1. SSH into staging enviornment ```flyctl ssh console -a your-app-name```
-### 2. Install psql ```apt-get update && apt-get install postgresql-client```
-### 3. Connect to db ```psql -h your-db-host.fly.dev -p your-db-port -U your-db-user -d your-db-name```
-### ex. psql -h express-web-app-template-db.internal -p 5432 -U postgres -d postgres
+ex. ```psql -h express-web-app-template-db.internal -p 5432 -U postgres -d postgres```
