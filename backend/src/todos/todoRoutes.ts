@@ -182,6 +182,6 @@ router.delete('/todos/:id', todoController.deleteTodo.bind(todoController));
  *                   type: string
  *                   description: The name of the user who created the todo.
  */
-router.post('/api/todos', todoController.createTodo.bind(todoController));
+router.post('/todos', todoController.createTodo.bind(todoController));
 
 export = router
