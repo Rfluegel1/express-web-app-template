@@ -263,6 +263,11 @@ describe('Verification controller', () => {
 				expectThrow: true
 			},
 			{
+				description: 'should throw when email contains html',
+				input: { body: { email: '<script>alert("xss")</script>' + generateTemporaryUserEmail() } },
+				expectThrow: true
+			},
+			{
 				description: 'should not throw when email is valid',
 				input: { body: { email: generateTemporaryUserEmail() } },
 				expectThrow: false
@@ -275,6 +280,11 @@ describe('Verification controller', () => {
 			{
 				description: 'should throw when password is >255',
 				input: { body: { password: longPassword } },
+				expectThrow: true
+			},
+			{
+				description: 'should throw when password contains html',
+				input: { body: { password: '<script>alert("xss")</script>' } },
 				expectThrow: true
 			},
 			{

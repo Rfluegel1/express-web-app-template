@@ -8,7 +8,7 @@ import { DatabaseException } from '../../src/exceptions/DatabaseException';
 import { UnauthorizedException } from '../../src/exceptions/UnauthorizedException';
 import * as constantsModule from '../../src/utils';
 import { validateRequest } from '../../src/utils';
-
+7
 // setup
 jest.mock('../../src/todos/TodoService', () => {
 	return jest.fn().mockImplementation(() => {
@@ -440,6 +440,11 @@ describe('Todo controller', () => {
 			{
 				description: 'should throw when task is >255',
 				input: { body: { task: longTask } },
+				expectThrow: true
+			},
+			{
+				description: 'should throw when task contains html',
+				input: { body: { task: '<script>alert("xss")</script>' } },
 				expectThrow: true
 			},
 			{

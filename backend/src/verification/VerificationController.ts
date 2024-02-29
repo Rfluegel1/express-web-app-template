@@ -5,7 +5,7 @@ import User from '../users/User';
 import { StatusCodes } from 'http-status-codes';
 import { UnauthorizedException } from '../exceptions/UnauthorizedException';
 import Joi from 'joi';
-import { validateRequest } from '../utils';
+import { checkForHtml, validateRequest } from '../utils';
 
 export default class VerificationController {
 	verificationService = new VerificationService();
@@ -13,7 +13,7 @@ export default class VerificationController {
 	validationSchema = Joi.object({
 		token: Joi.string().uuid(),
 		email: Joi.string().email(),
-		password: Joi.string().max(255),
+		password: Joi.string().max(255).custom(checkForHtml()),
 		confirmPassword: Joi.string().valid(Joi.ref('password')).messages({
 			'any.only': '"confirmPassword" must match "password"',
 		}),

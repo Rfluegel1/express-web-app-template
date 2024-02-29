@@ -5,15 +5,15 @@ import TodoService from './TodoService'
 import Todo from './Todo'
 import {UnauthorizedException} from '../exceptions/UnauthorizedException'
 import User from '../users/User'
+import { checkForHtml, validateRequest } from '../utils';
 import Joi from 'joi';
-import { validateRequest } from '../utils';
 
 export default class TodoController {
     todoService = new TodoService()
 
     validationSchema = Joi.object({
         id: Joi.string().uuid(),
-        task: Joi.string().max(255),
+        task: Joi.string().max(255).custom(checkForHtml()),
         createdBy: Joi.string().uuid(),
     });
 
