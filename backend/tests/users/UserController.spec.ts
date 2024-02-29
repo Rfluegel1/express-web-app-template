@@ -649,6 +649,11 @@ describe('User controller', () => {
 				expectThrow: true
 			},
 			{
+				description: 'should throw when email contains html',
+				input: { body: { email: 'email<script>alert("xss")</script>@test.com' } },
+				expectThrow: true
+			},
+			{
 				description: 'should not throw when email is email',
 				input: { body: { email: generateTemporaryUserEmail() } },
 				expectThrow: false
@@ -656,6 +661,11 @@ describe('User controller', () => {
 			{
 				description: 'should throw when pendingEmail is not email',
 				input: { body: { pendingEmail: 'notValidEmail' } },
+				expectThrow: true
+			},
+			{
+				description: 'should throw when pendingEmail contains html',
+				input: { body: { pendingEmail: '<script>alert("xss")</script>email@test.com' } },
 				expectThrow: true
 			},
 			{
@@ -676,6 +686,11 @@ describe('User controller', () => {
 			{
 				description: 'should throw when password is >255',
 				input: { body: { password: longPassword } },
+				expectThrow: true
+			},
+			{
+				description: 'should throw when password is html',
+				input: { body: { password: '<script>alert("xss")</script>' } },
 				expectThrow: true
 			},
 			{

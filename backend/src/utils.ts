@@ -6,6 +6,7 @@ import { NotFoundException } from './exceptions/NotFoundException';
 import { DatabaseException } from './exceptions/DatabaseException';
 import { DuplicateRowException } from './exceptions/DuplicateRowException';
 import { UnauthorizedException } from './exceptions/UnauthorizedException';
+import sanitizeHtml from 'sanitize-html';
 
 export const UUID_REG_EXP = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i
 
@@ -55,5 +56,15 @@ export function determineAndSendError() {
 		}
 		getLogger().error(errorWithStatus);
 		return response.status(StatusCodes.INTERNAL_SERVER_ERROR).send({ message: 'Generic Internal Server Error' });
+	};
+}
+
+export function checkForHtml() {
+	return (value: string) => {
+		const sanitizedValue = sanitizeHtml(value);
+		if (value !== sanitizedValue) {
+			throw new BadRequestException('Invalid task');
+		}
+		return sanitizedValue;
 	};
 }
