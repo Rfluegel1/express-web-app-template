@@ -14,7 +14,6 @@ import { v4 } from 'uuid';
 import { determineAndSendError } from './utils';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import helmet from 'helmet';
 
 const app: Express = express();
 
