@@ -18,22 +18,6 @@ import helmet from 'helmet';
 
 const app: Express = express();
 
-app.use(
-	helmet.contentSecurityPolicy({
-		directives: {
-			defaultSrc: ["'self'"],
-			scriptSrc: ["'self'", "'strict-dynamic'"],
-			styleSrc: ["'self'", 'https:', "'unsafe-inline'"],
-			imgSrc: ["'self'", 'data:', 'https:'],
-			connectSrc: ["'self'", 'ws:', 'wss:', 'http:', 'https:'],
-			fontSrc: ["'self'", 'https:', 'data:'],
-			objectSrc: ["'none'"],
-			mediaSrc: ["'self'"],
-			frameSrc: ["'none'"],
-		}
-	})
-);
-
 const passportService = new PassportService();
 
 app.use(passportService.configureSessionStore());
