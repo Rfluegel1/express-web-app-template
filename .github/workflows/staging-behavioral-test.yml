@@ -11,13 +11,28 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.16.0
 
       - name: Install backend dependencies
         working-directory: './backend'
         run: npm install
 
-      - name: Run Backend Tests
+      - name: Run Blackbox Tests (Staging)
         working-directory: './backend'
-        run: npm run test backend:staging
+        run: npm run test:staging
+
+      - name: Install frontend dependencies
+        working-directory: './frontend'
+        run: npm install
+
+      - name: Run Playwright Tests (Staging)
+        working-directory: './frontend'
+        run: npm run test:staging
