@@ -8,6 +8,8 @@ on:
 jobs:
   staging-performance-test:
     runs-on: ubuntu-latest
+    env:
+      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
     timeout-minutes: 10
 
     steps:
@@ -16,5 +18,5 @@ jobs:
       - name: Run k6 test
         uses: grafana/k6-action@v0.3.0
         with:
-          filename: tests/backend/postPerformance.ts
-          flags: --env BASE_URL=https://express-web-app-template.fly.dev
+          filename: backend/tests/todoPerformance.ts
+          flags: --env BASE_URL=https://express-web-app-template.fly.dev --env PASSWORD=${{ secrets.TEST_USER_PASSWORD }} --env EMAIL='cypressdefault@gmail.com'

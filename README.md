@@ -64,7 +64,7 @@ Set these up in a way that can be read by the application but not committed to t
 
 - To run backend tests (unit and blackbox), execute `npm run test` in the backend directory.
 - To run frontend tests (e2e), execute `npm run test` in the frontend directory.
-- To run performance tests, install k6 with homebrew and execute `k6 run tests/backend/postPerformance.ts` in the backend directory.
+- To run performance tests, install k6 with homebrew and execute `k6 run tests/backend/todoPerformance.ts` in the backend directory.
 
 #### Manually test backend responses
 
