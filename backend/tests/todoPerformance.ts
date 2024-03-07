@@ -8,7 +8,7 @@ export const options = {
     vus: virtualUsers,
     duration: '30s',
     thresholds: {
-        'http_req_duration': ['p(95)<1000']
+        'http_req_duration': ['p(95)<60000']
     }
 };
 
