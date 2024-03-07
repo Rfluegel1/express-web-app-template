@@ -38,6 +38,10 @@ jobs:
         working-directory: './frontend'
         run: npm install
 
+      - name: Install playwright
+        working-directory: './frontend'
+        run: npx playwright install
+
       - name: Run Playwright Tests (Staging)
         working-directory: './frontend'
         run: npm run test:staging
