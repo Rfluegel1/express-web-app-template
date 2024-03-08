@@ -68,8 +68,9 @@ Set these up in a way that can be read by the application but not committed to t
 
 #### Manually test backend responses
 
-1. ```brew install insomnia```
-2. import from file ```insomnia-config.json```
+1. navigate to ```http://localhost:8090/api/docs```
+2. log in with valid credentials
+3. execute on the endpoint you want to test
 
 ## Deployment
 

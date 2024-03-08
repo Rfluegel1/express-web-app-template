@@ -6,7 +6,7 @@ jest.setTimeout(30000 * 2)
 describe('Health check resource', () => {
     it('should return happy if database connection is healthy and requests are being served', async () => {
         // when
-        const getResponse = await axios.get(`${process.env.BASE_URL}/health-check`)
+        const getResponse = await axios.get(`${process.env.BASE_URL}/api/health-check`)
 
         // then
         expect(getResponse.status).toEqual(StatusCodes.OK)

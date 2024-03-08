@@ -80,8 +80,8 @@ app.use('/api', passportRoutes);
 app.use('/api', todoRoutes);
 app.use('/api', userRoutes);
 app.use('/api', verificationRoutes);
-app.use('/', healthCheckRoutes);
-app.use('/', heartbeatRoutes);
+app.use('/api', healthCheckRoutes);
+app.use('/api', heartbeatRoutes);
 
 // The "catchall" handler: for any request that doesn't match one above, send back React's index.html file.
 app.get('*', (req, res) => {

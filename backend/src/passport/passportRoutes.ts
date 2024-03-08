@@ -17,16 +17,19 @@ const router = express.Router();
  *     requestBody:
  *       required: true
  *       content:
- *         form-data:
+ *         application/x-www-form-urlencoded:
  *           schema:
  *             type: object
  *             properties:
  *               username:
  *                 type: string
- *                 description: The user's email.
+ *                 description: The user's email or username.
  *               password:
  *                 type: string
  *                 description: The user's password.
+ *             required:
+ *               - username
+ *               - password
  */
 router.post('/login', passport.authenticate('local', {
     successRedirect: '/',
