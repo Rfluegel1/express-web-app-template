@@ -253,4 +253,4 @@ router.delete('/users/:id', userController.deleteUser.bind(userController))
  */
 router.post('/users', userController.createUser.bind(userController))
 
-export = router
+export default router

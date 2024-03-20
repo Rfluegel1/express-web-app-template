@@ -56,8 +56,8 @@ export default class DataSourceService {
 	private async executeWithCatch(action: () => Promise<any>): Promise<any> {
 		try {
 			return await action();
-		} catch (error) {
-			getLogger().error(error);
+		} catch (error: any) {
+			getLogger().error(error.message);
 			throw new DatabaseException();
 		}
 	}

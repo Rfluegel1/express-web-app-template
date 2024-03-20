@@ -42,4 +42,4 @@ let healthCheckController: HealthCheckController = new HealthCheckController()
  */
 router.get('/health-check', healthCheckController.healthcheck.bind(healthCheckController))
 
-export = router
+export default router

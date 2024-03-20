@@ -136,4 +136,4 @@ router.put('/reset-password', verificationController.resetPassword.bind(verifica
  */
 router.get('/update-email', verificationController.updateEmail.bind(verificationController))
 
-export = router
+export default router

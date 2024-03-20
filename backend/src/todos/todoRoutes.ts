@@ -184,4 +184,4 @@ router.delete('/todos/:id', todoController.deleteTodo.bind(todoController));
  */
 router.post('/todos', todoController.createTodo.bind(todoController));
 
-export = router
+export default router

@@ -30,4 +30,4 @@ let heartbeatController: HeartbeatController = new HeartbeatController()
  */
 router.get('/heartbeat', heartbeatController.heartbeat.bind(heartbeatController))
 
-export = router
+export default router
