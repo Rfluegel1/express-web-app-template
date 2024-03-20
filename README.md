@@ -186,12 +186,16 @@ Only manual triggers will run this job. This will deploy main code to staging.
 
 # Setting up new repository
 
- 1. Replace express-web-app-template with new repository name
- 2. Set DataSource properties
- 3. Setup new secrets
-(ex. ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```)
- 4. Add application as source for log service
- 5. Set GitHub Action's secrets (see .yml files)
+1. Replace brawlhalla-tournament-information with new repository name
+2. ```fly launch```
+3. Do create with postgres (name it something other than app name)
+3. Setup new secrets ( ADMIN_EMAIL,ADMIN_PASSWORD,DB_PASSWORD,PASSPORT_SECRET,SMTP_PASSWORD,TEST_USER_PASSWORD)
+   (ex. ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```)
+4. Add secrets to github settings (ADMIN_EMAIL,ADMIN_PASSWORD,FLY_API_TOKEN,PASSPORT_SECRET,TEST_USER_PASSWORD)
+5. Update db username and db name for staging if not postgres
+6. Update db to have test user and admin user (create users via ui, update role and isverified via staging db)
+4. Add application as source for log service
+5. Set GitHub Action's secrets (see .yml files)
 
 # Access Staging DB
  1. SSH into staging enviornment 
@@ -201,4 +205,4 @@ Only manual triggers will run this job. This will deploy main code to staging.
  3. Connect to db 
 ```psql -h your-db-host.fly.dev -p your-db-port -U your-db-user -d your-db-name```
 
-ex. ```psql -h express-web-app-template-db.internal -p 5432 -U postgres -d postgres```
+ex. ```psql -h brawlhalla-tournament-information-db.internal -p 5432 -U postgres -d postgres```
