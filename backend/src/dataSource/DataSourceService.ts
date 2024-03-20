@@ -34,7 +34,6 @@ export default class DataSourceService {
 			database: process.env.DB_DATABASE,
 			synchronize: false,
 			entities: [
-				'src/entity/**/*.ts',
 				Todo,
 				User
 			],

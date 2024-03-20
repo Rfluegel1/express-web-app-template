@@ -4,9 +4,11 @@
   "description": "This project is designed to be a starting point for a express web application",
   "main": "src/server.ts",
   "scripts": {
+    "build": "tsc && node replace-migration-pattern.js",
     "test:staging": "NODE_ENV=staging jest blackbox --runInBand --detectOpenHandles",
     "test": "NODE_ENV=development jest --runInBand",
-    "start": "nodemon src/server.ts",
+    "dev": "nodemon src/server.ts",
+    "start": "node dist/server.js",
     "clean": "rm -rf node_modules && rm -f package-lock.json && npm cache clean --force",
     "migrations:revert": "DB_DATABASE=postgres npx typeorm-ts-node-esm migration:revert -d src/dataSource/dataSourceExport.ts",
     "migrations:create": "if [ -z \\\\\\\"$npm_config_name\\\\\\\" ]; then echo 'Missing --name'; exit 1; else typeorm migration:create src/migrations/$npm_config_name; fi"
