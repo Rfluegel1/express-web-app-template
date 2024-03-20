@@ -55,6 +55,10 @@ jobs:
         working-directory: './backend'
         run: npm install
 
+      - name: Build Backend
+        working-directory: './backend'
+        run: npm run build
+
       - name: Run Backend Tests (Development)
         working-directory: './backend'
         run: npm run test
