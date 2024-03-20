@@ -24,4 +24,4 @@ RUN npm install --only=production
 EXPOSE 8090
 
 # Specify the command to run the backend server when the container starts
-CMD [ "npx", "ts-node", "src/server.ts" ]
+CMD [ "node", "dist/server.js" ]
