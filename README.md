@@ -31,7 +31,7 @@ This project is designed to be a starting point for a TypeScript web application
 2. Create a database with ```createdb postgres```
 2. Install dependencies in both the frontend and backend directories using `npm install`.
 3. To build the frontend, run `npm run build` in the frontend directory. This command creates static files necessary for the application.
-4. To start the backend application, navigate to the backend directory and run `npm run backend`. The application will be available on `http://localhost:8090`.
+4. To start the backend application, navigate to the backend directory and run `npm start`. The application will be available on `http://localhost:8090`.
 
 note*:
 brew does not create a database folder for postgresql@14
