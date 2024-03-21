@@ -205,4 +205,4 @@ Only manual triggers will run this job. This will deploy main code to staging.
  3. Connect to db 
 ```psql -h your-db-host.fly.dev -p your-db-port -U your-db-user -d your-db-name```
 
-ex. ```psql -h brawlhalla-tournament-information-db.internal -p 5432 -U postgres -d postgres```
+ex. ```psql -h express-web-app-template-db.internal -p 5432 -U postgres -d postgres```
