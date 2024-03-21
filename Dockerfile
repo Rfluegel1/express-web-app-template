@@ -8,7 +8,6 @@ WORKDIR /app
 ENV NODE_ENV=staging
 
 # Copy entire frontend and backend directories
-COPY frontend/ ./frontend/
 COPY backend/ ./backend/
 
 # Install node modules for backend
