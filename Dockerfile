@@ -11,11 +11,6 @@ ENV NODE_ENV=staging
 COPY frontend/ ./frontend/
 COPY backend/ ./backend/
 
-# Install node modules and build static files for frontend
-WORKDIR /app/frontend
-RUN npm install
-RUN npm run build
-
 # Install node modules for backend
 WORKDIR /app/backend
 
