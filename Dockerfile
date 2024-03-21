@@ -11,4 +11,4 @@ COPY backend/.env* ./backend
 EXPOSE 8090
 
 # Specify the command to run the backend server when the container starts
-CMD [ "node", "dist/server.js" ]
+CMD [ "node", "backend/dist/server.js" ]
