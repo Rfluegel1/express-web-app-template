@@ -93,15 +93,17 @@ To deploy the application, Fly.io must be installed locally via Homebrew. Once i
 The `package.json` files in both the frontend and backend directories include various scripts for additional tasks, such as cleaning the filesystem and creating migrations.
 
 - backend 
-  1. To run the backend: ```npm run backend```
+  1. To run the backend: ```npm run dev```
+  1. To compile and run compiled backend: ```npm run build && npm start```
   1. To run tests: ```npm run test```
   1. To run tests against the staging environment: ```npm run test:staging```
   1. To create a new migration: ```npm run migrations:create --name=<name>```
-  1. To roll back a bad migration: ```npm run migrations:revert```
+  1. To roll back a migration: ```npm run migrations:revert```
   1. To remove node modules, package-lock and cache in the filesystem: ```npm run clean```
 - frontend
-  1. To run the frontend: ```npm run frontend```
-  1. To run tests: ```npm run test```
+  1. To run the frontend: ```npm run dev```
+  1. To compile frontend and place in backend directory: ```npm run build```
+  1. To run tests (uses compiled backend): ```npm run test```
   1. To run tests interactively: ```npm run test:debug```
   1. To run tests against the staging environment: ```npm run test:staging```
   1. To remove node modules, package-lock and cache in the filesystem: ```npm run clean```
@@ -152,7 +154,7 @@ Assign Ctrl+S to "Format and Save"
 5. Set working directory to ~/workspaces/express-web-app-template
 6. Set Javascript file to src/backend/server.ts
 
-# GitHub actions
+# GitHub Actions
 
 ### Continuous deployment
 
@@ -186,16 +188,14 @@ Only manual triggers will run this job. This will deploy main code to staging.
 
 # Setting up new repository
 
-1. Replace brawlhalla-tournament-information with new repository name
-2. ```fly launch```
-3. Do create with postgres (name it something other than app name)
-3. Setup new secrets ( ADMIN_EMAIL,ADMIN_PASSWORD,DB_PASSWORD,PASSPORT_SECRET,SMTP_PASSWORD,TEST_USER_PASSWORD)
-   (ex. ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```)
-4. Add secrets to github settings (ADMIN_EMAIL,ADMIN_PASSWORD,FLY_API_TOKEN,PASSPORT_SECRET,TEST_USER_PASSWORD)
-5. Update db username and db name for staging if not postgres
-6. Update db to have test user and admin user (create users via ui, update role and isverified via staging db)
-4. Add application as source for log service
-5. Set GitHub Action's secrets (see .yml files)
+1. Replace express-web-app-template with new repository name
+1. ```fly launch```
+1. Do create with postgres (name it something other than app name)
+1. Setup new secrets ( ADMIN_EMAIL,ADMIN_PASSWORD,DB_PASSWORD,PASSPORT_SECRET,SMTP_PASSWORD,TEST_USER_PASSWORD) | ex. ```fly secrets set DB_PASSWORD="<password>" DB_USERNAME="<username>"```
+1. Add secrets to github settings (ADMIN_EMAIL,ADMIN_PASSWORD,FLY_API_TOKEN,PASSPORT_SECRET,TEST_USER_PASSWORD)
+1. Update db username and db name for staging if not postgres
+1. Update db to have test user and admin user (create users via ui, update role and isverified via staging db)
+1. Add application as source for log service
 
 # Access Staging DB
  1. SSH into staging enviornment 
