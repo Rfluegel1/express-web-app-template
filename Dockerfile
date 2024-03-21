@@ -18,7 +18,6 @@ RUN npm run build
 
 # Install node modules for backend
 WORKDIR /app/backend
-RUN npm install --only=production
 
 # Expose the port the backend app runs on
 EXPOSE 8090
