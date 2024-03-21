@@ -9,6 +9,8 @@ COPY backend/dist/ ./backend/dist/
 COPY backend/node_modules/ ./backend/node_modules/
 COPY backend/.env* ./backend/
 
+WORKDIR /app/backend
+
 EXPOSE 8090
 
-CMD [ "node", "backend/dist/server.js" ]
+CMD [ "node", "dist/server.js" ]
