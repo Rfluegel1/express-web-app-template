@@ -51,10 +51,6 @@ jobs:
         working-directory: './backend'
         run: npm update
 
-      - name: Build Backend
-        working-directory: './backend'
-        run: npm run build
-
       - name: Run Backend Tests
         working-directory: './backend'
         run: npm run test
@@ -84,5 +80,6 @@ jobs:
             git push origin main
           else
             echo "No changes to package-lock.json, skipping update."
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
