@@ -74,13 +74,13 @@ jobs:
           branch_name="automated/update-dependencies-$(date +%s)"
           git checkout -b $branch_name
           git add frontend/package-lock.json backend/package-lock.json
-          # Check if there are any changes to commit in either package-lock.json files
           if git diff --exit-code --cached --name-only | grep -q 'package-lock.json'; then
             echo "Changes found in package-lock.json, committing and merging."
             git commit -m "Update NPM dependencies"
             git push origin $branch_name
+            git fetch origin
             git checkout main
-            git merge $branch_name --no-ff -m "Merge updated NPM dependencies"
+            git merge --no-ff $branch_name -m "Merge updated NPM dependencies"
             git push origin main
           else
             echo "No changes to package-lock.json, skipping update."
