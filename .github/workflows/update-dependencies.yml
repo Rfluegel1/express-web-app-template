@@ -86,4 +86,4 @@ jobs:
             echo "No changes to package-lock.json, skipping update."
           fi
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT }}
