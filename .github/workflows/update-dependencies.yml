@@ -77,7 +77,6 @@ jobs:
           if git diff --exit-code --cached --name-only | grep -q 'package-lock.json'; then
             echo "Changes found in package-lock.json, committing and merging."
             git commit -m "Update NPM dependencies"
-            git remote set-url origin https://x-access-token:${{ secrets.PAT }}@github.com/Rfluegel1/express-web-app-template.git
             git push origin $branch_name
             git fetch origin
             git checkout main
@@ -87,4 +86,4 @@ jobs:
             echo "No changes to package-lock.json, skipping update."
           fi
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

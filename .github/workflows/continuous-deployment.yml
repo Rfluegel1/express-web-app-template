@@ -5,6 +5,10 @@ on:
       branches:
         - main
     workflow_dispatch: # Manual trigger
+    workflow_run:
+      workflows: [Update NPM Dependencies and Test]
+      types:
+        - completed
 
 jobs:
   continuous-deployment:
