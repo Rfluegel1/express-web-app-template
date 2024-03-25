@@ -50,6 +50,10 @@ jobs:
       - name: Update backend NPM packages
         working-directory: './backend'
         run: npm update
+        π
+      - name: Build Backend
+        working-directory: './backend'
+        run: npm run build
 
       - name: Run Backend Tests
         working-directory: './backend'
